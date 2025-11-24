@@ -1,0 +1,62 @@
+<task>
+  <name>create-report</name>
+  <description>Create Script Report for custom analytics</description>
+  <steps>
+    <step>Create: bench --site {{site_name}} new-report "{{report_name}}"</step>
+    <step>Choose: Select "Script Report" when prompted</step>
+    <step>Edit: Update {{report_name}}.py with columns and data method</step>
+    <step>Add filters: Define report filters in .js file</step>
+    <step>Test: Run report from Reports menu</step>
+  </steps>
+  <template>
+    <code>
+import frappe
+from frappe import _
+
+def execute(filters=None):
+    columns = get_columns()
+    data = get_data(filters)
+    return columns, data
+
+def get_columns():
+    return [
+        {"label": _("ID"), "fieldname": "name", "fieldtype": "Link",
+         "options": "{{doctype}}", "width": 150},
+        {"label": _("Date"), "fieldname": "date", "fieldtype": "Date",
+         "width": 100},
+        {"label": _("Amount"), "fieldname": "amount", "fieldtype": "Currency",
+         "width": 120},
+    ]
+
+def get_data(filters):
+    conditions = get_conditions(filters)
+
+    return frappe.db.sql("""
+        SELECT
+            name,
+            date,
+            amount
+        FROM `tab{{doctype}}`
+        WHERE docstatus = 1 {conditions}
+        ORDER BY date DESC
+    """.format(conditions=conditions), filters, as_dict=1)
+
+def get_conditions(filters):
+    conditions = []
+
+    if filters.get("from_date"):
+        conditions.append("date >= %(from_date)s")
+    if filters.get("to_date"):
+        conditions.append("date <= %(to_date)s")
+
+    return " AND " + " AND ".join(conditions) if conditions else ""
+    </code>
+  </template>
+  <checklist>
+    <check>columns defined with proper fieldtypes</check>
+    <check>data method returns list of dicts</check>
+    <check>Filters defined in .js file</check>
+    <check>Parameterized SQL queries</check>
+    <check>Report tested with various filter combinations</check>
+  </checklist>
+</task>

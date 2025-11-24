@@ -1,0 +1,18 @@
+<task>
+  <name>check-site</name>
+  <description>Check Frappe site health and status</description>
+  <steps>
+    <step>List sites: bench --site {{site_name}} list-apps (verify app installed)</step>
+    <step>Check logs: tail -20 sites/{{site_name}}/logs/error.log (recent errors)</step>
+    <step>Verify DB: bench --site {{site_name}} mariadb -e "SELECT 1" (DB accessible)</step>
+  </steps>
+  <expected_output>
+    <output>App installed and active</output>
+    <output>No recent critical errors in logs</output>
+    <output>Database connection successful</output>
+  </expected_output>
+  <error_handling>
+    <error type="app_not_found">Install app: bench --site {{site_name}} install-app {{current_app}}</error>
+    <error type="db_connection_failed">Check MariaDB service, verify site_config.json credentials</error>
+  </error_handling>
+</task>

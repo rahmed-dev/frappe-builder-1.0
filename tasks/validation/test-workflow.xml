@@ -1,0 +1,22 @@
+<task>
+  <name>test-workflow</name>
+  <description>Test workflow state transitions and permissions</description>
+  <steps>
+    <step>Create test doc: Create draft document</step>
+    <step>Test transitions: Attempt each workflow state transition</step>
+    <step>Test permissions: Verify only allowed roles can transition</step>
+    <step>Test emails: Verify email alerts sent for transitions</step>
+    <step>Test validation: Verify transition conditions enforced</step>
+  </steps>
+  <test_scenarios>
+    <scenario>Happy path: All transitions work for authorized users</scenario>
+    <scenario>Permission denial: Unauthorized users cannot transition</scenario>
+    <scenario>Validation: Invalid transitions are blocked</scenario>
+    <scenario>Email alerts: Notifications sent to correct recipients</scenario>
+  </test_scenarios>
+  <expected_output>
+    <output>All valid transitions succeed</output>
+    <output>Invalid transitions are blocked with clear error</output>
+    <output>Email alerts sent correctly</output>
+  </expected_output>
+</task>

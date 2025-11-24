@@ -1,0 +1,16 @@
+<task>
+  <name>build-assets</name>
+  <description>Build JavaScript/CSS assets for Frappe app</description>
+  <steps>
+    <step>Build app: bench build --app {{current_app}}</step>
+    <step>Verify build: Check for build errors in output</step>
+  </steps>
+  <expected_output>
+    <output>Assets compiled successfully</output>
+    <output>No JavaScript/CSS errors</output>
+  </expected_output>
+  <error_handling>
+    <error type="js_syntax_error">Fix JavaScript syntax in client scripts</error>
+    <error type="module_not_found">Run 'bench setup requirements' or install missing npm packages</error>
+  </error_handling>
+</task>

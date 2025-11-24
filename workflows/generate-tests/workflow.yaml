@@ -1,0 +1,24 @@
+# Generate Tests Workflow
+name: generate-tests
+description: "Generate test scenarios (happy/sad/edge/evil) and Frappe unittest code"
+author: "frappe-builder"
+
+# Config source pattern
+config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+output_folder: "{config_source}:output_folder"
+frappe_bench_path: "{config_source}:frappe_bench_path"
+default_site: "{config_source}:default_site"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/generate-tests"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.md"
+
+# Output configuration
+default_output_file: "{{docs_path}}/test-scenarios/test-matrix-{{feature_name}}.md"
+
+standalone: true

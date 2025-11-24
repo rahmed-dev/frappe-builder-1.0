@@ -1,0 +1,27 @@
+<task>
+  <name>validate-code</name>
+  <description>Check code for Frappe anti-patterns and quality issues</description>
+  <steps>
+    <step>Check imports: Verify frappe.utils used for dates/numbers</step>
+    <step>Check SQL: Verify all queries use parameterization</step>
+    <step>Check permissions: Verify all @frappe.whitelist() have checks</step>
+    <step>Check UI: Verify frappe.ui components used (not custom HTML/CSS)</step>
+    <step>Check naming: Verify descriptive function/variable names</step>
+  </steps>
+  <anti_patterns>
+    <pattern>String concatenation in SQL queries (SQL injection risk)</pattern>
+    <pattern>Missing @frappe.whitelist() decorator</pattern>
+    <pattern>Client-side filtering (should be server-side)</pattern>
+    <pattern>Custom HTML/CSS instead of frappe.ui components</pattern>
+    <pattern>Not using frappe.utils for dates/numbers</pattern>
+    <pattern>Cryptic variable names (x, data, temp)</pattern>
+    <pattern>Unnecessary helper functions (used only 1-2 times)</pattern>
+    <pattern>console.log() in production code</pattern>
+  </anti_patterns>
+  <quality_checks>
+    <check>Code is self-documenting with descriptive names</check>
+    <check>Business logic in Python, not JavaScript</check>
+    <check>Helper functions only when used 3+ times</check>
+    <check>Simple solutions, no over-engineering</check>
+  </quality_checks>
+</task>

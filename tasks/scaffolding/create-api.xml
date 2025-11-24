@@ -1,0 +1,52 @@
+<task>
+  <name>create-api</name>
+  <description>Create whitelisted API method template</description>
+  <steps>
+    <step>Create file: Create .py file in {{app_path}}/{{module}}/api/</step>
+    <step>Add template: Use server-script-template.py as reference</step>
+    <step>Implement: Add @frappe.whitelist() decorator and permission checks</step>
+    <step>Test: Call API from client or Postman</step>
+  </steps>
+  <template>
+    <code>
+import frappe
+from frappe import _
+from frappe.utils import flt, cint, getdate
+
+@frappe.whitelist()
+def {{method_name}}(param1, param2):
+    """
+    Brief description
+
+    Args:
+        param1: Description
+        param2: Description
+
+    Returns:
+        dict: Result data
+    """
+    # Permission check
+    if not frappe.has_permission("{{doctype}}", "read"):
+        frappe.throw(_("No permission"), frappe.PermissionError)
+
+    # Validate inputs
+    if not param1:
+        frappe.throw(_("param1 is required"))
+
+    # Convert types
+    param2 = flt(param2)
+
+    # Business logic
+    result = process_data(param1, param2)
+
+    return {"success": True, "data": result}
+    </code>
+  </template>
+  <checklist>
+    <check>@frappe.whitelist() decorator present</check>
+    <check>Permission check implemented</check>
+    <check>Input validation added</check>
+    <check>Type conversion for JavaScript values</check>
+    <check>Docstring with Args and Returns</check>
+  </checklist>
+</task>

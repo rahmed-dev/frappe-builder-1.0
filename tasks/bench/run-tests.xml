@@ -1,0 +1,20 @@
+<task>
+  <name>run-tests</name>
+  <description>Run Frappe unit tests for app or specific module</description>
+  <steps>
+    <step>Run tests: bench --site {{site_name}} run-tests --app {{current_app}} {{module_filter}}</step>
+    <step>Analyze results: Parse output for passed/failed/skipped tests</step>
+    <step>Report: Summarize test results with failure details</step>
+  </steps>
+  <parameters>
+    <param name="module_filter" optional="true">--module [module_name] for specific module tests</param>
+  </parameters>
+  <expected_output>
+    <output>All tests passed</output>
+    <output>Test coverage summary</output>
+  </expected_output>
+  <error_handling>
+    <error type="test_failed">Review failure traceback, fix test or code, re-run</error>
+    <error type="import_error">Check module imports, ensure dependencies installed</error>
+  </error_handling>
+</task>

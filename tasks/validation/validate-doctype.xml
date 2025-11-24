@@ -1,0 +1,24 @@
+<task>
+  <name>validate-doctype</name>
+  <description>Validate DocType definition for common issues</description>
+  <steps>
+    <step>Check JSON: Validate DocType JSON syntax is correct</step>
+    <step>Check fields: Verify all required fields present (name, fieldname, fieldtype)</step>
+    <step>Check naming: Verify naming_rule or autoname set</step>
+    <step>Check permissions: Verify at least one role has permissions</step>
+    <step>Check links: Verify Link field options reference valid DocTypes</step>
+  </steps>
+  <validation_checklist>
+    <check>JSON syntax valid</check>
+    <check>All fields have fieldname, label, fieldtype</check>
+    <check>Naming rule configured</check>
+    <check>At least one role permission exists</check>
+    <check>Link field options are valid DocTypes</check>
+    <check>Child table references valid DocType</check>
+  </validation_checklist>
+  <error_handling>
+    <error type="invalid_json">Fix JSON syntax errors in .json file</error>
+    <error type="missing_permissions">Add role permissions to DocType</error>
+    <error type="invalid_link">Update Link field options to valid DocType name</error>
+  </error_handling>
+</task>

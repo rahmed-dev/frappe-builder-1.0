@@ -1,0 +1,20 @@
+# Review Code Workflow
+name: review-code
+description: "Scan code for Frappe anti-patterns and suggest built-in alternatives"
+author: "frappe-builder"
+
+# Config source pattern
+config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+output_folder: "{config_source}:output_folder"
+frappe_bench_path: "{config_source}:frappe_bench_path"
+default_site: "{config_source}:default_site"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/review-code"
+instructions: "{installed_path}/instructions.md"
+template: false  # Action workflow
+
+standalone: true

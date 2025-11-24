@@ -1,0 +1,23 @@
+<task>
+  <name>create-doctype</name>
+  <description>Scaffold new DocType with bench command</description>
+  <steps>
+    <step>Create: bench --site {{site_name}} new-doctype "{{doctype_name}}"</step>
+    <step>Verify: Check files created in {{app_path}}/{{module}}/doctype/{{doctype_name}}/</step>
+    <step>Edit JSON: Update DocType definition with required fields</step>
+    <step>Migrate: Run bench migrate to create database table</step>
+  </steps>
+  <files_created>
+    <file>{{doctype_name}}.json - DocType definition</file>
+    <file>{{doctype_name}}.py - Python controller</file>
+    <file>{{doctype_name}}.js - Client script (form events)</file>
+    <file>test_{{doctype_name}}.py - Unit tests</file>
+  </files_created>
+  <next_steps>
+    <step>Add fields to DocType JSON</step>
+    <step>Configure permissions</step>
+    <step>Implement validation in .py controller</step>
+    <step>Add UI behavior in .js client script</step>
+    <step>Write unit tests</step>
+  </next_steps>
+</task>

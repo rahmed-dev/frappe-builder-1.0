@@ -1,0 +1,20 @@
+<task>
+  <name>check-permissions</name>
+  <description>Verify permission checks in whitelisted methods</description>
+  <steps>
+    <step>Scan code: Find all @frappe.whitelist() methods</step>
+    <step>Check each: Verify frappe.has_permission() or doc.check_permission() called</step>
+    <step>Report: List methods missing permission checks</step>
+  </steps>
+  <validation_checklist>
+    <check>All @frappe.whitelist() methods have permission checks</check>
+    <check>Permission checks before any write operations</check>
+    <check>Document-level permissions for doc updates</check>
+    <check>Background jobs use ignore_permissions=True only when necessary</check>
+  </validation_checklist>
+  <anti_patterns>
+    <pattern>@frappe.whitelist() without permission check</pattern>
+    <pattern>frappe.delete_doc() without permission check</pattern>
+    <pattern>frappe.get_doc().save() without permission check</pattern>
+  </anti_patterns>
+</task>

@@ -1,0 +1,43 @@
+# BMAD Module gitignore
+
+# Configuration files (user-specific)
+config.yaml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+.directory
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Node modules (if any)
+node_modules/
+
+# Test coverage
+.coverage
+htmlcov/

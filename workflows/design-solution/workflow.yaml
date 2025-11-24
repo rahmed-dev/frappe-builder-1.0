@@ -1,0 +1,33 @@
+# Design Solution Workflow
+name: design-solution
+description: "Design technical solution using 4-tier framework (Standard → Configure → Scripts → Custom)"
+author: "frappe-builder"
+
+# Config source pattern
+config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+output_folder: "{config_source}:output_folder"
+frappe_bench_path: "{config_source}:frappe_bench_path"
+default_site: "{config_source}:default_site"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/design-solution"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.md"
+
+# Input
+recommended_inputs:
+  - brd: "{{docs_path}}/brd/"
+
+input_file_patterns:
+  brd:
+    whole: "{{docs_path}}/brd/*.md"
+    sharded: "{{docs_path}}/brd/*/index.md"
+
+# Output configuration
+default_output_file: "{{docs_path}}/tsd/tsd-{{date}}.md"
+
+standalone: true

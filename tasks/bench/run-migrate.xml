@@ -1,0 +1,19 @@
+<task>
+  <name>run-migrate</name>
+  <description>Run bench migrate to apply database changes</description>
+  <steps>
+    <step>Build app assets: bench build --app {{current_app}}</step>
+    <step>Run migrations: bench --site {{site_name}} migrate</step>
+    <step>Clear cache: bench --site {{site_name}} clear-cache</step>
+    <step>Restart bench: bench restart</step>
+  </steps>
+  <expected_output>
+    <output>Migration successful with no errors</output>
+    <output>All DocTypes and customizations applied</output>
+    <output>Cache cleared, bench restarted</output>
+  </expected_output>
+  <error_handling>
+    <error type="migration_failed">Check error.log for details, fix schema issues, retry</error>
+    <error type="permission_denied">Ensure user has write permissions to site database</error>
+  </error_handling>
+</task>
