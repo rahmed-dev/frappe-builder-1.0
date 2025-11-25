@@ -807,17 +807,30 @@ Note: No specific time estimates. Complexity ratings guide developer planning.
    - Identify data flow dependencies
    - Identify workflow dependencies
 
-4. **Create Implementation Plan**
-   - Follow template structure
+4. **Load Implementation Plan Template (MAKER Integration)**
+   ```
+   Read: {project-root}/.bmad/custom/modules/frappe-builder/templates/documents/implementation-plan-efficient.md
+   ```
+   - This template is optimized for token efficiency
+   - Contains minimal boilerplate, focuses on actionable content
+   - Includes TSD section mapping table structure
+
+5. **Create Implementation Plan**
+   - Follow template structure from implementation-plan-efficient.md
    - Divide User vs Developer tasks
    - Define phases with completion criteria
+   - Include TSD section mapping (see TSD Section Mapping section below)
+   - Determine complexity level (Simple/Medium/Complex) based on task count:
+     * Simple: ≤10 tasks
+     * Medium: 11-20 tasks
+     * Complex: >20 tasks
 
-5. **Save Implementation Plan**
+6. **Save Implementation Plan**
    ```
    Save to: {{implementation_plans_path}}/[project-name]-implementation-plan.md
    ```
 
-6. **Update memories.md**
+7. **Update memories.md**
    ```
    Track:
    - Current project
@@ -826,7 +839,7 @@ Note: No specific time estimates. Complexity ratings guide developer planning.
    - Key dependency decisions
    ```
 
-7. **Hand off to Frappe-Dev**
+8. **Hand off to Frappe-Dev**
    ```
    Message: "Implementation Plan complete. Handing off to Frappe-Dev to execute Phase 1."
    Provide: Implementation Plan location
@@ -1134,6 +1147,66 @@ Phase 3:
 ❌ **Phase 1 Has No User Value**
 - Wrong: "Phase 1: Set up database structure"
 - Right: "Phase 1: Complete Purchase Order workflow (users can create and approve POs)"
+
+---
+
+## TSD Section Mapping (GAP 2 FIX)
+
+**Purpose:** Auto-generate TSD section references for each task in plan
+
+**When:** After creating task list, before writing final plan.md
+
+**Process:**
+
+1. **Parse TSD structure**
+   - Read TSD file
+   - Extract all headers (## Section N, ### Subsection N.M)
+   - Build section index with line numbers
+
+2. **Match tasks to sections**
+   - For each task in plan:
+     - Extract task type (DocType, Field, Validation, Calc, etc)
+     - Search TSD for matching section by keyword
+     - Estimate tokens for that section (line count * 0.8)
+     - Assign TSD reference (§N.M format)
+
+3. **Generate mapping table**
+   ```markdown
+   ## TSD Section Mapping
+
+   | Task | TSD Section | Topic | Est. Tokens |
+   |------|-------------|-------|-------------|
+   | d4 | §3.2.1 | Validation rules | ~150 |
+   | d5 | §3.2.2 | Calculation logic | ~200 |
+   ```
+
+4. **Add to plan.md**
+   - Insert mapping table after "Task Ranges" section
+   - Before "Critical Decisions" section
+
+**Matching Keywords:**
+
+| Task Type | TSD Keywords to Search |
+|-----------|------------------------|
+| DocType creation | "DocType", "Data Model", "Entity" |
+| Field addition | "Fields", "Attributes", "Properties" |
+| Validation | "Validation", "Business Rules", "Constraints" |
+| Calculation | "Calculation", "Formula", "Computation" |
+| Client script | "Client-side", "Form Script", "UI Logic" |
+| Server script | "Server-side", "Hooks", "Automation" |
+| Report | "Report", "Query", "Analytics" |
+| Dashboard | "Dashboard", "Metrics", "KPI" |
+
+**Token Estimation:**
+```python
+# Pseudocode
+section_lines = count_lines_in_section(tsd, section_number)
+estimated_tokens = int(section_lines * 0.8)  # ~0.8 tokens per line average
+```
+
+**Fallback:**
+- If no TSD section match found: Use "TSD: N/A"
+- If TSD doesn't exist: Skip mapping table entirely
 
 ---
 

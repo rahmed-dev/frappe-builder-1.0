@@ -43,38 +43,84 @@
 
 2. **Detect Frappe Bench**
    - Check if {project-root}/apps/ directory exists
-   - If NOT found: Warn user "Frappe-Builder is designed for Frappe bench environments. This doesn't appear to be a Frappe bench."
+   - If NOT found: Warn user "Frappe-Builder designed for Frappe bench"
    - If found: Proceed to step 3
 
-3. **Ask User for Current App**
+3. **Check Active Project State**
+   - Check if {project-root}/.bmad/custom/modules/frappe-builder/state/active.yaml exists
+
+   **IF EXISTS (resuming project):**
+   - Load active.yaml (<200 tokens with summary)
+   - Read: project, app, phase, specialist, tasks, summary, notes
+   - Set {{current_app}} = app from active.yaml
+   - Greet: "Resuming '[project]' | [specialist] working on [tasks]"
+   - Display summary if present
+   - Skip to step 6
+
+   **IF NOT EXISTS (new or archived):**
+   - Proceed to step 4
+
+4. **New or Resume Decision**
    ```
-   Which Frappe app are you working on?
+   No active project. Choose:
+   1. Start new project
+   2. Resume archived project
 
-   Available apps:
-   [List from: ls {project-root}/apps/]
-
-   Enter app name:
+   Enter choice (1 or 2):
    ```
-   - Store user's answer as {{current_app}}
-   - Update memories.md with current_app
 
-4. **Set Session Paths**
+   **IF choice = 1 (New project):**
+   - Ask: "Which Frappe app?"
+   - List: ls {project-root}/apps/
+   - Store as {{current_app}}
+   - Ask: "Project name?"
+   - Store as {{project_name}}
+   - Create active.yaml:
+     ```yaml
+     project: "{{project_name}}"
+     app: "{{current_app}}"
+     plan: ""
+     tsd: ""
+     brd: ""
+     phase: "Planning"
+     specialist: "frappe-nexus-sidecar"
+     tasks: ""
+     context: null
+     updated: "[ISO timestamp]"
+     summary: ""
+     notes: ""
+     ```
+   - Save to: .bmad/custom/modules/frappe-builder/state/active.yaml
+   - Proceed to step 5
+
+   **IF choice = 2 (Resume archived):**
+   - List: ls {project-root}/.bmad/custom/modules/frappe-builder/state/archive/
+   - Ask: "Which project to resume?"
+   - User selects [project-name]
+   - Copy: archive/[project-name]/active.yaml → state/active.yaml
+   - Load active.yaml
+   - Set {{current_app}} = app from active.yaml
+   - Ask: "Iterate (uncheck tasks) or continue?"
+     - **Iterate:** Uncheck all tasks in plan.md (- [x] → - [ ])
+     - **Continue:** Keep task states as-is
+   - Update active.yaml timestamp
+   - Proceed to step 6
+
+5. **Set Session Paths** (if new project)
    - {{app_path}} = {project-root}/apps/{{current_app}}
    - {{docs_path}} = {{app_path}}/docs
    - {{code_path}} = {{app_path}}/{{current_app}}
 
-5. **Confirm to User**
+6. **Show Status and Greeting**
    ```
-   ✅ Working on '{{current_app}}'
+   ✅ Active Project: [project name]
+   📱 App: [app]
+   📍 Phase: [phase]
+   🤖 Specialist: [specialist]
+   📋 Tasks: [task range or "Not assigned"]
 
-   Documents will be saved to:
-   {{docs_path}}/
-
-   Code will be in:
-   {{code_path}}/
+   What do you need?
    ```
-
-6. **Show Greeting and Menu**
 
 ### Session Context Management
 
@@ -90,6 +136,39 @@
 - After completing orchestrated workflow step
 - When user provides project status updates
 - When switching apps
+
+---
+
+## CREATING NEW PROJECT
+
+When user starts new project:
+1. Ask for project name
+2. Ask for Frappe app (list apps/ directory)
+3. Create active.yaml in state/
+4. Route to ERPNext BA for requirements (if no BRD exists)
+5. **[GAP 4 FIX] After BA completes BRD:**
+   - Read BRD file (first 50 lines or "Executive Summary" section)
+   - Extract 2-3 sentence summary covering: project description, key objective, primary user
+   - Update active.yaml `summary:` field with extracted text
+   - Keep summary concise (<50 tokens)
+6. Route to Planner after BRD complete
+7. Update active.yaml with plan path after Planner completes
+
+**DO NOT:**
+- Create memories.md (obsolete with MAKER integration)
+- Load old session state
+- Track project details in this agent's memory
+
+**State Management:**
+All project state lives in active.yaml. Read it on startup, update it when routing.
+
+**BRD Summary Extraction (Gap 4 Fix):**
+```python
+# Pseudocode for BRD summary extraction
+brd_content = read_file(brd_path, limit=50)
+summary = extract_sentences(brd_content, section="Executive Summary" or "Overview", max_sentences=3)
+update_active_yaml(summary=summary)
+```
 
 ---
 
@@ -140,6 +219,101 @@
   - "What do you already have? (BRD, TSD, code, errors)"
   - "What's your immediate goal?"
 - Based on answers, route to appropriate specialist
+
+### Setting Task Range for Specialists
+
+When routing to specialist, update active.yaml with task range:
+
+**Process:**
+1. Read plan.md to identify specialist's tasks for current phase
+2. Determine task range (e.g., d4:d7 for Dev Phase 1 tasks)
+3. Update active.yaml before routing:
+   ```yaml
+   specialist: "[specialist-name]"
+   tasks: "[task-range]"
+   phase: "[current-phase]"
+   updated: "[ISO timestamp]"
+   ```
+4. Route to specialist with message: "You're assigned [tasks] for [phase]"
+
+**Example: Routing to Dev for Phase 1 implementation**
+```yaml
+# Nexus reads plan.md, identifies Dev task range for Phase 1
+# Plan shows: d4:d7 (4 tasks)
+
+# Update active.yaml:
+specialist: "frappe-dev-sidecar"
+tasks: "d4:d7"
+phase: "Phase 1"
+updated: "2025-11-25T10:30:00Z"
+```
+
+**Specialist receives:**
+- Pointer to plan via active.yaml
+- Task range to work autonomously
+- Knows when to return (after d7 complete or if blocked)
+
+**Task Range Format:**
+- Single task: `d4`
+- Range: `d4:d7` (tasks d4, d5, d6, d7)
+- Multiple ranges: `d4:d7,d10:d12` (if non-contiguous)
+- Completed: `complete` (when specialist finishes all assigned tasks)
+
+**Task ID Prefixes:**
+- `u*` = User configuration tasks
+- `d*` = Dev implementation tasks
+- `q*` = QA testing tasks
+- `a*` = Architect design tasks
+- `p*` = Planner sequencing tasks
+
+---
+
+## PROJECT COMPLETION & ARCHIVAL
+
+### Detecting Completion
+
+When specialist returns with "Project complete" or all phase tasks checked:
+1. Read plan.md
+2. Count total tasks vs checked tasks
+3. If all checked: Proceed to archival flow
+4. If some unchecked: Ask user if intentional partial completion
+
+**Verification:**
+```bash
+# Count total tasks
+grep -c "^- \[ \]" plan.md
+grep -c "^- \[x\]" plan.md
+
+# If counts match: All done
+```
+
+### Archival Flow
+
+```
+Ask user: "Project '[name]' complete! Archive?"
+
+Options:
+1. Yes, archive → Clean state for next project
+2. No, keep active → Continue adding features
+
+IF YES:
+  1. Update active.yaml: phase = "Complete"
+  2. Execute: tasks/state/archive-project.xml
+  3. Confirm: "Archived to state/archive/[project]/"
+  4. Inform: "state/active.yaml cleared. Ready for next project."
+  5. Next startup will offer: "New or resume archived?"
+
+IF NO:
+  - Keep active.yaml (user may extend project later)
+  - Inform: "Active project kept. Can resume or extend anytime."
+```
+
+### Next Session After Archival
+
+- No active.yaml exists → Startup offers "New or resume archived?"
+- User can resume archived project and:
+  - **Iterate:** Rebuild from scratch with improvements
+  - **Continue:** Add new features to completed project
 
 ---
 

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BMAD Core Compliant Task Definition -->
+<!-- Version: 6.0 -->
+<!-- Task: Project Archival for MAKER Integration -->
+
+<bmad_task>
+  <metadata>
+    <id>archive-project</id>
+    <name>Archive Completed Project</name>
+    <version>1.0</version>
+    <category>state-management</category>
+    <created>2025-11-25</created>
+    <module>frappe-builder</module>
+  </metadata>
+
+  <description>
+    Move completed project to archive directory, create metadata, clean active state.
+  </description>
+
+  <trigger>
+    <condition>Project completion confirmed (all tasks checked in plan.md)</condition>
+    <invoked_by>frappe-nexus-sidecar</invoked_by>
+    <user_confirmation>Required - ask user before archiving</user_confirmation>
+  </trigger>
+
+  <prerequisites>
+    <item>active.yaml exists with phase = "Complete"</item>
+    <item>archive/ directory exists</item>
+    <item>User confirmed archival</item>
+  </prerequisites>
+
+  <execution>
+    <step n="1">
+      <action>Read active.yaml</action>
+      <file>.bmad/custom/modules/frappe-builder/state/active.yaml</file>
+      <extract>project, app, plan, tsd, phase</extract>
+      <validate>phase must equal "Complete"</validate>
+    </step>
+
+    <step n="2">
+      <action>Create archive directory</action>
+      <path>.bmad/custom/modules/frappe-builder/state/archive/[project-name]/</path>
+      <mkdir>Create if doesn't exist, including subdirectories</mkdir>
+    </step>
+
+    <step n="3">
+      <action>Create metadata.yaml</action>
+      <template>state/archive/metadata.yaml.template</template>
+      <fill>
+        - project: From active.yaml
+        - app: From active.yaml
+        - archived_date: Current ISO timestamp
+        - archived_by: From config.yaml (user_name)
+        - reason: "Complete" (or user-specified)
+        - final_status: "Complete"
+        - total_tasks: Count tasks in plan.md
+        - completed_tasks: Count checked boxes in plan.md
+        - total_phases: Count phases in plan.md
+        - final_phase: From active.yaml
+      </fill>
+      <output_path>state/archive/[project-name]/metadata.yaml</output_path>
+    </step>
+
+    <step n="4">
+      <action>Copy active.yaml to archive</action>
+      <source>state/active.yaml</source>
+      <destination>state/archive/[project-name]/active.yaml</destination>
+    </step>
+
+    <step n="5">
+      <action>Copy plan.md to archive</action>
+      <source>[plan path from active.yaml]</source>
+      <destination>state/archive/[project-name]/plan.md</destination>
+    </step>
+
+    <step n="6">
+      <action>Copy tsd.md to archive (if exists)</action>
+      <source>[tsd path from active.yaml]</source>
+      <destination>state/archive/[project-name]/tsd.md</destination>
+      <condition>Only if tsd field in active.yaml is not empty</condition>
+    </step>
+
+    <step n="7">
+      <action>Copy context dumps to archive (if exist)</action>
+      <source>state/context.md</source>
+      <destination>state/archive/[project-name]/context/dump-final.md</destination>
+      <condition>Only if context.md exists</condition>
+    </step>
+
+    <step n="8">
+      <action>Delete active.yaml from state/</action>
+      <file>state/active.yaml</file>
+      <confirm>Verify archive copy successful before deleting</confirm>
+    </step>
+
+    <step n="9">
+      <action>Delete context.md from state/ (if exists)</action>
+      <file>state/context.md</file>
+      <optional>true</optional>
+    </step>
+
+    <step n="10">
+      <action>Confirm to user</action>
+      <message>
+        ✅ Project "[project-name]" archived!
+
+        **Archived to:** state/archive/[project-name]/
+        **Contains:**
+        - metadata.yaml (project details)
+        - active.yaml (final state)
+        - plan.md (implementation plan)
+        - tsd.md (tech spec, if existed)
+        - context/ (context dumps, if existed)
+
+        **State cleared:** Ready for next project!
+
+        **To resume later:**
+        1. Copy archive/[project-name]/active.yaml → state/active.yaml
+        2. Invoke Nexus
+        3. Choose: Iterate (reimplement) or Continue (add features)
+      </message>
+    </step>
+  </execution>
+
+  <validation>
+    <check>Archive directory created: archive/[project-name]/</check>
+    <check>metadata.yaml created with all fields</check>
+    <check>active.yaml copied to archive</check>
+    <check>plan.md copied to archive</check>
+    <check>tsd.md copied (if existed)</check>
+    <check>state/active.yaml deleted</check>
+    <check>User confirmation message displayed</check>
+  </validation>
+
+  <error_handling>
+    <error type="active.yaml phase != Complete">
+      <action>Abort with message: "Project not complete. Finish all tasks first."</action>
+    </error>
+    <error type="plan.md not found">
+      <action>Warn user, ask if should proceed anyway (partial archive)</action>
+    </error>
+    <error type="archive directory creation failed">
+      <action>Check permissions, retry once, abort if fails</action>
+    </error>
+    <error type="file copy failed">
+      <action>Identify which file, check source exists, check destination writable, abort</action>
+    </error>
+  </error_handling>
+
+  <output>
+    <directory>state/archive/[project-name]/</directory>
+    <file>metadata.yaml (in archive)</file>
+    <file>active.yaml (in archive)</file>
+    <file>plan.md (in archive)</file>
+    <file>tsd.md (in archive, optional)</file>
+    <deleted>state/active.yaml</deleted>
+    <deleted>state/context.md (optional)</deleted>
+  </output>
+
+  <notes>
+    - Always ask user confirmation before archiving
+    - Verify archive copy successful before deleting from state/
+    - Archive is immutable - don't modify archived projects
+    - To resume: copy active.yaml back, not move (preserve archive)
+  </notes>
+</bmad_task>

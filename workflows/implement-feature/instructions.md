@@ -8,8 +8,32 @@
 
 **CRITICAL**: This workflow operates in Frappe bench environment.
 
+## MAKER Integration: Load Active Project State
+
+**BEFORE loading any specification, load project state:**
+
+```
+Read: .bmad/custom/modules/frappe-builder/state/active.yaml
+
+Extract:
+- project: Project name
+- app: Current Frappe app
+- plan: Implementation plan path
+- tsd: TSD path
+- phase: Current phase
+- tasks: Task range (if assigned)
+- summary: BRD summary (quick context)
+- notes: Critical context notes
+```
+
+**Benefits:**
+- Lighter context (<200 tokens vs loading full memories)
+- Always current state
+- Quick project summary from BRD
+- Task range awareness
+
 **Session Variables:**
-- `{{current_app}}` - Frappe app name
+- `{{current_app}}` - Frappe app name (from active.yaml)
 - `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{current_app}}`
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 

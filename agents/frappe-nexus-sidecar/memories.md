@@ -1,99 +1,34 @@
 # Frappe-Nexus Session Memories
 
-## Current Session Context
+## MAKER Integration Active
 
-**User:** {user_name}
-**Current App:** {{current_app}}
-**App Path:** {{app_path}}
-**Docs Path:** {{docs_path}}
-**Code Path:** {{code_path}}
+**State Management:** All project state in `.bmad/custom/modules/frappe-builder/state/active.yaml`
 
----
+**DO NOT track project state in this file.** Read from active.yaml instead.
 
-## Project State
+## State File Location
+- **Active project:** `.bmad/custom/modules/frappe-builder/state/active.yaml`
+- **Archived projects:** `.bmad/custom/modules/frappe-builder/state/archive/[project-name]/`
+- **Context dumps:** `.bmad/custom/modules/frappe-builder/state/context.md` (when offloaded)
 
-**Project Phase:**
-- [ ] Requirements Analysis
-- [ ] Solution Design
-- [ ] Implementation Planning
-- [ ] Code Development
-- [ ] Debugging/Troubleshooting
-- [ ] Testing
-- [ ] Documentation
+## Key Behaviors (MAKER Integration)
 
-**Completed Artifacts:**
-- [ ] Business Requirements Document (BRD) - Location: {{docs_path}}/brd/
-- [ ] Technical Specification Document (TSD) - Location: {{docs_path}}/tsd/
-- [ ] Implementation Plan - Location: {{docs_path}}/implementation-plans/
-- [ ] Working Code - Location: {{code_path}}/
-- [ ] Test Scenarios - Location: {{docs_path}}/test-scenarios/
-- [ ] User Documentation - Location: {{docs_path}}/user-guides/
+1. **Startup:** Check for active.yaml first (not memories.md)
+2. **New project:** Create active.yaml, not memories tracking
+3. **Routing:** Update active.yaml with specialist + task range
+4. **Completion:** Archive project, delete active.yaml
+5. **Resume:** Copy from archive to state/
 
-**Current Status:**
-[Brief description of where project is at]
+## Session Notes (Optional)
+
+[Use this space for cross-project observations, user preferences, patterns noticed]
+
+## Standards References
+- Anti-fluff: `.bmad/frappe-builder/standards/core/anti-fluff-mandate.md`
+- Token efficiency: `.bmad/frappe-builder/standards/core/token-efficiency.md`
 
 ---
 
-## Specialist Interaction History
-
-**Last Specialist Invoked:**
-- Specialist: [Name]
-- Purpose: [What user needed]
-- Outcome: [What was completed]
-- Date: [When]
-
-**Previous Specialists:**
-1. [Specialist] - [Purpose] - [Outcome] - [Date]
-2. [Specialist] - [Purpose] - [Outcome] - [Date]
-3. ...
-
----
-
-## User Patterns & Preferences
-
-**Working Style:**
-[How user prefers to work - full-cycle, quick iterations, etc.]
-
-**Common Needs:**
-[Patterns observed in what user frequently requests]
-
-**Technical Level:**
-[User's Frappe expertise level - helps tailor explanations]
-
----
-
-## Project Notes
-
-**Current Challenges:**
-[Any blockers or recurring issues]
-
-**Lessons Learned:**
-[Successful patterns or approaches for this project]
-
-**Next Steps:**
-[What should happen next in the project]
-
----
-
-## Session Variables
-
-```
-{{current_app}} = [app name]
-{{app_path}} = {project-root}/apps/{{current_app}}
-{{docs_path}} = {{app_path}}/docs
-{{code_path}} = {{app_path}}/{{current_app}}
-```
-
-**Document Paths:**
-- BRD: `{{docs_path}}/brd/`
-- TSD: `{{docs_path}}/tsd/`
-- Implementation Plans: `{{docs_path}}/implementation-plans/`
-- Diagnostics: `{{docs_path}}/diagnostics/`
-- Test Scenarios: `{{docs_path}}/test-scenarios/`
-- User Guides: `{{docs_path}}/user-guides/`
-
----
-
-**Last Updated:** [Date]
-
-**Notes:** This memories file tracks session context and project state. Update after each significant interaction or specialist routing.
+**Last Updated:** 2025-11-25
+**Note:** This file is minimal (~80 tokens). All project state lives in active.yaml.
+**Reason:** MAKER integration for 91% token reduction

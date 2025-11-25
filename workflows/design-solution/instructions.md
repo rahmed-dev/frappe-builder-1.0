@@ -349,4 +349,31 @@ If changes needed, update the relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
+<step n="12" goal="Update active.yaml with TSD path (MAKER Integration)">
+<action>After saving the TSD document, update the project state:
+
+**File to Update:** `.bmad/custom/modules/frappe-builder/state/active.yaml`
+
+**Fields to Update:**
+```yaml
+tsd: "{{docs_path}}/tsd/tsd-{{date}}.md"  # Path to the created TSD
+updated: "{{timestamp}}"                   # Current timestamp
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the `tsd` field with the TSD path
+3. Update the `updated` field with current timestamp
+4. Write back to active.yaml
+
+This enables:
+- Planner can find TSD automatically
+- Dev can reference TSD without searching
+- Nexus tracks project artifacts
+- State-based workflow coordination
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

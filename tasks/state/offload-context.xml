@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BMAD Core Compliant Task Definition -->
+<!-- Version: 6.0 -->
+<!-- Task: Context Offload for MAKER Integration -->
+
+<bmad_task>
+  <metadata>
+    <id>offload-context</id>
+    <name>Offload Context to File</name>
+    <version>1.0</version>
+    <category>state-management</category>
+    <created>2025-11-25</created>
+    <module>frappe-builder</module>
+  </metadata>
+
+  <description>
+    Offload conversation context when token usage exceeds threshold.
+    Creates structured context dump, updates active.yaml, signals need for session restart.
+  </description>
+
+  <trigger>
+    <condition>Context usage > 30,000 tokens (check via /context command)</condition>
+    <invoked_by>frappe-dev-sidecar, frappe-architect-sidecar, any specialist agent</invoked_by>
+    <frequency>Check after completing each task</frequency>
+  </trigger>
+
+  <prerequisites>
+    <item>active.yaml exists in state/</item>
+    <item>context.md.template exists in state/</item>
+    <item>Agent has completed at least 1 task</item>
+  </prerequisites>
+
+  <execution>
+    <step n="1">
+      <action>Check context usage</action>
+      <method>Run `/context` command in Claude Code</method>
+      <condition>If tokens > 30,000, proceed to step 2. If &lt; 30,000, abort (no offload needed)</condition>
+    </step>
+
+    <step n="2">
+      <action>Read active.yaml</action>
+      <file>.bmad/custom/modules/frappe-builder/state/active.yaml</file>
+      <extract>project, app, phase, specialist, plan</extract>
+    </step>
+
+    <step n="3">
+      <action>Read plan.md for completed tasks</action>
+      <file>[path from active.yaml]</file>
+      <extract>All lines matching "- [x] [task_id]:" (checked boxes)</extract>
+    </step>
+
+    <step n="4">
+      <action>Collect modified files list</action>
+      <method>Review conversation history for files written/edited this session</method>
+      <output>List of file paths</output>
+    </step>
+
+    <step n="5">
+      <action>Identify current task</action>
+      <method>Next unchecked task in task range from active.yaml</method>
+      <output>Task ID and description</output>
+    </step>
+
+    <step n="6">
+      <action>Create context.md</action>
+      <template>state/context.md.template</template>
+      <fill>
+        - [Project]: From active.yaml
+        - [Phase]: From active.yaml
+        - [ISO timestamp]: Current UTC time
+        - [specialist]: From active.yaml
+        - [Session]: Increment if previous context.md exists
+        - Completed tasks table: From step 3
+        - Files modified list: From step 4
+        - Current task: From step 5
+      </fill>
+      <output_path>.bmad/custom/modules/frappe-builder/state/context.md</output_path>
+    </step>
+
+    <step n="7">
+      <action>Update active.yaml</action>
+      <field>context</field>
+      <value>"context.md"</value>
+      <field>updated</field>
+      <value>[Current ISO timestamp]</value>
+      <output_path>.bmad/custom/modules/frappe-builder/state/active.yaml</output_path>
+    </step>
+
+    <step n="8">
+      <action>Signal session restart required</action>
+      <message>
+        ⚠️ Context offloaded to state/context.md
+
+        **Next Steps:**
+        1. Review context dump: cat state/context.md
+        2. Restart this agent session to clear context
+        3. Agent will auto-load active.yaml + resume from [current task]
+
+        **Why:** Context window was at [X] tokens. Fresh start needed.
+      </message>
+      <pause>true</pause>
+    </step>
+  </execution>
+
+  <validation>
+    <check>context.md file created at correct path</check>
+    <check>context.md token count &lt; 120</check>
+    <check>context.md contains completed tasks table</check>
+    <check>active.yaml updated with context path</check>
+    <check>active.yaml timestamp updated</check>
+    <check>User notified of restart requirement</check>
+  </validation>
+
+  <error_handling>
+    <error type="active.yaml not found">
+      <action>Abort with message: "No active project. Run this task only during active development."</action>
+    </error>
+    <error type="plan.md not found">
+      <action>Check active.yaml plan path, verify file exists, abort if missing</action>
+    </error>
+    <error type="context.md write failed">
+      <action>Check permissions on state/ directory, retry once, abort if fails again</action>
+    </error>
+  </error_handling>
+
+  <output>
+    <file>.bmad/custom/modules/frappe-builder/state/context.md</file>
+    <file>.bmad/custom/modules/frappe-builder/state/active.yaml (updated)</file>
+    <notification>User instruction to restart session</notification>
+  </output>
+
+  <notes>
+    - This task DOES NOT automatically clear context (not possible in Claude Code)
+    - Relies on user to restart agent session after context.md created
+    - Fresh session will auto-load active.yaml (60 tokens) + minimal plan section
+    - Context reduction: ~50k → ~500 tokens after restart
+  </notes>
+</bmad_task>

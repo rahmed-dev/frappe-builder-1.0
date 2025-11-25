@@ -191,4 +191,46 @@ If user requests changes, update the relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
+<step n="9" goal="Update active.yaml with BRD path + Extract Summary (MAKER Integration - GAP 4 FIX)">
+<action>After saving the BRD document, update the project state:
+
+**File to Update:** `.bmad/custom/modules/frappe-builder/state/active.yaml`
+
+**Step 1: Extract BRD Summary**
+- Read the saved BRD file
+- Locate the "Executive Summary" section
+- Extract first 3 sentences (or up to 150 words)
+- This summary provides quick context for all agents
+
+**Step 2: Update active.yaml**
+```yaml
+brd: "{{docs_path}}/brd/brd-{{date}}.md"   # Path to created BRD
+summary: "[Extracted 3 sentences from Executive Summary]"  # Quick project context
+updated: "{{timestamp}}"                    # Current timestamp
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the `brd` field with the BRD path
+3. Update the `summary` field with extracted Executive Summary text
+4. Update the `updated` field with current timestamp
+5. Write back to active.yaml
+
+**Benefits of Summary Extraction:**
+- Agents get instant project context (<50 tokens vs 1000+ for full BRD)
+- Consistent summary across all agents
+- No manual copy-paste needed
+- Auto-updated when BRD changes
+
+This enables:
+- Architect can find BRD automatically
+- All agents get quick project context via summary field
+- Nexus tracks project artifacts
+- State-based workflow coordination
+- Gap 4 FIXED: BRD summary extraction is now automated
+</action>
+
+<template-output>state_updated_with_summary</template-output>
+</step>
+
 </workflow>

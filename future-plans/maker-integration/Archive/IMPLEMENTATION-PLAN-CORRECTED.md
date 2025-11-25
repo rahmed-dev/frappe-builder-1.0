@@ -11,9 +11,24 @@
 
 **SESSION INDEPENDENCE:**
 This plan is designed for multi-session execution. If you lose context mid-implementation:
+
+**METHOD 1 (FASTEST):**
+```bash
+cd /home/riz/frappe-bench/.bmad/custom/modules/frappe-builder/
+bash future-plans/maker-integration/resume-maker-implementation.sh
+```
+Script shows: current phase, completed tasks, exact next task + line number
+
+**METHOD 2 (MANUAL):**
+1. Jump to **Progress Tracker** (line 54 in this plan)
+2. Find first unchecked `[ ]` task
+3. Search for that task's section: `### [task_id]:`
+4. Resume execution from there
+
+**METHOD 3 (DETAILED):**
 1. Check current status: `cat .bmad/custom/modules/frappe-builder/state/active.yaml` (if exists)
-2. Find your phase/task in this document
-3. Resume from that task - all context is embedded here
+2. Read Session Handoff Protocol (line 3674)
+3. Follow step-by-step resume instructions
 
 **VALIDATION STATUS:**
 - ✅ Reviewed by BMad Builder (2025-11-25)
@@ -48,6 +63,67 @@ This plan is designed for multi-session execution. If you lose context mid-imple
 | **Current phase** | Phase 1 |
 | **Current task** | Not started |
 | **Estimated duration** | 5 days (realistic, with Phase 4) |
+
+---
+
+## 📋 Implementation Progress Tracker
+
+**CRITICAL FOR MULTI-SESSION:** Mark tasks as complete here. After context loss, check this table to resume instantly.
+
+**How to use:**
+1. After completing any task, mark it: `[ ]` → `[x]`
+2. On new session: Scan for first unchecked `[ ]` task
+3. Jump to that task's section (Ctrl+F: "### [task_id]:")
+4. Resume execution
+
+| Phase | ID | Task Description | Status |
+|-------|----|--------------------|--------|
+| **1** | i1 | Create state/ directory structure | [x] |
+| **1** | i2 | Create active.yaml template | [x] |
+| **1** | i3 | Create context.md template | [x] |
+| **1** | i4 | Create archive/ structure + metadata | [x] |
+| **1** | i5 | Create token-efficient plan template | [x] |
+| **1** | i6 | Validate templates against standards | [x] |
+| **1** | i7 | Create state management XML tasks | [x] |
+| **1** | i8 | Test sample plan, measure tokens | [x] |
+| **2** | n1 | Backup Nexus files | [x] |
+| **2** | n2 | Modify Nexus startup (load active.yaml) | [x] |
+| **2** | n3 | Add new project flow + BRD summary | [x] |
+| **2** | n4 | Add resume archived project | [x] |
+| **2** | n5 | Add task range on routing | [x] |
+| **2** | n6 | Add archive completion detection | [x] |
+| **2** | n7 | Update Nexus memories.md | [x] |
+| **2** | n8 | Test full lifecycle | [x] |
+| **2** | p1 | Backup Planner files | [x] |
+| **2** | p2 | Add TSD mapping automation | [x] |
+| **3** | d1 | Backup Dev files | [x] |
+| **3** | d2 | Dev load active.yaml on startup | [x] |
+| **3** | d3 | Dev autonomous execution loop | [x] |
+| **3** | d4 | Dev context size detection | [x] |
+| **3** | d5 | Dev context offload integration | [x] |
+| **3** | d6 | Dev plan checkbox updates | [x] |
+| **3** | d7 | Dev return protocol | [x] |
+| **3** | d8 | Test 10-task scenario | [x] |
+| **4** | w1 | Backup workflow files | [x] |
+| **4** | w2 | Update sequence-tasks workflow | [x] |
+| **4** | w3 | Update implement-feature workflow | [x] |
+| **4** | w4 | Update design-solution workflow | [x] |
+| **4** | w5 | Update analyze-requirements workflow | [x] |
+| **4** | w6 | Test full workflow chain | [ ] |
+| **4** | w7 | Measure end-to-end token usage | [ ] |
+
+**Phase Completion Markers:**
+- [x] Phase 1 Complete (all i* tasks done + validation passed)
+- [x] Phase 2 Complete (all n* and p* tasks done + validation passed)
+- [x] Phase 3 Complete (all d* tasks done + validation passed)
+- [ ] Phase 4 Complete (all w* tasks done + validation passed)
+
+**Quick Status Check:**
+```bash
+cd /home/riz/frappe-bench/.bmad/custom/modules/frappe-builder/
+grep -c "\[x\]" future-plans/maker-integration/IMPLEMENTATION-PLAN-CORRECTED.md
+# Shows count of completed tasks
+```
 
 ---
 
@@ -1144,6 +1220,8 @@ fi
 
 **Validate ALL before proceeding to Phase 2:**
 
+**IMPORTANT:** After validation passes, mark phase complete in Progress Tracker (line 101)
+
 ```bash
 cd /home/riz/frappe-bench/.bmad/custom/modules/frappe-builder/
 
@@ -1211,6 +1289,8 @@ echo "Phase 1 validation complete!"
 - [ ] No agent integration yet (just infrastructure)
 
 **Status:** Phase 1 [ ] Complete
+
+**📝 UPDATE PROGRESS TRACKER:** Mark Phase 1 complete checkbox (line 101) before proceeding to Phase 2
 
 ---
 
@@ -1982,6 +2062,8 @@ cp agents/frappe-nexus-sidecar/memories.md.backup-pre-maker* \
 ```
 
 **Status:** Phase 2 [ ] Complete
+
+**📝 UPDATE PROGRESS TRACKER:** Mark Phase 2 complete checkbox (line 102) before proceeding to Phase 3
 
 ---
 
@@ -2994,6 +3076,8 @@ cp agents/frappe-dev-sidecar/instructions.md.backup-pre-maker* \
 
 **Status:** Phase 3 [ ] Complete
 
+**📝 UPDATE PROGRESS TRACKER:** Mark Phase 3 complete checkbox (line 103) before proceeding to Phase 4
+
 ---
 
 ## Phase 4: Workflow Integration (GAP 1 FIX)
@@ -3466,6 +3550,8 @@ cp workflows/analyze-requirements/workflow.yaml.backup-pre-maker* \
 
 **Status:** Phase 4 [ ] Complete
 
+**📝 UPDATE PROGRESS TRACKER:** Mark Phase 4 complete checkbox (line 104) - MAKER integration complete!
+
 ---
 
 ## Phase 5: Rollout to Other Specialists (OPTIONAL)
@@ -3604,12 +3690,37 @@ If issues occur:
 
 **If you lose context mid-implementation and need to resume:**
 
-### Step 1: Identify Current Status
+### Step 1: Run Resume Script (FASTEST METHOD)
+
+```bash
+cd /home/riz/frappe-bench/.bmad/custom/modules/frappe-builder/
+bash future-plans/maker-integration/resume-maker-implementation.sh
+```
+
+**This script automatically:**
+- Detects which phases are complete
+- Shows completed task count
+- Identifies exact next task to resume
+- Provides line numbers for quick navigation
+
+**Output example:**
+```
+Phase 1: ✅ COMPLETE (state/ exists, templates created)
+Phase 2: ⏳ IN PROGRESS (Nexus or Planner not modified yet)
+
+Tasks Completed: 12 / 31 (38.7%)
+
+▶ RESUME AT: Phase 2
+  Next task: n3 - Add new project flow
+  Line 1425 in plan
+```
+
+### Step 1 Alternative: Manual Status Check
 
 ```bash
 cd /home/riz/frappe-bench/.bmad/custom/modules/frappe-builder/
 
-# Check if active project exists
+# Check if active project exists (might be working ON a frappe project during MAKER implementation)
 if [ -f "state/active.yaml" ]; then
     echo "Active project exists:"
     cat state/active.yaml
@@ -3627,17 +3738,35 @@ echo "=== Implementation Status ==="
 [ -f "state/active.yaml.template" ] && echo "✓ Phase 1 templates created" || echo "✗ Phase 1 incomplete"
 grep -q "Check Active Project State" agents/frappe-nexus-sidecar/instructions.md 2>/dev/null && echo "✓ Phase 2 started (Nexus modified)" || echo "✗ Phase 2 not started"
 grep -q "MAKER Integration: Startup" agents/frappe-dev-sidecar/instructions.md 2>/dev/null && echo "✓ Phase 3 started (Dev modified)" || echo "✗ Phase 3 not started"
+grep -q "implementation-plan-efficient" workflows/sequence-tasks/workflow.yaml 2>/dev/null && echo "✓ Phase 4 started (Workflows modified)" || echo "✗ Phase 4 not started"
 ```
 
-### Step 2: Resume from This Plan
+### Step 2: Check Progress Tracker
 
-1. Find your current phase in this document (Phase 1, 2, or 3)
-2. Look at task status table
-3. Find next unchecked task
-4. Read that task's detailed section
+**Jump to line 54 in this plan** - View "Implementation Progress Tracker"
+
+1. Scan table for first `[ ]` (unchecked) task
+2. Note the task ID (e.g., "i3", "n5", "d7")
+3. Use Ctrl+F to find: `### [task_id]:`
+4. Read detailed instructions
 5. Execute task
-6. Update task status checkbox in this plan
+6. **Mark complete in TWO places:**
+   - Progress Tracker (line 54): `[ ]` → `[x]`
+   - Phase completion marker (line 101-104 depending on phase)
 7. Repeat
+
+**Example:**
+```
+Progress Tracker shows:
+  | 1 | i1 | Create state/ dirs | [x] |  ← Done
+  | 1 | i2 | Create active.yaml | [x] |  ← Done
+  | 1 | i3 | Create context.md  | [ ] |  ← RESUME HERE!
+
+Search for: "### i3: Create context.md template"
+Jump to line ~233
+Execute task
+Mark [x] in tracker
+```
 
 ### Step 3: Don't Repeat Completed Work
 

@@ -1,0 +1,29 @@
+# Active Project State - Pointer + Project Summary
+# Token target: <200
+# Updated: 2025-11-25 (CORRECTED VERSION v2.1 - added BRD summary, expanded budget)
+#
+# 🚨 CONFIG PATH CLARIFICATION (Gap 3 Fix):
+# Module config is at: /home/riz/frappe-bench/.bmad/frappe-builder/config.yaml
+# NOT at: .bmad/custom/modules/frappe-builder/config.yaml
+# Agents must read from .bmad/frappe-builder/ (installed location)
+
+project: ""           # Project display name
+app: ""               # Frappe app name
+plan: ""              # Path to implementation plan (relative to project root)
+tsd: ""               # Path to TSD (if exists, relative to project root)
+brd: ""               # Path to BRD (if exists, relative to project root)
+phase: ""             # Current phase (Phase 1, Phase 2, etc)
+specialist: ""        # Current agent (frappe-dev-sidecar, etc)
+tasks: ""             # Task range (d3:d10, a1:a5, etc) or "complete"
+context: null         # Path to context.md if offloaded (relative to state/)
+updated: ""           # ISO timestamp (YYYY-MM-DDTHH:MM:SSZ)
+
+# Project Summary (from BRD - keep concise)
+# 🚨 AUTO-EXTRACTED (Gap 4 Fix): Nexus extracts this from BRD after BA completion
+summary: |
+  [2-3 sentence project description]
+  [Key objective]
+  [Primary user/stakeholder]
+
+# Quick Context (optional - use for critical info agents need)
+notes: ""             # Brief implementation notes, critical decisions, blockers
