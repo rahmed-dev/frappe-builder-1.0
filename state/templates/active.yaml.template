@@ -9,6 +9,7 @@
 
 project: ""           # Project display name
 app: ""               # Frappe app name
+site: ""              # Frappe site name for this project (per-project, not global)
 plan: ""              # Path to implementation plan (relative to project root)
 tsd: ""               # Path to TSD (if exists, relative to project root)
 brd: ""               # Path to BRD (if exists, relative to project root)
