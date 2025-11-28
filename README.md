@@ -28,6 +28,8 @@ Frappe-Builder is a **sub-agent compatible module** specifically designed for he
 
 ## Installation
 
+This source module generates its runtime config during install. Use `_module-installer/install-config.yaml` (installer template) to produce the installed `{project-root}/.bmad/frappe-builder/config.yaml` — there is no config.yaml in the source tree by design.
+
 ### Prerequisites
 
 - BMAD Core installed and configured
@@ -71,7 +73,7 @@ BMAD-METHOD/
 cd ../..
 
 # Run BMAD installer (interactive)
-npm run install
+npm run bmad:install
 
 # During installation:
 # 1. Select modules to install
@@ -128,21 +130,44 @@ See **USER-GUIDE.md** for:
 
 ```
 frappe-builder/
-├── agents/                    # 8 specialized agents
-│   ├── frappe-nexus.agent.yaml
-│   ├── erpnext-ba.agent.yaml
-│   ├── frappe-architect.agent.yaml
-│   ├── frappe-planner.agent.yaml
-│   ├── frappe-dev.agent.yaml
-│   ├── frappe-debugger.agent.yaml
-│   ├── qa-specialist.agent.yaml
-│   └── doc-writer.agent.yaml
-├── workflows/                 # 12 workflow automations
+├── agents/                    # 8 specialized agents (see list below)
+├── workflows/                 # 12 workflow automations (see list below)
 ├── knowledge/                 # Comprehensive Frappe/ERPNext KB
 ├── standards/                 # Coding principles & guidelines
-├── state/                     # Multi-project state management
+├── state/                     # Multi-project state management (MAKER-inspired minimal state per step)
+├── _module-installer/         # install-config.yaml (installer template → generates runtime config)
 └── README.md                  # This file
 ```
+
+### Agents (8)
+- frappe-nexus.agent.yaml — orchestrator/router
+- erpnext-ba.agent.yaml — requirements mapping
+- frappe-architect.agent.yaml — 4-tier design
+- frappe-planner.agent.yaml — sequencing/dependencies
+- frappe-dev.agent.yaml — implementation
+- frappe-debugger.agent.yaml — diagnostics/anti-patterns
+- qa-specialist.agent.yaml — tests/scenarios
+- doc-writer.agent.yaml — user docs
+
+### Workflows (12)
+- analyze-requirements — convert notes to BRD
+- design-solution — produce TSD (4-tier)
+- sequence-tasks — order tasks by dependencies
+- create-roadmap — phased plan
+- implement-feature — execute build
+- diagnose-issue — debug flow
+- generate-tests — manual + unittest scenarios
+- review-code — anti-pattern/code review
+- create-guide — user docs
+- prepare-release — release checklist
+- create-guide templates — doc templates
+- design-solution/generate-tests/etc. templates where provided
+
+### State Management
+- `state/` holds multi-project context with minimal per-step state (inspired by `future-plans/maker-integration/maker-method-overview.md`). Example template: `state/test-plan.md`.
+
+### Installer
+- Installer template: `_module-installer/install-config.yaml` (source). Generates installed `.bmad/frappe-builder/config.yaml`. No source config.yaml by design.
 
 ## Requirements
 

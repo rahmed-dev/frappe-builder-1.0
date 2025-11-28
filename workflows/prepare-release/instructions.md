@@ -15,94 +15,25 @@
 <workflow>
 
 <step n="1" goal="Get release scope and version">
-<action>Ask user: What are we releasing?
-
-Questions:
-1. Version number (e.g., v1.2.0, v2.0.0-beta)?
-2. Scope:
-   - Major release (breaking changes)
-   - Minor release (new features)
-   - Patch release (bug fixes only)
-3. Files/features included in this release?
-
-Store:
-- {{version}} - Version number
-- {{release_type}} - major/minor/patch
-- {{scope_description}} - What's included
-</action>
+<action>Ask for release version, type (major/minor/patch), and scope (features/files). Store version, release_type, scope_description.</action>
 
 <template-output>release_scope</template-output>
 </step>
 
 <step n="2" goal="Run comprehensive code review">
-<action>Invoke review-code workflow on all files in scope.
-
-**If review-code workflow exists:**
-Use it to scan for Frappe anti-patterns.
-
-**If NOT available:**
-Manually check:
-- Missing @frappe.whitelist() decorators
-- SQL injection risks
-- Missing permission checks
-- Client-side filtering
-- console.log() in production
-- Custom code reinventing Frappe built-ins
-
-Report all CRITICAL issues.
-
-**GATE:** If critical issues found, STOP and fix before proceeding.
-</action>
+<action>Run review-code workflow on scoped files (or manually check whitelist/SQL injection/permissions/client filtering/console.log/built-in alternatives). Gate: fix critical issues before proceeding.</action>
 
 <template-output>code_review_results</template-output>
 </step>
 
 <step n="3" goal="Generate and run tests">
-<action>Ensure all features have test coverage.
-
-**If generate-tests workflow exists:**
-Invoke it for features without tests.
-
-**Run all tests:**
-```bash
-cd {frappe_bench_path}
-bench --site {{default_site}} run-tests --app {{current_app}}
-```
-
-**Check test results:**
-- All tests passing?
-- Code coverage acceptable (>70%)?
-- Edge cases covered?
-
-**GATE:** All tests must pass before proceeding.
-</action>
+<action>Ensure tests exist; use generate-tests workflow if needed. Run `bench --site {{default_site}} run-tests --app {{current_app}}`. Gate: all tests must pass; note coverage/edge cases.</action>
 
 <template-output>test_results</template-output>
 </step>
 
 <step n="4" goal="Update or create documentation">
-<action>Ensure all features have user guides.
-
-**For each feature in release scope:**
-
-<check if="create-guide workflow exists">
-Invoke create-guide workflow for features without guides.
-</check>
-
-<check if="create-guide workflow NOT available">
-Manually create concise user guides (2-3 pages):
-- Overview (1 paragraph)
-- When to use (bullets)
-- How to use (numbered steps)
-- Field reference (table)
-- Tips (3-5 bullets)
-- Troubleshooting (table)
-
-Use ERPNext UI terminology (DocType, Child Table, etc.).
-</check>
-
-Verify all guides exist in `{{docs_path}}/guides/`.
-</action>
+<action>Ensure guides exist for all features. If create-guide workflow available, invoke for gaps; otherwise produce concise guides (overview, when to use, how to use, field table, tips, troubleshooting) using ERPNext UI terms. Verify in `{{docs_path}}/guides/`.</action>
 
 <template-output>documentation_status</template-output>
 </step>
@@ -115,65 +46,9 @@ Verify all guides exist in `{{docs_path}}/guides/`.
 # Release {{version}} - {{current_app}}
 
 **Release Date:** {{date}}
-
 **Release Type:** {{release_type}}
 
-## What's New
-
-### New Features
-- [Feature 1]: Brief description
-- [Feature 2]: Brief description
-
-### Enhancements
-- [Enhancement 1]: What improved
-- [Enhancement 2]: What improved
-
-### Bug Fixes
-- [Bug 1]: What was fixed
-- [Bug 2]: What was fixed
-
-### Breaking Changes (if major release)
-- [Change 1]: What broke and migration path
-- [Change 2]: What broke and migration path
-
-## Installation
-
-**New Installation:**
-```bash
-bench get-app {{current_app}}
-bench --site [site-name] install-app {{current_app}}
-```
-
-**Upgrade from Previous Version:**
-```bash
-cd {frappe_bench_path}/apps/{{current_app}}
-git pull
-bench --site [site-name] migrate
-bench --site [site-name] build
-```
-
-## Testing Performed
-
-- Unit tests: [X passed]
-- Integration tests: [X passed]
-- Manual testing: [Scenarios tested]
-
-## Known Issues
-
-- [Issue 1]: Workaround
-- [Issue 2]: Workaround
-
-## Contributors
-
-- {{user_name}}
-- [Additional contributors if any]
-
----
-
-**For questions or issues, contact:** [Support contact]
-```
-
-Save to: `{{docs_path}}/releases/release-{{version}}.md`
+Sections: What's New (features/enhancements/fixes), Breaking Changes (if any), Installation/Upgrade commands, Testing performed, Known issues (with workarounds), Contributors, Support contact. Save to `{{docs_path}}/releases/release-{{version}}.md`.
 </action>
 
 <template-output>release_notes</template-output>

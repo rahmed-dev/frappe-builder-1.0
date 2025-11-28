@@ -14,83 +14,19 @@
 <workflow>
 
 <step n="1" goal="Identify feature to test">
-<action>Ask user: Which feature needs test scenarios?
-
-Get:
-- Feature name
-- DocType involved (if applicable)
-- Feature description or specification
-
-Can load from TSD if user provides path.
-</action>
+<action>Ask which feature/DocType to test; capture brief description (or load from TSD if given).</action>
 
 <template-output>feature_spec</template-output>
 </step>
 
 <step n="2" goal="Generate test scenarios using real-world lenses">
-<action>Apply real-world user lenses to generate comprehensive test scenarios:
-
-**HAPPY PATH TESTS (Everything works as designed):**
-- All required fields provided with valid data
-- Expected workflow completion
-- Successful save/submit
-- Expected calculations correct
-- Expected side effects occur
-
-**LAZY USER TESTS (Minimal effort):**
-- Skip optional fields
-- Use default values
-- Minimal data entry
-- Fastest path through workflow
-- What breaks when fields left empty?
-
-**UNEDUCATED USER TESTS (Wrong formats/types):**
-- Text in number fields ("abc" in quantity)
-- Invalid date formats ("01-20-2025" instead of "2025-01-20")
-- Wrong data types (string where int expected)
-- Invalid email formats
-- Wrong select options
-
-**MISTAKE-PRONE TESTS (Fat-finger errors):**
-- Decimal point errors (10.5 becomes 105)
-- Extra zeros (1000 becomes 10000)
-- Transposed numbers (123 becomes 132)
-- Copy-paste errors (partial data)
-- Negative numbers where positive expected
-
-**EVIL USER TESTS (Deliberate misuse):**
-- SQL injection attempts: `'; DROP TABLE users; --`
-- XSS attempts: `<script>alert('XSS')</script>`
-- Permission escalation: Try to access admin functions
-- Data tampering: Modify submitted docs
-- Overflow attacks: 10000-character strings
-- Concurrent conflicts: Submit same doc twice
-- API abuse: Bypass UI validations
-
-For each test scenario, specify:
-- Test ID
-- Scenario description
-- Input data
-- Expected result
-- Pass/Fail criteria
-</action>
+<action>Generate scenarios by lens: Happy (valid flow), Lazy (skip optional/minimal entry), Uneducated (wrong formats/types), Mistake-prone (fat fingers), Evil (misuse: SQLi/XSS/perm escalation/tampering/overflow/concurrency/API abuse). For each: ID, description, input, expected, pass/fail.</action>
 
 <template-output>test_scenarios</template-output>
 </step>
 
 <step n="3" goal="Create test matrix table">
-<action>Organize test scenarios into structured matrix:
-
-| Test ID | Category | Scenario | Input | Expected Result | Pass/Fail |
-|---------|----------|----------|-------|-----------------|-----------|
-| T001 | Happy Path | Valid sales order | Customer: CUST-001, Items: valid | Order created | |
-| T002 | Lazy User | Missing optional notes | Notes: empty | Order created (notes blank) | |
-| T003 | Uneducated | Text in qty field | Qty: "abc" | ValidationError: Qty must be number | |
-| T004 | Mistake-Prone | Extra zero in qty | Qty: 10000 (meant 1000) | Warning: Large quantity | |
-| T005 | Evil User | SQL injection in customer | Customer: `'; DROP TABLE--` | Escaped, no SQL execution | |
-
-Create comprehensive matrix covering all scenarios.
-</action>
+<action>Build matrix: Test ID | Category | Scenario | Input | Expected Result | Pass/Fail. Cover all lenses.</action>
 
 <template-output>test_matrix</template-output>
 </step>

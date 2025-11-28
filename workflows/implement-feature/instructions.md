@@ -43,126 +43,19 @@ Extract:
 <workflow>
 
 <step n="1" goal="Load specification document">
-<action>Ask user which specification to implement from:
-- Technical Specification Document (TSD)?
-- Implementation Plan phase?
-- Specific feature description?
-
-Search for document using fuzzy file matching.
-
-If TSD or Implementation Plan:
-- Try whole document first: `{{docs_path}}/tsd/*.md` or `{{docs_path}}/implementation-plans/*.md`
-- Check sharded version if whole not found
-- Read complete specification
-
-If specific feature description:
-- Get detailed description from user
-
-Understand WHAT needs to be built before coding.
-</action>
+<action>Ask spec source (TSD, plan phase, or feature description). Load full doc (`tsd/*.md` or `implementation-plans/*.md`, sharded if needed). If ad-hoc, capture details. Ensure clear build scope.</action>
 
 <template-output>specification</template-output>
 </step>
 
 <step n="2" goal="Identify components to build">
-<action>Based on the specification, identify all components needed:
-
-**Custom DocTypes:**
-- List DocTypes to create
-- Note fields, child tables, relationships
-
-**Server Scripts:**
-- List scripts needed (validation, calculation, trigger)
-- Note which DocType/event
-
-**Client Scripts:**
-- List UI behaviors needed
-- Note which DocType/event
-
-**Reports:**
-- List Script Reports or Query Reports
-- Note columns, filters
-
-**API Endpoints:**
-- List @frappe.whitelist() functions
-- Note parameters, return format
-
-**Print Formats:**
-- List custom print templates
-
-**Workflows:**
-- List workflow configurations
-
-Create implementation checklist.
-</action>
+<action>Identify components: DocTypes (fields/children/links), server scripts (doctype/event, purpose), client scripts (UI behavior), reports (columns/filters), APIs (@frappe.whitelist params/returns), print formats, workflows. Build checklist.</action>
 
 <template-output>implementation_checklist</template-output>
 </step>
 
 <step n="3" goal="Scaffold boilerplate for each component">
-<action>For EACH component type, generate appropriate boilerplate:
-
-**For Custom DocTypes:**
-Generate JSON definition:
-```json
-{
- "doctype": "DocType",
- "name": "{{DocTypeName}}",
- "module": "{{module_name}}",
- "fields": [
-  {
-   "fieldname": "field1",
-   "label": "Field 1",
-   "fieldtype": "Data",
-   "reqd": 1
-  }
- ],
- "permissions": [],
- "sort_field": "modified",
- "sort_order": "DESC"
-}
-```
-
-**For Server Scripts:**
-```python
-import frappe
-from frappe import _
-
-@frappe.whitelist()
-def function_name(param1, param2):
-    \"\"\"
-    Function description
-
-    Args:
-        param1: Description
-        param2: Description
-
-    Returns:
-        dict: Result
-    \"\"\"
-    # Permission check
-    if not frappe.has_permission("DocType", "read"):
-        frappe.throw(_("Insufficient permissions"), frappe.PermissionError)
-
-    # Business logic here
-
-    return {"status": "success"}
-```
-
-**For Client Scripts:**
-```javascript
-frappe.ui.form.on('DocType', {
-    refresh: function(frm) {
-        // Form refresh logic
-    },
-
-    field_name: function(frm) {
-        // Field change logic
-    }
-});
-```
-
-**For Script Reports:**
+<action>For each component, scaffold minimal boilerplate using Frappe conventions: DocTypes (JSON with fields/permissions/order), server scripts (doctype/event, pseudocode, whitelisted if API), client scripts (doctype .js with needed hooks), reports (script/query folders), APIs (add whitelisted functions), workflows (states/transitions/roles), print formats (Jinja skeleton).</action>
 ```python
 import frappe
 
@@ -190,46 +83,7 @@ Generate all boilerplate scaffolds.
 <step n="4" goal="Implement business logic - server-side first">
 <action>Implement business logic following Frappe framework patterns:
 
-**Server-Side Patterns:**
-1. **Validation Logic** (in DocType controller):
-```python
-def validate(self):
-    self.validate_dates()
-    self.calculate_totals()
-```
-
-2. **Hooks** (before_save, on_submit, etc.):
-```python
-def before_save(self):
-    # Logic before document saved
-    pass
-
-def on_submit(self):
-    # Logic when document submitted
-    pass
-```
-
-3. **Custom Methods**:
-```python
-def custom_method(self):
-    # Business logic
-    pass
-```
-
-**CRITICAL Frappe Patterns:**
-✅ Use frappe.utils for date/number operations
-✅ Use parameterized queries (frappe.db.get_all with filters dict)
-✅ Add permission checks (frappe.has_permission)
-✅ Use frappe.throw() for validation errors
-✅ Use frappe.msgprint() for user notifications
-
-❌ AVOID:
-- String concatenation in SQL queries (SQL injection risk)
-- Direct frappe.db.sql without parameters
-- Business logic in client scripts
-- Custom date/number formatting (use frappe.utils)
-
-Implement all server-side logic.
+**Server-Side Patterns (logic/pseudocode):** validations in controller, hooks (before_save/on_submit), custom methods. Critical: use frappe.utils, parameterized queries, permission checks, frappe.throw/msgprint. Avoid SQL concat/direct db.sql, client-side business logic, custom formatting. Implement server-side logic first.
 </action>
 
 <template-output>server_logic_implemented</template-output>
@@ -273,147 +127,38 @@ frappe.ui.form.on('DocType', {
 ```
 
 **CRITICAL:**
-✅ Always convert form field values (they're strings): int(), float()
-✅ Use frappe.call() to invoke server methods
-✅ Use frm.set_value() to update fields
-✅ Handle null/undefined values
-
-❌ AVOID:
-- Business logic in client scripts
-- Direct DB queries from client
-- Complex calculations (do server-side)
-
-Implement all client-side behavior.
+✅ Convert form values (int/float), use frappe.call and frm.set_value, handle null/undefined. Avoid business logic/client DB/complex calcs (do server-side). Implement minimal client behavior.
 </action>
 
 <template-output>client_logic_implemented</template-output>
 </step>
 
 <step n="6" goal="Write all code to files">
-<action>Save all implemented code to correct locations:
-
-**DocType JSON:**
-`{{app_path}}/{{current_app}}/{{module}}/doctype/{{doctype_name}}/{{doctype_name}}.json`
-
-**DocType Controller (Python):**
-`{{app_path}}/{{current_app}}/{{module}}/doctype/{{doctype_name}}/{{doctype_name}}.py`
-
-**Client Scripts:**
-`{{app_path}}/{{current_app}}/public/js/{{doctype_name}}.js`
-
-**Server Scripts (API):**
-`{{app_path}}/{{current_app}}/{{module}}/api.py`
-
-**Reports:**
-`{{app_path}}/{{current_app}}/{{module}}/report/{{report_name}}/{{report_name}}.py`
-
-Confirm all files written successfully.
-</action>
+<action>Write code/files to correct paths (DocType JSON/controller, client scripts, server/API, reports). Confirm writes succeed.</action>
 
 <template-output>files_written</template-output>
 </step>
 
 <step n="7" goal="Run bench build">
-<action>Build the Frappe app to compile JavaScript and CSS:
-
-Execute command:
-```bash
-cd {frappe_bench_path}
-bench build --app {{current_app}}
-```
-
-Parse output:
-- Look for "Built {{current_app}}"
-- Check for JavaScript errors
-- Check for CSS errors
-
-If build fails:
-- Report error details
-- Suggest fixes
-- Offer to retry after fixes
-
-If build succeeds:
-- Proceed to next step
-</action>
+<action>Run `bench build --app {{current_app}}`; check for JS/CSS errors; report and fix if fails.</action>
 
 <template-output>build_result</template-output>
 </step>
 
 <step n="8" goal="Run bench migrate">
-<action>Run database migrations to create/update DocTypes:
-
-Execute command:
-```bash
-cd {frappe_bench_path}
-bench --site {{default_site}} migrate
-```
-
-Parse output:
-- Look for "Migrating {{current_app}}"
-- Check for table creation/alteration
-- Check for errors
-
-Common migration errors:
-- Duplicate column: Field already exists
-- Invalid JSON: DocType JSON syntax error
-- Missing dependency: Linked DocType doesn't exist
-
-If migration fails:
-- Report error details
-- Suggest fixes
-- Offer to retry after fixes
-
-If migration succeeds:
-- Proceed to next step
-</action>
+<action>Run `bench --site {{default_site}} migrate`; watch for errors (duplicate column, invalid JSON, missing dependency). Report/fix if fails; continue if succeeds.</action>
 
 <template-output>migration_result</template-output>
 </step>
 
 <step n="9" goal="Clear cache and restart">
-<action>Clear Frappe cache and restart bench:
-
-Execute commands:
-```bash
-cd {frappe_bench_path}
-bench --site {{default_site}} clear-cache
-bench restart
-```
-
-This ensures:
-- New code is loaded
-- JavaScript/CSS changes take effect
-- DocType metadata refreshed
-</action>
+<action>Run `bench --site {{default_site}} clear-cache` and `bench restart` to refresh code/assets/metadata.</action>
 
 <template-output>cache_cleared</template-output>
 </step>
 
 <step n="10" goal="Run tests">
-<action>Execute Frappe unit tests for the app:
-
-Execute command:
-```bash
-cd {frappe_bench_path}
-bench --site {{default_site}} run-tests --app {{current_app}}
-```
-
-Parse test results:
-- Total tests run
-- Passed count
-- Failed count (with error details)
-- Skipped count
-
-If tests fail:
-- Report which tests failed
-- Show error tracebacks
-- Suggest fixes
-- Offer to re-run after fixes
-
-If tests pass:
-- Report success
-- Proceed to validation
-</action>
+<action>Run `bench --site {{default_site}} run-tests --app {{current_app}}`; report pass/fail details and rerun after fixes if needed.</action>
 
 <template-output>test_results</template-output>
 </step>

@@ -2,6 +2,13 @@
 App: [app_name] | BRD: [path] | TSD: [path or "N/A"] | Date: [ISO]
 Complexity: [Simple/Medium/Complex] | Token Budget: [1-5k/5-10k/10-15k]
 
+## Summary
+| Type | Range | Notes |
+|------|-------|-------|
+| User Tasks | u1:uX | Configuration (fields/workflows/roles) |
+| Developer Tasks | d1:dY | Code (scripts/reports/dashboards/jobs) |
+| QA/Docs (optional) | q1:qZ | Tests/docs if included |
+
 ## Project Context
 **Goal:** [1-sentence primary objective]
 **Users:** [Who will use this]

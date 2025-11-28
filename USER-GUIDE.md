@@ -354,6 +354,12 @@ START
 
 ## Multi-Project Management
 
+### State Usage (fast context)
+- Active project state lives in `.bmad/frappe-builder/state/`
+- `active-project.txt` selects the current project folder
+- `active.yaml` holds: project, app, site, plan, tsd, brd, phase, specialist, tasks, summary, notes
+- Agents read summary/context from state to avoid loading full docs; update state when BRD/TSD/plan changes
+
 Frappe-Builder supports working on **multiple Frappe projects simultaneously** without losing context.
 
 ### How It Works

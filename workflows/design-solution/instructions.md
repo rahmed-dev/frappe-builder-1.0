@@ -19,160 +19,31 @@
 <workflow>
 
 <step n="1" goal="Load Business Requirements Document">
-<action>Search for BRD using fuzzy file matching.
-
-Try patterns:
-- `{{docs_path}}/brd/*.md`
-- `{{docs_path}}/brd/*/index.md` (if sharded)
-
-If sharded version found:
-- Read index.md to understand structure
-- Read ALL section files listed in index
-- Treat combined content as single document
-
-If multiple BRDs found, ask user which one to use.
-</action>
+<action>Find BRD (`{{docs_path}}/brd/*.md` or sharded index). If multiple, ask which. Load full content.</action>
 
 <template-output>brd_content</template-output>
 </step>
 
 <step n="2" goal="Apply 4-tier framework to each requirement">
-<action>For EACH requirement in the BRD, apply the 4-tier framework:
-
-**Tier 1: Standard ERPNext Features**
-Ask: Can ERPNext do this out-of-the-box?
-- Which standard DocTypes handle this?
-- Are there existing workflows/processes?
-- Is this a common ERPNext use case?
-
-**Tier 2: Configuration Required**
-Ask: Can configuration achieve this without code?
-- Custom Fields (which DocType, field details)?
-- Workflow states and transitions?
-- Property Setters (hide fields, change labels)?
-- Print Format customizations?
-- Role permissions?
-
-**Tier 3: Scripts Required**
-Ask: Do we need custom business logic?
-- Server Scripts (validations, calculations, triggers)?
-- Client Scripts (UI behavior, auto-fills, dependencies)?
-- API endpoints (@frappe.whitelist())?
-
-**Tier 4: Custom App Required**
-Ask: Is a fully custom DocType needed?
-- Custom DocType with controllers?
-- Complex business logic?
-- Hooks into Frappe events?
-- Custom pages or portals?
-
-**Decision Rule:** Use lowest tier possible. Only move up when lower tier cannot satisfy requirement.
-
-Document tier decision for EACH requirement with justification.
-</action>
+<action>For each requirement, choose lowest viable tier (Standard → Configure → Scripts → Custom). Note DocTypes/workflows/config needs, script needs, or custom DocType need. Document tier + rationale per requirement.</action>
 
 <template-output>tier_analysis</template-output>
 </step>
 
 <step n="3" goal="Design DocType structures for Tier 4 requirements">
-<action if="Tier 4 custom DocTypes needed">For each custom DocType required, design complete structure:
-
-**DocType Definition:**
-- DocType name (CamelCase, e.g., "Purchase Requisition")
-- Purpose (what business entity does this represent?)
-- Module (which ERPNext module does it belong to?)
-
-**Fields Design:**
-For each field specify:
-- Fieldname (snake_case)
-- Label (Display name)
-- Fieldtype (Data, Link, Select, Table, Currency, Date, Text, Small Text, etc.)
-- Options (for Select/Link fields)
-- Mandatory (required field?)
-- Read Only (calculated/auto-filled?)
-- Depends On (show/hide based on other fields?)
-
-**Child Table Design** (if nested data needed):
-- Child DocType name
-- Fields in child table
-- Parent link
-
-**Link Fields** (relationships to other DocTypes):
-- Which DocTypes link to?
-- Link field names
-- Cascade behavior (what happens if linked doc deleted?)
-
-**Naming Series:**
-- Naming pattern (e.g., "PR-.YYYY.-.#####")
-- Auto-naming rule
-
-**Permissions:**
-- Which roles can read/write/submit/delete?
-- Field-level permissions if needed
-
-**Workflows** (if approval process needed):
-- States (Draft, Pending, Approved, Rejected)
-- Transitions (who can move between states?)
-- Email notifications
-
-Present complete DocType designs in structured format.
-</action>
+<action if="Tier 4 custom DocTypes needed">Design each custom DocType: name/purpose/module; fields (name/label/type/options/reqd/readonly/depends on); child tables; links; naming series; permissions; workflows (states/transitions/notifications). Present structured design.</action>
 
 <template-output>doctype_designs</template-output>
 </step>
 
 <step n="4" goal="Design configuration changes for Tier 2 requirements">
-<action if="Tier 2 configuration needed">For each configuration change required:
-
-**Custom Fields:**
-- Target DocType (which standard DocType to customize?)
-- Field specifications (same detail as DocType fields above)
-- Insert After (where in form layout?)
-- Purpose (why this field is needed?)
-
-**Workflow Configuration:**
-- Target DocType
-- States and transitions
-- Role-based permissions per state
-- Email notifications per transition
-
-**Property Setters:**
-- Target DocType
-- Property to change (label, hidden, read_only, etc.)
-- New value
-- Reason for change
-
-**Print Format Customizations:**
-- Target DocType
-- Template changes
-- Additional fields to display
-- Formatting requirements
-
-Present all configuration changes in structured format.
-</action>
+<action if="Tier 2 configuration needed">List config changes: custom fields (target DocType, specs, insert after, purpose), workflows (states/transitions/roles/notifications), property setters (property/value/reason), print formats (target, additions, formatting). Present structured.</action>
 
 <template-output>configuration_design</template-output>
 </step>
 
 <step n="5" goal="Design script logic for Tier 3 requirements">
-<action if="Tier 3 scripts needed">For each script required:
-
-**Server Scripts:**
-- DocType/Event (which DocType, which trigger: before_save, on_submit, etc.)
-- Logic description (what does this script do?)
-- Pseudo-code or detailed algorithm
-- Validation rules
-- Calculations
-- Side effects (creates other docs, sends emails, etc.)
-
-**Client Scripts:**
-- DocType/Event (which DocType, which trigger: refresh, field change, etc.)
-- UI behavior (what changes on screen?)
-- Field dependencies (when field X changes, update field Y)
-- Auto-fill logic
-- Custom buttons (what do they do?)
-
-**API Endpoints:**
+<action if="Tier 3 scripts needed">For each script: server (doctype/event, logic, pseudocode, validations/calcs, side effects), client (doctype/event, UI behavior, dependencies, autofill, buttons), APIs (whitelisted endpoints, payloads, errors). Keep logic/pseudocode only.</action>
 - Function name (@frappe.whitelist())
 - Parameters
 - Business logic
@@ -231,75 +102,19 @@ Present UX designs with component specifications.
 - Which operations are heavy/slow?
 - Recommend background jobs for: bulk operations, external API calls, complex calculations
 
-**Caching:**
-- What data is static or rarely changes?
-- Recommend caching for: dropdown options, settings, reference data
-
-**Data Volume:**
-- Will child tables grow large?
-- Recommend pagination for: large child tables, report results
-
-Present performance recommendations with reasoning.
-</action>
+**Caching:** note static data to cache (dropdowns/settings/reference).\n\n**Data Volume:** flag large child tables/reports; recommend pagination.\n\nPresent performance recommendations with reasoning.</action>
 
 <template-output>performance_considerations</template-output>
 </step>
 
 <step n="8" goal="Assess upgrade safety">
-<action>Evaluate how safe this design is for future ERPNext upgrades:
-
-**Safe (No upgrade risk):**
-✅ Using standard DocTypes only
-✅ Custom Fields only
-✅ Custom Print Formats
-✅ Workflows on standard DocTypes
-✅ Role permissions
-
-**Moderate Risk (Test after upgrades):**
-⚠️ Server Scripts (may need adjustment if Frappe API changes)
-⚠️ Client Scripts (UI changes may affect)
-⚠️ Custom DocTypes with Link to standard DocTypes
-
-**High Risk (Avoid if possible):**
-❌ Modifying core Frappe/ERPNext code
-❌ Monkey-patching standard functions
-❌ Overriding standard DocType controllers without super()
-
-**Custom App with Hooks (Depends on hooks used):**
-- Standard hooks (on_submit, on_cancel): Low risk
-- Override hooks (doc_events replacing standard): High risk
-
-Present upgrade safety assessment with risk mitigation strategies.
-</action>
+<action>Upgrade safety: Safe (standard DocTypes, custom fields/prints, workflows, roles); Moderate (server/client scripts, custom DocTypes linking standard); High risk (core mods, monkey-patching, override controllers without super). Hooks: standard low, overrides high. Provide mitigations.</action>
 
 <template-output>upgrade_safety</template-output>
 </step>
 
 <step n="9" goal="Design integration architecture" optional="true">
-<action if="external integrations required">For each external integration:
-
-**API Design:**
-- Endpoint structure (@frappe.whitelist() methods)
-- HTTP methods (GET, POST, PUT, DELETE)
-- Request format (JSON structure)
-- Response format (JSON structure)
-
-**Authentication:**
-- API Key + Secret?
-- OAuth?
-- Token-based?
-- IP whitelisting?
-
-**Error Handling:**
-- HTTP status codes
-- Error response format
-- Retry logic
-- Timeout handling
-
-**Data Sync:**
-- Real-time (webhooks)?
-- Batch (scheduled jobs)?
-- Polling?
+<action if="external integrations required">For each integration: API design (endpoints/methods/payloads/responses), auth (key/secret, OAuth, token, IP allowlist), error handling (status codes, format, retries/timeouts), sync mode (webhooks, batch jobs, polling), conflict handling, security (rate limits, validation, permissions).</action>
 - Sync frequency?
 
 **Rate Limiting:**

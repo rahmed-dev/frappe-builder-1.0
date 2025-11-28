@@ -7,44 +7,19 @@
 <workflow>
 
 <step n="1" goal="Identify code to review">
-<action>Ask user: Which code to review?
-
-Options:
-1. Specific file paths (user provides)
-2. Recent changes in app (scan {{app_path}})
-3. Entire app (comprehensive review)
-4. Specific module or DocType
-
-Get file paths to review.
-</action>
+<action>Ask which code to review (paths/recent changes/module/DocType). Collect file paths.</action>
 
 <template-output>files_to_review</template-output>
 </step>
 
 <step n="2" goal="Load and analyze code files">
-<action>Read all specified code files:
-
-For Python files (.py):
-- DocType controllers
-- API endpoints
-- Utilities
-- Hooks
-
-For JavaScript files (.js):
-- Client scripts
-- Form scripts
-- Custom pages
-
-For JSON files (.json):
-- DocType definitions
-- Custom field definitions
-</action>
+<action>Read specified code files (py: controllers/APIs/utils/hooks; js: client/form/custom pages; json: doctypes/custom fields).</action>
 
 <template-output>code_content</template-output>
 </step>
 
 <step n="3" goal="Scan for Frappe anti-patterns">
-<action>Check code against Frappe anti-patterns checklist:
+<action>Check code against Frappe anti-patterns:
 
 **SERVER-SIDE (Python) Anti-Patterns:**
 
@@ -223,44 +198,7 @@ For each reinvention, show Frappe built-in alternative.
 CODE REVIEW REPORT
 ==================
 
-Files Reviewed: X
-Anti-Patterns Found: Y
-Critical Issues: Z
-Warnings: W
-
-CRITICAL ISSUES (Fix immediately):
------------------------------------
-1. [FILE:LINE] SQL Injection Risk
-   Code: frappe.db.sql(f"SELECT * FROM tabItem WHERE name = '{name}'")
-   Risk: Malicious user could execute arbitrary SQL
-   Fix: Use parameterized query or frappe.get_all()
-
-WARNINGS (Should fix):
-----------------------
-1. [FILE:LINE] Missing @frappe.whitelist()
-   Code: def my_api_method():
-   Risk: Security - API endpoint not properly decorated
-   Fix: Add @frappe.whitelist() decorator and permission check
-
-SUGGESTIONS (Improvements):
----------------------------
-1. [FILE:LINE] Custom date handling
-   Code: datetime.now().strftime("%Y-%m-%d")
-   Suggestion: Use frappe.utils.today() instead
-   Benefit: Consistent timezone handling, simpler code
-
-FRAPPE BUILT-IN ALTERNATIVES:
------------------------------
-1. Custom dialog HTML → frappe.ui.Dialog
-2. Manual number formatting → frappe.utils.fmt_money()
-3. Custom date calculations → frappe.utils.add_days()
-```
-
-Organize findings by severity:
-- Critical (security/data integrity risks)
-- Warnings (anti-patterns, bad practices)
-- Suggestions (improvements, optimizations)
-</action>
+Organize findings by severity (Critical/Warn/Suggest) with file:line, description, risk, fix. List built-in alternatives (frappe.ui.Dialog, frappe.utils.fmt_money/add_days).</action>
 
 <template-output>review_report</template-output>
 </step>

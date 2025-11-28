@@ -19,101 +19,25 @@
 <workflow>
 
 <step n="1" goal="Load Technical Specification Document">
-<action>Search for TSD using fuzzy file matching.
-
-Try patterns:
-- `{{docs_path}}/tsd/*.md`
-- `{{docs_path}}/tsd/*/index.md` (if sharded)
-
-If sharded:
-- Read index.md
-- Read ALL section files
-- Combine as single document
-
-If multiple TSDs found, ask user which one.
-</action>
+<action>Find TSD (`{{docs_path}}/tsd/*.md` or sharded index). If multiple, ask which. Load full content.</action>
 
 <template-output>tsd_content</template-output>
 </step>
 
 <step n="2" goal="Extract all features from TSD">
-<action>Review the TSD and extract every feature/requirement:
-
-Organize by 4-tier framework:
-- **Tier 1 (Standard):** Features using ERPNext out-of-box
-- **Tier 2 (Configure):** Features needing configuration
-- **Tier 3 (Scripts):** Features needing code scripts
-- **Tier 4 (Custom):** Features needing custom DocTypes
-
-For each feature, note:
-- Feature name/description
-- Which tier
-- Which DocTypes involved
-- Estimated complexity (Simple/Medium/Complex)
-
-Create comprehensive feature list.
-</action>
+<action>Extract all features/requirements from TSD, tag by tier (Standard/Configure/Scripts/Custom), note DocTypes and complexity.</action>
 
 <template-output>feature_list</template-output>
 </step>
 
 <step n="3" goal="Analyze DocType dependencies">
-<action>Build dependency graph for all DocTypes mentioned in TSD:
-
-**Identify Dependencies:**
-- **Link Fields:** DocType A has Link field to DocType B → A depends on B
-- **Child Tables:** Parent DocType depends on Child DocType
-- **Workflow Triggers:** DocType A creates DocType B on submit → A depends on B
-- **Data Flow:** DocType A reads data from DocType B → A depends on B
-
-**Dependency Types:**
-- **Blocking:** Cannot build A until B exists
-- **Non-blocking:** Can build in parallel, link later
-
-Create dependency graph showing:
-- Foundation DocTypes (no dependencies)
-- Dependent DocTypes (depend on others)
-- Interdependent DocTypes (circular dependencies - flag these!)
-
-Present as:
-```
-Foundation:
-- Customer (no dependencies)
-- Item (no dependencies)
-
-Dependent:
-- Sales Order (depends on: Customer, Item)
-- Delivery Note (depends on: Sales Order)
-- Sales Invoice (depends on: Delivery Note, Sales Order)
-```
-</action>
+<action>Build DocType dependency graph: links, child tables, workflow triggers, data flows. Mark blocking vs non-blocking; flag circular. List foundation/dependent DocTypes.</action>
 
 <template-output>dependency_analysis</template-output>
 </step>
 
 <step n="4" goal="Identify critical path">
-<action>Determine which features MUST be built first:
-
-**Critical Path Analysis:**
-1. Foundation features (no dependencies)
-2. Features that block the most other features
-3. Longest dependency chain
-4. Features required for minimal viable system
-
-Example:
-```
-Critical Path:
-1. Customer DocType (blocks Sales Order)
-2. Item DocType (blocks Sales Order)
-3. Sales Order DocType (blocks Delivery Note, Sales Invoice)
-4. Delivery Note DocType (blocks Sales Invoice)
-5. Sales Invoice DocType (completes sales cycle)
-
-This is the MINIMUM sequence for a working sales flow.
-```
-
-Identify THE critical path - the minimum sequence to get a working system.
-</action>
+<action>Identify critical path: foundation features, top blockers, longest chains, minimum viable sequence. List the minimal sequence to a working system.</action>
 
 <template-output>critical_path</template-output>
 </step>
@@ -195,68 +119,20 @@ Criteria:
 - Improves user experience
 - Can be deferred if needed
 
-For EACH phase, list:
-- User tasks (what user configures via UI)
-- Developer tasks (what developer codes)
-- Dependencies (what must be done first)
-- Completion criteria (how we know phase is done)
+For each phase: list User tasks (UI/config), Dev tasks (code), dependencies, completion criteria.
 </action>
 
 <template-output>phased_breakdown</template-output>
 </step>
 
 <step n="7" goal="Identify parallel work opportunities">
-<action>Analyze which features can be built simultaneously:
-
-**Parallel Work Criteria:**
-- Features in different modules (Sales vs Stock)
-- Features with no shared dependencies
-- Features that don't interact with each other
-- Features assigned to different developers
-
-Example:
-```
-Parallel Tracks:
-Track A (Sales Module):
-- Sales Order customization
-- Sales Invoice workflow
-- Sales reports
-
-Track B (Stock Module):
-- Stock Entry enhancements
-- Warehouse management
-- Stock reports
-
-These can be built simultaneously because they don't depend on each other.
-```
-
-Benefits:
-- Faster delivery (2 developers work in parallel)
-- Reduced waiting time
-- Better resource utilization
-
-Present parallel work opportunities for each phase.
-</action>
+<action>Identify parallel tracks (different modules/no shared deps/different owners). List per phase to accelerate delivery.</action>
 
 <template-output>parallel_opportunities</template-output>
 </step>
 
 <step n="8" goal="Structure into Implementation Plan">
-<action>Organize all planning information into the template:
-
-Write in {document_output_language}.
-
-Ensure completeness:
-- All features categorized
-- All dependencies identified
-- All three phases defined
-- User tasks vs Developer tasks split for each phase
-- Critical path documented
-- Parallel work opportunities identified
-- Completion criteria for each phase
-
-The Implementation Plan should be actionable - team can start work immediately with clear understanding of sequence.
-</action>
+<action>Compile the plan in {document_output_language}: features categorized, dependencies, phases defined, User vs Dev tasks per phase, critical path, parallel opportunities, completion criteria. Plan should be actionable.</action>
 
 <template-output>complete_plan</template-output>
 </step>

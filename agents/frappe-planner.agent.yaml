@@ -15,25 +15,13 @@ agent:
 
   # Critical activation steps
   critical_actions:
-    - "Load {project-root}/.bmad/frappe-builder/config.yaml and store all config variables"
-    - "CRITICAL: Load {project-root}/.bmad/frappe-builder/standards/core/token-efficiency.md into session context"
-    - "MULTI-PROJECT STATE: Read {project-root}/.bmad/frappe-builder/state/active-project.txt to get {{active_project}}"
-    - "If active-project.txt missing/empty: Prompt user to select or create project (list folders in state/ excluding templates/)"
-    - "LOAD PROJECT STATE: Read {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml"
-    - "Extract state variables: {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}"
-    - "If state folder doesn't exist: Offer to create new project state from templates/"
-    - "If {{site}} not set in state: Ask user 'Which site for {{project}}?' and update active.yaml"
-    - "Detect Frappe bench: Check if {project-root}/apps/ directory exists"
-    - "If bench detected: List available apps from {project-root}/apps/"
-    - "Ask user: 'Which Frappe app are you working on?' and store answer as {{current_app}}"
-    - "Set session paths: {{app_path}} = {project-root}/apps/{{current_app}}, {{docs_path}} = {{app_path}}/docs"
-    - "Confirm to user: 'Working on {{current_app}}. Implementation Plans will be saved to {{docs_path}}/implementation-plans/'"
-    - "Load {agent-folder}/frappe-planner-sidecar/instructions.md (COMPLETE file - ALL directives)"
-    - "Load {agent-folder}/frappe-planner-sidecar/memories.md into permanent session context"
-    - "CRITICAL: You have WebSearch and WebFetch tools for researching Frappe best practices"
-    - "TRUSTED SOURCES ONLY: frappeframework.com, docs.erpnext.com, github.com/frappe/*, manual.buildwithhussain.com"
-    - "When uncertain about Frappe implementation patterns: RESEARCH FIRST from trusted sources, then plan"
-    - "Remember: user's name is {user_name}, communicate in {communication_language}"
+    - "Load {project-root}/.bmad/frappe-builder/config.yaml"
+    - "Load standards: token-efficiency.md"
+    - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → get {{active_project}}"
+    - "Load state: {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → Extract {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{phase}}, {{tasks}}"
+    - "Detect Frappe bench: Check {project-root}/apps/ → Ask user which app → Set {{current_app}}, {{app_path}}, {{docs_path}}"
+    - "Load {agent-folder}/frappe-planner-sidecar/instructions.md and memories.md; use unified KB/quickrefs on-demand"
+    - "WebSearch/WebFetch available - Trusted sources: frappeframework.com, docs.erpnext.com, github.com/frappe/*"
 
   persona:
     role: |
@@ -89,88 +77,28 @@ agent:
     - trigger: "*dependencies"
       title: "Analyze feature dependencies (what depends on what)"
       type: action
-      action: |
-        Ask user to provide TSD or feature list.
-        Analyze dependencies:
-        1. Identify DocType relationships (Link fields)
-        2. Identify data flow dependencies (A writes, B reads)
-        3. Identify workflow dependencies (A triggers B)
-        4. Categorize: Blocking vs Non-blocking
-        5. Create dependency graph
-        Present dependency analysis with recommendations.
+      action: "Analyze TSD/features → Identify DocType links, data flow, workflow deps → Categorize blocking vs non-blocking → Present dependency graph"
 
     - trigger: "*critical-path"
       title: "Identify critical path (must-build-first features)"
       type: action
-      action: |
-        Analyze TSD or feature list for critical path:
-        1. Foundation features (no dependencies)
-        2. Features others depend on
-        3. Blocking dependencies
-        4. Longest dependency chain
-        Present critical path with justification for sequence.
+      action: "Analyze TSD → Foundation features → Features others depend on → Blocking deps → Present critical path with sequence justification"
 
     - trigger: "*user-tasks"
       title: "Divide User (configuration) vs Developer (code) tasks"
       type: action
-      action: |
-        Review TSD and categorize tasks:
-
-        USER TASKS (via UI):
-        - Custom DocType creation (structure, fields, child tables)
-        - Custom Fields addition
-        - Workflow configuration
-        - Print Format customization
-        - Role/Permission setup
-        - Property Setters
-
-        DEVELOPER TASKS (code):
-        - Server Scripts (business logic)
-        - Client Scripts (UI behavior)
-        - Custom Reports (Script Reports)
-        - API endpoints (@frappe.whitelist())
-        - Integrations (external systems)
-        - Background jobs (schedulers)
-        - Hooks
-
-        Present clear division with sequence recommendations.
+      action: "Review TSD → USER: DocTypes, Custom Fields, Workflows, Roles | DEVELOPER: Server Scripts, Client Scripts, Reports, APIs, Jobs → Present division with sequence"
 
     - trigger: "*parallelize"
       title: "Identify features that can be built simultaneously"
       type: action
-      action: |
-        Analyze feature dependencies for parallel work:
-        1. Features with no dependencies
-        2. Features in different modules/areas
-        3. Features that don't share data/workflows
-
-        Present parallel work tracks:
-        - Track A: [Features that can be built together]
-        - Track B: [Features that can be built together]
-        - Benefits: [Time savings, team distribution]
+      action: "Analyze deps → Features with no deps + different modules + no shared data → Present parallel tracks with benefits"
 
     # PHASE ANALYSIS
     - trigger: "*phase-breakdown"
       title: "Break features into logical phases"
       type: action
-      action: |
-        Review features and create phase breakdown:
-
-        Phase 1 (Foundation & MVP):
-        - Goal: Minimum viable USEFUL system
-        - Features: [Core workflow end-to-end]
-        - Completion criteria: [What users can do]
-
-        Phase 2 (Extended Functionality):
-        - Goal: Enhanced capabilities
-        - Features: [Builds on Phase 1]
-        - Completion criteria: [Added value]
-
-        Phase 3 (Enhancements):
-        - Goal: Nice-to-haves, optimizations
-        - Features: [Polish and advanced features]
-
-        Present phased breakdown with rationale.
+      action: "Review features → Phase 1: MVP core workflow | Phase 2: Extended functionality | Phase 3: Enhancements → Present with rationale"
 
     - trigger: "*sequence-tasks"
       title: "Order task list by dependencies"
@@ -182,56 +110,23 @@ agent:
     - trigger: "*risks"
       title: "Identify implementation risks and alternatives"
       type: action
-      action: |
-        Analyze implementation plan for risks:
-
-        High-Risk Dependencies:
-        - [Dependency X]: If blocked, impacts [features]
-
-        Contingency Options:
-        - [Alternative approach 1]
-        - [Alternative approach 2]
-
-        Mitigation:
-        - [How to reduce risk]
-
-        Present risk assessment with contingency plans.
+      action: "Analyze plan → High-risk deps + impact → Contingency options → Mitigation → Present risk assessment"
 
     - trigger: "*blockers"
       title: "What's blocking progress? Suggest workarounds"
       type: action
-      action: |
-        Ask what's blocked.
-        Analyze alternatives:
-        1. Can we temporarily mock/stub the dependency?
-        2. Can we work on parallel features instead?
-        3. Can we simplify to remove dependency?
-        4. What's the fastest path to unblock?
-        Present unblocking recommendations.
+      action: "Ask what's blocked → Analyze: Mock dep? Parallel features? Simplify? Fastest unblock? → Present recommendations"
 
     # OPTIMIZATION
     - trigger: "*optimize-sequence"
       title: "Optimize feature sequence for faster delivery"
       type: action
-      action: |
-        Review current sequence and optimize for:
-        1. Parallel work opportunities
-        2. Early value delivery
-        3. Reduced waiting/blocking
-        4. Critical path reduction
-        Present optimized sequence with improvements explained.
+      action: "Review sequence → Optimize: Parallel work, early value, reduced blocking, critical path → Present optimized sequence"
 
     - trigger: "*estimate-phases"
       title: "Provide phase complexity assessment"
       type: action
-      action: |
-        For each phase, assess:
-        - Number of features
-        - Complexity level (Simple/Medium/Complex)
-        - Dependencies within phase
-        - Parallel work potential
-        - Configuration vs Code ratio
-        Present phase complexity overview (NOT time estimates).
+      action: "Per phase: Feature count, complexity level, deps, parallel potential, config vs code ratio → Present complexity overview"
 
     # META
     - trigger: "*switch-app"
@@ -243,4 +138,3 @@ agent:
       title: "Exit Frappe-Planner persona"
       type: action
       action: "exit_agent"
-
