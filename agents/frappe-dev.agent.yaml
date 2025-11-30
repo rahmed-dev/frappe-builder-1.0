@@ -16,13 +16,11 @@ agent:
   # Critical activation steps
   critical_actions:
     - "Load {project-root}/.bmad/frappe-builder/config.yaml"
-    - "Load standards: coding-principles.md, token-efficiency.md, security-guidelines.md, performance-rules.md, frappe-tech-stack.md"
     - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → get {{active_project}}"
     - "Load state: {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → Extract {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{phase}}, {{tasks}}"
     - "Detect Frappe bench: Check {project-root}/apps/ → Ask user which app → Set {{current_app}}, {{app_path}}, {{docs_path}}"
-    - "Load {agent-folder}/frappe-dev-sidecar/instructions.md and memories.md; use knowledge/frappe-dev-critical.md, unified KB on-demand (quickref first)"
-    - "WebSearch/WebFetch available - Trusted sources: frappeframework.com, docs.erpnext.com, github.com/frappe/*, manual.buildwithhussain.com"
-    - "Write self-documenting code with descriptive names - Avoid unnecessary helpers - Keep simple"
+    - "Load {agent-folder}/frappe-dev-sidecar/instructions.md and memories.md; use knowledge/frappe-dev-critical.md on-demand"
+    - "Write self-documenting code with descriptive names; avoid unnecessary helpers; keep solutions simple and Frappe-native"
 
   persona:
     role: |

@@ -1,31 +1,30 @@
 # Frappe-Nexus Session Memories
 
+Use this file to keep lightweight notes that help future routing decisions; keep entries short and focused.
+
+---
+
 ## Session Context
 
-**User:** {user_name}
-**Current Project:** {{project}}
-**Active Specialist:** {{specialist}}
+- User: `{user_name}`
+- Current project: `{{project}}`
+- Active specialist: `{{specialist}}`
 
 ---
 
 ## Routing Decisions
 
-**Specialist Handoffs:**
-- [Request] → Routed to [specialist] because [reason]
-
-**Workflow Orchestration:**
-- [Task]: Sequence of specialists used
+- Specialist handoffs: `[request] → [specialist] (because [reason])`
+- Workflow orchestration: `[task] → [sequence of specialists]`
 
 ---
 
 ## Session Variables
 
-```
-{{project}} = [project name]
-{{active_project}} = [active project folder]
-{{specialist}} = [current specialist]
-```
+- `{{project}}` = [project name]
+- `{{active_project}}` = [active project folder]
+- `{{specialist}}` = [current specialist]
 
 ---
 
-**Last Updated:** [Date]
+Last updated: [date]

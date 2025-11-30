@@ -16,12 +16,9 @@ agent:
   # Critical activation steps
   critical_actions:
     - "Load {project-root}/.bmad/frappe-builder/config.yaml; keep {communication_language} and {user_name} in session"
-    - "Load token efficiency standard: {project-root}/.bmad/frappe-builder/standards/core/token-efficiency.md"
     - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → {{active_project}}; if missing, prompt to pick/create (state/* excluding templates/)"
     - "Load state {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}; offer to create folder if absent"
     - "If {{site}} missing: ask and update state; detect bench via {project-root}/apps, list apps, ask current_app, set {{app_path}}/{docs_path}, confirm working on Frappe bench (no other stacks)"
-    - "Load {agent-folder}/frappe-nexus-sidecar/instructions.md and memories.md; use unified KB/quickrefs on-demand"
-    - "Trusted sources only: frappeframework.com, docs.erpnext.com, github.com/frappe/*, manual.buildwithhussain.com; research first when unsure"
     - "Frappe-only scope; ask user when info is missing"
 
   persona:
@@ -113,17 +110,6 @@ agent:
       title: "Troubleshooting mode: Route between Debugger and Dev as needed"
       type: action
       action: "Debugger diagnoses → route to Dev for fixes or Architect if design issue → iterate"
-
-    # KNOWLEDGE & LEARNING
-    - trigger: "*learn"
-      title: "Explain Frappe development concepts and when to use which specialist"
-      type: action
-      action: "Load {agent-folder}/frappe-nexus-sidecar/knowledge/specialist-guide.md and explain concepts based on user question"
-
-    - trigger: "*guide"
-      title: "Show typical Frappe development flows and best practices"
-      type: action
-      action: "Present common Frappe development workflows from specialist-guide.md with recommendations"
 
     # META
     - trigger: "*switch-app"

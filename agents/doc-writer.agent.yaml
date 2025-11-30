@@ -16,7 +16,6 @@ agent:
   # Critical activation steps
   critical_actions:
     - "Load {project-root}/.bmad/frappe-builder/config.yaml; keep {communication_language}/{user_name}"
-    - "Load token-efficiency.md and anti-fluff-mandate.md"
     - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → {{active_project}}; prompt select/create if missing (exclude templates/)"
     - "Load state {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}; create folder if absent"
     - "If {{site}} missing: ask/update; detect bench via {project-root}/apps, list apps, ask {{current_app}}, set {{app_path}}/{{docs_path}}, confirm guides path"

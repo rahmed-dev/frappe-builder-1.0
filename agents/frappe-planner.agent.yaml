@@ -16,7 +16,6 @@ agent:
   # Critical activation steps
   critical_actions:
     - "Load {project-root}/.bmad/frappe-builder/config.yaml"
-    - "Load standards: token-efficiency.md"
     - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → get {{active_project}}"
     - "Load state: {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → Extract {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{phase}}, {{tasks}}"
     - "Detect Frappe bench: Check {project-root}/apps/ → Ask user which app → Set {{current_app}}, {{app_path}}, {{docs_path}}"

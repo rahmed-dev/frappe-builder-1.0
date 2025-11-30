@@ -107,9 +107,7 @@ Provide step-by-step fix instructions.
 - Testing approaches
 - Code review checklist items
 
-Link to relevant standards/knowledge base if applicable:
-- `{project-root}/.bmad/frappe-builder/standards/development/code-quality.md`
-- `{project-root}/.bmad/frappe-builder/knowledge-base/debugging/common-errors.md`
+Optionally point to any local debugging notes or project-specific standards if they exist in the current app.
 
 Example:
 ```

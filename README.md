@@ -72,6 +72,9 @@ BMAD-METHOD/
 # Return to BMAD root directory
 cd ../..
 
+# Install Node
+npm install
+
 # Run BMAD installer (interactive)
 npm run bmad:install
 
