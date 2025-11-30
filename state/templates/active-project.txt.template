@@ -1,0 +1,10 @@
+# Active Project Pointer
+# This file contains the name of the currently active project folder
+# Format: Single line with project folder name (e.g., "nexus_erp")
+# Agents read this to determine which project state to load
+#
+# Example:
+# nexus_erp
+#
+# To switch projects, simply update this file with the new project folder name
+

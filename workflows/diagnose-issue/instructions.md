@@ -19,96 +19,27 @@
 <workflow>
 
 <step n="1" goal="Understand the problem">
-<action>Ask user: What's the issue?
-
-Options:
-1. Error in logs (which log?)
-2. Python traceback (paste it)
-3. Unexpected behavior (no error message)
-4. Performance issue (slow operation)
-
-Get detailed description and context.
-</action>
+<action>Ask what the issue is (log error, traceback, unexpected behavior, performance). Capture brief context.</action>
 
 <template-output>problem_description</template-output>
 </step>
 
 <step n="2" goal="Gather error evidence">
-<action if="Error in logs">Read bench logs:
-
-- Error log (last 100 lines): `tail -100 {frappe_bench_path}/sites/{{default_site}}/logs/error.log`
-- Web log (last 100 lines): `tail -100 {frappe_bench_path}/sites/{{default_site}}/logs/web.log`
-- Scheduler log (last 50 lines): `tail -50 {frappe_bench_path}/sites/{{default_site}}/logs/scheduler.log`
-
-Parse for:
-- Timestamps
-- Error types (ValidationError, PermissionError, etc.)
-- Tracebacks
-- Related errors
-</action>
-
-<action if="Python traceback provided">Analyze the traceback:
-
-- Identify error type
-- Trace error location (file:line)
-- Understand call stack
-- Identify triggering action
-</action>
-
-<action if="Unexpected behavior">Gather context:
-
-- What did user expect?
-- What actually happened?
-- Steps to reproduce?
-- Which DocType/feature?
-- Any error messages (even if subtle)?
-</action>
+<action if="Error in logs">Tail relevant logs (error/web/scheduler). Note timestamps, error types, tracebacks.</action>
+\n<action if="Python traceback provided">Identify error type, file:line, call stack, trigger.</action>
+\n<action if="Unexpected behavior">Capture expected vs actual, steps to reproduce, DocType/feature, any messages.</action>
 
 <template-output>error_evidence</template-output>
 </step>
 
 <step n="3" goal="Correlate logs if multiple errors">
-<action if="Multiple log files read">Cross-reference logs:
-
-Look for:
-- Same timestamp errors in different logs
-- Error chains (error A triggered error B)
-- Patterns (same error recurring)
-
-Correlation example:
-```
-error.log [10:30:15] - ValidationError in Sales Order
-web.log [10:30:15] - POST /api/method/frappe.desk.form.save 500
-scheduler.log [10:30:00] - Scheduled job "daily_sales_summary" started
-
-→ The validation error occurred during scheduled job execution
-```
-</action>
+<action if="Multiple log files read">Cross-reference timestamps/patterns across logs; note chains and recurrence.</action>
 
 <template-output>log_correlation</template-output>
 </step>
 
 <step n="4" goal="Identify root cause">
-<action>Determine WHY the error occurred:
-
-Ask:
-- What was the code trying to do?
-- What condition triggered the failure?
-- What data caused the problem?
-- What's the underlying issue (not just symptom)?
-
-Common Frappe error patterns:
-- **ValidationError**: Business rule violated (missing required field, invalid value)
-- **PermissionError**: User lacks permission (role check failed)
-- **AttributeError**: Accessing non-existent attribute (typo, wrong DocType field)
-- **TypeError**: Wrong data type (string passed where int expected)
-- **DoesNotExistError**: Document not found (invalid name/ID)
-
-Root cause analysis:
-- Symptom: "Sales Order won't save"
-- Surface cause: "ValidationError: Customer is mandatory"
-- Root cause: "Client script isn't setting customer field correctly (returns string 'undefined' instead of null)"
-</action>
+<action>Find root cause: what code was doing, trigger condition/data, underlying issue (not just symptom). Note error type (Validation/Permission/Attribute/Type/DoesNotExist) and pinpoint cause.</action>
 
 <template-output>root_cause</template-output>
 </step>
@@ -176,9 +107,7 @@ Provide step-by-step fix instructions.
 - Testing approaches
 - Code review checklist items
 
-Link to relevant standards/knowledge base if applicable:
-- `{project-root}/.bmad/frappe-builder/standards/development/code-quality.md`
-- `{project-root}/.bmad/frappe-builder/knowledge-base/debugging/common-errors.md`
+Optionally point to any local debugging notes or project-specific standards if they exist in the current app.
 
 Example:
 ```

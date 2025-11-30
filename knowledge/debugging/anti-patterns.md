@@ -1,518 +1,741 @@
-# Anti-Patterns & Code Smells
+# Frappe Anti-Patterns - What NOT to Do
 
-> Common mistakes in Frappe/ERPNext development and how to fix them.
+## Overview
 
-## Database Anti-Patterns
+This document catalogs common Frappe anti-patterns - things that "work" but are wrong, risky, or unmaintainable. Each anti-pattern includes WHY it's wrong, the RISK, and the Frappe-native ALTERNATIVE.
 
-### ❌ SQL Injection
+---
 
+## Critical Anti-Patterns (Security/Data Risk)
+
+### 1. SQL Injection Vulnerability
+
+#### ❌ WRONG
 ```python
-# WRONG - SQL injection vulnerability
-status = request.args.get('status')
-data = frappe.db.sql(f"SELECT * FROM `tabTask` WHERE status = '{status}'")
-
-# CORRECT - parameterized query
-status = request.args.get('status')
-data = frappe.db.sql("""
-    SELECT * FROM `tabTask`
-    WHERE status = %(status)s
-""", {'status': status})
+item_code = request_data.get("item_code")
+results = frappe.db.sql(f"SELECT * FROM `tabItem` WHERE item_code = '{item_code}'")
 ```
 
-### ❌ N+1 Query Problem
-
+#### ✅ RIGHT
 ```python
-# WRONG - N+1 queries
-tasks = frappe.get_all('Task', fields=['name', 'project'])
-for task in tasks:
-    project = frappe.get_doc('Project', task.project)  # N queries!
-    print(project.project_name)
-
-# CORRECT - single join query
-data = frappe.db.sql("""
-    SELECT t.name, t.subject, p.project_name
-    FROM `tabTask` t
-    LEFT JOIN `tabProject` p ON t.project = p.name
-""", as_dict=True)
+item_code = request_data.get("item_code")
+results = frappe.db.sql("SELECT * FROM `tabItem` WHERE item_code = %s", (item_code,))
 ```
 
-### ❌ Fetching All Fields
+**Why Wrong:** String concatenation allows SQL injection attacks.
+**Risk:** CRITICAL - Attacker can read/modify/delete any data in database.
+**Fix:** Always use parameterized queries (`%s` placeholders).
 
+---
+
+### 2. Missing @frappe.whitelist() Decorator
+
+#### ❌ WRONG
 ```python
-# WRONG - fetches all fields
-tasks = frappe.get_all('Task')
-
-# CORRECT - fetch only needed fields
-tasks = frappe.get_all('Task', fields=['name', 'subject', 'status'])
-
-# BEST - fetch single field
-names = frappe.get_all('Task', pluck='name')
+def my_api_method(param):
+    """Exposed API but no decorator"""
+    return process(param)
 ```
 
-### ❌ Missing Filters
-
+#### ✅ RIGHT
 ```python
-# WRONG - fetches entire table
-all_tasks = frappe.get_all('Task')
-open_tasks = [t for t in all_tasks if t.status == 'Open']
-
-# CORRECT - filter in database
-open_tasks = frappe.get_all('Task', filters={'status': 'Open'})
-```
-
-## Permission Anti-Patterns
-
-### ❌ Missing Permission Checks
-
-```python
-# WRONG - no permission check
 @frappe.whitelist()
-def delete_task(task_name):
-    frappe.delete_doc('Task', task_name)
+def my_api_method(param):
+    """Properly exposed API"""
+    return process(param)
+```
 
-# CORRECT - check permission
+**Why Wrong:** Without decorator, method is NOT accessible via frappe.call().
+**Risk:** HIGH - API doesn't work, OR if it somehow works, bypasses security checks.
+**Fix:** Always decorate with `@frappe.whitelist()`.
+
+---
+
+### 3. Missing Permission Checks
+
+#### ❌ WRONG
+```python
 @frappe.whitelist()
-def delete_task(task_name):
-    doc = frappe.get_doc('Task', task_name)
-    if not frappe.has_permission('Task', 'delete', doc):
-        frappe.throw('No permission')
-    doc.delete()
+def delete_item(item_code):
+    frappe.delete_doc("Item", item_code)
 ```
 
-### ❌ Skipping Permission in Hooks
-
+#### ✅ RIGHT
 ```python
-# WRONG - bypasses permissions
-def validate_task(doc, method):
-    frappe.db.set_value('Task', doc.name, 'status', 'Completed', update_modified=False)
-
-# CORRECT - use doc methods
-def validate_task(doc, method):
-    if should_complete(doc):
-        doc.status = 'Completed'
-        # Save is called by framework
-```
-
-## Validation Anti-Patterns
-
-### ❌ Client-Side Only Validation
-
-```javascript
-// WRONG - client-side only
-frappe.ui.form.on('Task', {
-    validate: function(frm) {
-        if (frm.doc.qty < 0) {
-            frappe.msgprint('Qty must be positive');
-            frappe.validated = false;
-        }
-    }
-});
-
-// CORRECT - server-side validation
-```
-
-```python
-# Python (server-side)
-class Task(Document):
-    def validate(self):
-        if self.qty < 0:
-            frappe.throw('Qty must be positive')
-```
-
-### ❌ Missing Type Conversion
-
-```python
-# WRONG - no type conversion
 @frappe.whitelist()
-def update_qty(item, qty):
-    doc = frappe.get_doc('Item', item)
-    doc.qty = qty  # qty is string from client!
-    doc.save()
+def delete_item(item_code):
+    if not frappe.has_permission("Item", "delete"):
+        frappe.throw(_("No permission"), frappe.PermissionError)
+    frappe.delete_doc("Item", item_code)
+```
 
-# CORRECT - convert types
-from frappe.utils import cint
+**Why Wrong:** Any user can call API and delete data.
+**Risk:** CRITICAL - Unauthorized data modification/deletion.
+**Fix:** Check permissions with `frappe.has_permission()`.
 
+---
+
+### 4. Exposing Sensitive Data Without Checks
+
+#### ❌ WRONG
+```python
 @frappe.whitelist()
-def update_qty(item, qty):
-    qty = cint(qty)  # Convert to int
-
-    if qty < 0:
-        frappe.throw('Qty must be positive')
-
-    doc = frappe.get_doc('Item', item)
-    doc.qty = qty
-    doc.save()
+def get_all_salaries():
+    return frappe.get_all("Salary Slip", fields=["employee", "gross_pay"])
 ```
 
-## Code Organization Anti-Patterns
-
-### ❌ God Object
-
+#### ✅ RIGHT
 ```python
-# WRONG - one class does everything
-class TaskManager:
-    def create_task(self): pass
-    def update_task(self): pass
-    def delete_task(self): pass
-    def send_email(self): pass
-    def generate_report(self): pass
-    def sync_data(self): pass
-    def calculate_metrics(self): pass
-    # ... 50 more methods
-
-# CORRECT - separate concerns
-class TaskService:
-    def create(self, data): pass
-    def update(self, name, data): pass
-
-class TaskNotification:
-    def send_email(self, task): pass
-
-class TaskReport:
-    def generate(self, filters): pass
-```
-
-### ❌ Unnecessary Helper Functions
-
-```python
-# WRONG - helper used once
-def get_task_name(doc):
-    return doc.name
-
-task_name = get_task_name(doc)
-
-# CORRECT - use directly
-task_name = doc.name
-
-# Use helpers only for 3+ uses
-def calculate_total(items):
-    return sum(item.amount for item in items)
-
-# Used multiple times
-total1 = calculate_total(order.items)
-total2 = calculate_total(invoice.items)
-total3 = calculate_total(quote.items)
-```
-
-### ❌ Cryptic Variable Names
-
-```python
-# WRONG - unclear names
-def process(d, x, t):
-    if t == 'c':
-        r = d.qty * d.rate
-        return r * x
-
-# CORRECT - descriptive names
-def calculate_total_amount(item, tax_rate, transaction_type):
-    if transaction_type == 'credit':
-        base_amount = item.qty * item.rate
-        return base_amount * tax_rate
-```
-
-## Performance Anti-Patterns
-
-### ❌ Processing Large Data in Web Request
-
-```python
-# WRONG - blocks web request
 @frappe.whitelist()
-def process_all_tasks():
-    tasks = frappe.get_all('Task', pluck='name')  # 10,000 tasks
-    for task_name in tasks:
-        process_task(task_name)  # Takes 5 minutes!
-    return {'success': True}
+def get_employee_salary(employee):
+    # Check user can only see their own salary
+    if frappe.session.user != employee and not frappe.has_permission("Salary Slip", "read"):
+        frappe.throw(_("No permission"), frappe.PermissionError)
 
-# CORRECT - background job
-@frappe.whitelist()
-def process_all_tasks():
-    frappe.enqueue(
-        'my_app.tasks.process_all_tasks_async',
-        queue='long',
-        timeout=3600
+    return frappe.get_all(
+        "Salary Slip",
+        filters={"employee": employee},
+        fields=["employee", "gross_pay"]
     )
-    return {'message': 'Processing started'}
 ```
 
-### ❌ No Batching
+**Why Wrong:** Exposes sensitive data to all users.
+**Risk:** CRITICAL - Privacy violation, data leakage.
+**Fix:** Filter data by user permissions, check access rights.
 
-```python
-# WRONG - process all at once
-def update_all():
-    tasks = frappe.get_all('Task', pluck='name')
-    for name in tasks:
-        frappe.db.set_value('Task', name, 'processed', 1)
-    frappe.db.commit()
+---
 
-# CORRECT - batch processing
-def update_all():
-    batch_size = 100
-    offset = 0
+## Important Anti-Patterns (Performance/Maintainability)
 
-    while True:
-        tasks = frappe.get_all('Task', pluck='name', limit=batch_size, start=offset)
-        if not tasks:
-            break
+### 5. Client-Side Filtering (Performance Issue)
 
-        for name in tasks:
-            frappe.db.set_value('Task', name, 'processed', 1)
-
-        frappe.db.commit()
-        offset += batch_size
-```
-
-### ❌ No Caching
-
-```python
-# WRONG - query every time
-def get_company_name():
-    return frappe.db.get_value('Company', filters={'is_default': 1}, fieldname='name')
-
-# Called 100 times in loop
-for i in range(100):
-    company = get_company_name()  # 100 queries!
-
-# CORRECT - cache result
-def get_company_name():
-    cache_key = 'default_company'
-    company = frappe.cache().get_value(cache_key)
-
-    if company is None:
-        company = frappe.db.get_value('Company', filters={'is_default': 1}, fieldname='name')
-        frappe.cache().set_value(cache_key, company, expires_in_sec=3600)
-
-    return company
-```
-
-## JavaScript Anti-Patterns
-
-### ❌ Global Pollution
-
+#### ❌ WRONG
 ```javascript
-// WRONG - pollutes global namespace
-var myData = {};
-function processData() { }
-
-// CORRECT - encapsulate
-(function() {
-    var myData = {};
-    function processData() { }
-})();
-
-// Or use class
-class MyPage {
-    constructor() {
-        this.myData = {};
-    }
-    processData() { }
-}
-```
-
-### ❌ Client-Side Data Processing
-
-```javascript
-// WRONG - fetch all, filter client-side
 frappe.call({
-    method: 'my_app.api.get_all_tasks',
-    callback: (r) => {
-        let open_tasks = r.message.filter(t => t.status === 'Open');
-        render(open_tasks);
-    }
-});
-
-// CORRECT - filter server-side
-frappe.call({
-    method: 'my_app.api.get_tasks',
-    args: { status: 'Open' },
-    callback: (r) => {
-        render(r.message);
+    method: 'frappe.client.get_list',
+    args: {
+        doctype: 'Item',
+        fields: ['name', 'item_name', 'status']
+    },
+    callback: function(r) {
+        // Filtering 10,000 items in browser (SLOW!)
+        let active_items = r.message.filter(item => item.status === 'Active');
+        display_items(active_items);
     }
 });
 ```
 
-### ❌ Unscoped CSS
-
-```css
-/* WRONG - affects all pages */
-.container { padding: 20px; }
-.btn { min-height: 48px; }
-
-/* CORRECT - scoped to page */
-.page-my-custom-page .container { padding: 20px; }
-.page-my-custom-page .btn-custom { min-height: 48px; }
+#### ✅ RIGHT
+```javascript
+frappe.call({
+    method: 'frappe.client.get_list',
+    args: {
+        doctype: 'Item',
+        fields: ['name', 'item_name', 'status'],
+        filters: {status: 'Active'}  // Filter on SERVER (FAST!)
+    },
+    callback: function(r) {
+        display_items(r.message);
+    }
+});
 ```
 
-## Error Handling Anti-Patterns
+**Why Wrong:** Fetches ALL data, then filters in browser.
+**Risk:** HIGH - Slow performance, high memory usage, poor UX.
+**Fix:** Always filter on server-side (database level).
 
-### ❌ Silent Failures
+---
 
+### 6. N+1 Query Problem
+
+#### ❌ WRONG
 ```python
-# WRONG - swallows all errors
-try:
-    doc.save()
-except:
-    pass  # Error ignored!
-
-# CORRECT - handle specific errors
-try:
-    doc.save()
-except frappe.ValidationError as e:
-    frappe.log_error(frappe.get_traceback(), 'Validation Failed')
-    frappe.throw(str(e))
-except Exception as e:
-    frappe.log_error(frappe.get_traceback(), 'Save Failed')
-    raise
+# Fetches items (1 query), then customer for EACH item (N queries)
+items = frappe.get_all("Sales Order Item", fields=["parent", "item_code"])
+for item in items:
+    order = frappe.get_doc("Sales Order", item.parent)  # N queries!
+    customer = order.customer
 ```
 
-### ❌ Generic Error Messages
-
+#### ✅ RIGHT
 ```python
-# WRONG - unhelpful message
-if not doc.customer:
-    frappe.throw('Error')
-
-# CORRECT - descriptive message
-if not doc.customer:
-    frappe.throw('Customer is required for Sales Order')
+# Single query with join
+items = frappe.get_all(
+    "Sales Order Item",
+    fields=["parent", "item_code", "parent.customer as customer"],  # Join parent
+)
+# Access: item.customer (no additional queries)
 ```
 
-## Security Anti-Patterns
+**Why Wrong:** Executes N+1 queries (1 + N) instead of 1 query.
+**Risk:** HIGH - Extremely slow with large datasets.
+**Fix:** Use joins or fetch related data in single query.
 
-### ❌ Hardcoded Credentials
+---
 
-```python
-# WRONG - hardcoded secrets
-api_key = 'sk_live_12345abcdef'
-db_password = 'admin123'
+### 7. Custom HTML/CSS Instead of Frappe UI
 
-# CORRECT - environment variables
-import os
-api_key = os.environ.get('API_KEY')
+#### ❌ WRONG
+```javascript
+frm.fields_dict.html_field.$wrapper.html(`
+    <div class="custom-modal">
+        <input type="text" id="my-field" class="form-control">
+        <button onclick="submitData()" class="btn btn-primary">Submit</button>
+    </div>
+`);
 ```
 
-### ❌ Logging Sensitive Data
-
-```python
-# WRONG - logs password
-frappe.logger().info(f'User login: {username}, Password: {password}')
-
-# CORRECT - never log passwords
-frappe.logger().info(f'User login: {username}')
+#### ✅ RIGHT
+```javascript
+let d = new frappe.ui.Dialog({
+    title: 'Enter Details',
+    fields: [
+        {fieldname: 'my_field', fieldtype: 'Data', label: 'My Field'}
+    ],
+    primary_action_label: 'Submit',
+    primary_action(values) {
+        submitData(values.my_field);
+    }
+});
+d.show();
 ```
 
-### ❌ No Input Sanitization
+**Why Wrong:** Custom HTML breaks on Frappe upgrades, inconsistent UI.
+**Risk:** MEDIUM - Maintenance burden, upgrade compatibility issues.
+**Fix:** Use `frappe.ui.Dialog`, `frappe.ui.form`, and other native components.
 
+---
+
+### 8. Not Using frappe.utils (Reinventing the Wheel)
+
+#### ❌ WRONG
 ```python
-# WRONG - XSS risk
+from datetime import datetime, timedelta
+
+# Custom date handling
+today = datetime.now().date()
+future_date = today + timedelta(days=7)
+formatted = future_date.strftime("%Y-%m-%d")
+```
+
+#### ✅ RIGHT
+```python
+from frappe.utils import getdate, add_days, formatdate
+
+# Frappe date handling (timezone-aware, user format support)
+today = getdate()
+future_date = add_days(today, 7)
+formatted = formatdate(future_date)  # Respects user's date format
+```
+
+**Why Wrong:** Custom code doesn't respect user timezone/format settings.
+**Risk:** MEDIUM - Timezone bugs, wrong date display for users.
+**Fix:** Always use `frappe.utils` for dates, numbers, strings.
+
+**Common frappe.utils Functions:**
+- `getdate()` - Get date object
+- `add_days(date, days)` - Add days to date
+- `add_months(date, months)` - Add months
+- `add_years(date, years)` - Add years
+- `get_datetime(date)` - Get datetime object
+- `now_datetime()` - Current datetime with timezone
+- `flt(value, precision)` - Convert to float
+- `cint(value)` - Convert to int
+- `fmt_money(amount, currency)` - Format money
+
+---
+
+### 9. Unnecessary Data Fetching
+
+#### ❌ WRONG
+```python
+# Fetching entire document when only need one field
+doc = frappe.get_doc("Sales Order", name)
+customer = doc.customer
+```
+
+#### ✅ RIGHT
+```python
+# Fetch only needed field (much faster!)
+customer = frappe.db.get_value("Sales Order", name, "customer")
+```
+
+**Why Wrong:** Loads entire document (all fields, child tables, etc.).
+**Risk:** MEDIUM - Slow performance, unnecessary database load.
+**Fix:** Use `frappe.db.get_value()` for single field, `frappe.db.get_all()` with specific fields.
+
+---
+
+### 10. Missing ignore_permissions in Schedulers
+
+#### ❌ WRONG
+```python
+def daily_cleanup():
+    """Daily scheduled task"""
+    # PermissionError! Background jobs don't have user context
+    orders = frappe.get_all("Sales Order", filters={"status": "Draft"})
+    for order in orders:
+        process(order)
+```
+
+#### ✅ RIGHT
+```python
+def daily_cleanup():
+    """Daily scheduled task"""
+    # Scheduler needs ignore_permissions=True
+    orders = frappe.get_all(
+        "Sales Order",
+        filters={"status": "Draft"},
+        ignore_permissions=True
+    )
+    for order in orders:
+        process(order)
+```
+
+**Why Wrong:** Scheduled tasks run without user context → PermissionError.
+**Risk:** HIGH - Background jobs fail silently.
+**Fix:** Always use `ignore_permissions=True` in scheduled tasks.
+
+---
+
+## Minor Anti-Patterns (Code Quality)
+
+### 11. console.log() in Production Code
+
+#### ❌ WRONG
+```javascript
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm) {
+        console.log('Form loaded', frm.doc);  // LEFT IN PRODUCTION!
+        // ... actual code ...
+    }
+});
+```
+
+#### ✅ RIGHT
+```javascript
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm) {
+        // No console.log in production
+        // ... actual code ...
+    }
+});
+```
+
+**Why Wrong:** Logging large objects slows browser, clutters console.
+**Risk:** LOW - Performance degradation, unprofessional.
+**Fix:** Remove all `console.log()` before production. Use `frappe.logger()` if needed.
+
+---
+
+### 12. Not Converting Form Values (Type Errors)
+
+#### ❌ WRONG
+```python
 @frappe.whitelist()
-def save_comment(html_content):
-    doc = frappe.get_doc({'doctype': 'Comment', 'content': html_content})
-    doc.insert()
+def calculate(qty, rate):
+    # TypeError if qty/rate are strings (JS sends strings!)
+    total = qty * rate
+    return total
+```
 
-# CORRECT - sanitize HTML
-import frappe.utils.html_utils
+#### ✅ RIGHT
+```python
+from frappe.utils import flt, cint
 
 @frappe.whitelist()
-def save_comment(html_content):
-    clean_html = frappe.utils.html_utils.sanitize_html(html_content)
-    doc = frappe.get_doc({'doctype': 'Comment', 'content': clean_html})
-    doc.insert()
+def calculate(qty, rate):
+    # Always convert form values
+    qty = cint(qty) if qty else 0
+    rate = flt(rate)
+    total = qty * rate
+    return total
 ```
+
+**Why Wrong:** JavaScript form sends "10" (string), not 10 (int).
+**Risk:** MEDIUM - TypeError crashes API.
+**Fix:** Always convert with `flt()` or `cint()` at API boundary.
+
+---
+
+### 13. Not Disabling Submit Button in Dialogs
+
+#### ❌ WRONG
+```javascript
+let d = new frappe.ui.Dialog({
+    title: 'Enter Details',
+    fields: [{fieldname: 'field1', fieldtype: 'Data'}],
+    primary_action(values) {
+        frappe.call({
+            method: 'app.method',
+            args: values,
+            callback: function(r) {
+                d.hide();
+            }
+        });
+    }
+});
+d.show();
+```
+
+#### ✅ RIGHT
+```javascript
+let d = new frappe.ui.Dialog({
+    title: 'Enter Details',
+    fields: [{fieldname: 'field1', fieldtype: 'Data'}],
+    primary_action(values) {
+        // Prevent duplicate submissions
+        d.get_primary_btn().prop('disabled', true);
+
+        frappe.call({
+            method: 'app.method',
+            args: values,
+            callback: function(r) {
+                d.hide();
+            },
+            error: function() {
+                // Re-enable if error
+                d.get_primary_btn().prop('disabled', false);
+            }
+        });
+    }
+});
+d.show();
+```
+
+**Why Wrong:** User can click "Submit" multiple times → duplicate records.
+**Risk:** MEDIUM - Duplicate data creation.
+**Fix:** Disable button on click, re-enable on error.
+
+---
+
+### 14. Missing frappe.db.commit() in Scheduler Loops
+
+#### ❌ WRONG
+```python
+def daily_task():
+    """Process 10,000 records"""
+    records = frappe.get_all("DocType", ignore_permissions=True)
+    for rec in records:
+        process(rec)  # All 10,000 in single transaction!
+    # If error at record 9999, ALL 10,000 rollback!
+```
+
+#### ✅ RIGHT
+```python
+def daily_task():
+    """Process 10,000 records"""
+    records = frappe.get_all("DocType", ignore_permissions=True)
+    for rec in records:
+        try:
+            process(rec)
+            frappe.db.commit()  # Commit per record (safe!)
+        except Exception as e:
+            frappe.log_error(title=f"Error: {rec.name}", message=str(e))
+```
+
+**Why Wrong:** Single transaction = all-or-nothing. One error = all lost.
+**Risk:** MEDIUM - Data loss on error in large batch jobs.
+**Fix:** Commit per record in loops, catch exceptions individually.
+
+---
+
+### 15. Not Building App After JS Changes
+
+#### ❌ WRONG
+```
+1. Edit apps/custom_app/public/js/script.js
+2. Refresh browser
+3. Changes don't appear!
+```
+
+#### ✅ RIGHT
+```bash
+# After JS changes, ALWAYS build
+bench build --app custom_app
+
+# OR watch mode during development
+bench watch
+```
+
+**Why Wrong:** JS files need to be bundled before browser can see them.
+**Risk:** LOW - Confusion, "my changes don't work!"
+**Fix:** Run `bench build --app [app]` after JS changes.
+
+---
 
 ## Architecture Anti-Patterns
 
-### ❌ Core Modifications
+### 16. Business Logic in Client Scripts (Should Be Server-Side)
 
+#### ❌ WRONG
+```javascript
+frappe.ui.form.on('Sales Order', {
+    qty: function(frm) {
+        // Complex discount calculation in JavaScript!
+        let discount = 0;
+        if (frm.doc.customer_type === 'Wholesale') {
+            if (frm.doc.qty > 100) discount = 15;
+            else if (frm.doc.qty > 50) discount = 10;
+            else discount = 5;
+        }
+        frm.set_value('discount_percentage', discount);
+    }
+});
+```
+
+#### ✅ RIGHT
 ```python
-# WRONG - modifying core file
-# apps/frappe/frappe/model/document.py
-class Document:
-    def save(self):
-        # Modified core logic
+# In DocType controller (server-side)
+class SalesOrder(Document):
+    def validate(self):
+        self.calculate_discount()
 
-# CORRECT - use hooks
-# hooks.py
+    def calculate_discount(self):
+        """Business logic on server (secure, testable, auditable)"""
+        if self.customer_type == "Wholesale":
+            if self.qty > 100:
+                self.discount_percentage = 15
+            elif self.qty > 50:
+                self.discount_percentage = 10
+            else:
+                self.discount_percentage = 5
+```
+
+```javascript
+// Client Script (just triggers refresh)
+frappe.ui.form.on('Sales Order', {
+    qty: function(frm) {
+        frm.trigger('calculate_discount');  // Calls server method
+    }
+});
+```
+
+**Why Wrong:** Business logic in JS can be bypassed, not auditable.
+**Risk:** HIGH - Security, data integrity, maintainability.
+**Fix:** Business logic in Python (controller), JS only for UI behavior.
+
+---
+
+### 17. Not Using Hooks for Events
+
+#### ❌ WRONG
+```python
+# Manually calling function from everywhere
+from custom_app.custom_module import update_stock
+
+def process_sales_order():
+    # ... code ...
+    update_stock()  # Manually called
+```
+
+#### ✅ RIGHT
+```python
+# In hooks.py
 doc_events = {
-    "*": {
-        "before_save": "my_app.custom.before_save_handler"
+    "Sales Order": {
+        "on_submit": "custom_app.custom_module.update_stock"
     }
 }
 ```
 
-### ❌ Tight Coupling
-
 ```python
-# WRONG - tightly coupled
-class OrderProcessor:
-    def process(self, order):
-        email = EmailService()
-        email.send_gmail(order.customer_email)  # Coupled to Gmail
-
-# CORRECT - dependency injection
-class OrderProcessor:
-    def __init__(self, email_service):
-        self.email_service = email_service
-
-    def process(self, order):
-        self.email_service.send(order.customer_email)
+# In custom_app/custom_module.py
+def update_stock(doc, method):
+    """Automatically called on Sales Order submit"""
+    # ... stock update logic ...
 ```
 
-## Testing Anti-Patterns
+**Why Wrong:** Manual calls are fragile, easy to forget.
+**Risk:** MEDIUM - Logic not executed, inconsistent behavior.
+**Fix:** Use `doc_events` hooks in hooks.py for automatic event handling.
 
-### ❌ No Tests
+---
 
+### 18. Hardcoding Values (Should Be Configurable)
+
+#### ❌ WRONG
 ```python
-# WRONG - no tests
-def calculate_total(items):
-    return sum(item.qty * item.rate for item in items)
-
-# CORRECT - write tests
-class TestCalculations(unittest.TestCase):
-    def test_calculate_total(self):
-        items = [
-            {'qty': 10, 'rate': 100},
-            {'qty': 5, 'rate': 200}
-        ]
-        total = calculate_total(items)
-        self.assertEqual(total, 2000)
+def calculate_tax(amount):
+    TAX_RATE = 0.18  # Hardcoded 18% (what if it changes?)
+    return amount * TAX_RATE
 ```
 
-### ❌ Testing Implementation, Not Behavior
-
+#### ✅ RIGHT
 ```python
-# WRONG - tests implementation
-def test_save_calls_validate(self):
-    doc = Task()
-    with mock.patch.object(doc, 'validate') as mock_validate:
-        doc.save()
-        mock_validate.assert_called_once()
+# Create "Tax Settings" DocType with tax_rate field
 
-# CORRECT - tests behavior
-def test_save_validates_dates(self):
-    doc = frappe.get_doc({
-        'doctype': 'Task',
-        'subject': 'Test',
-        'exp_start_date': '2025-12-31',
-        'exp_end_date': '2025-01-01'  # Before start!
-    })
-    with self.assertRaises(frappe.ValidationError):
-        doc.insert()
+def calculate_tax(amount):
+    settings = frappe.get_single("Tax Settings")
+    return amount * flt(settings.tax_rate) / 100
 ```
 
-## Key Rules for Clean Code
+**Why Wrong:** Hardcoded values require code changes to update.
+**Risk:** MEDIUM - Maintenance burden, deployment for config changes.
+**Fix:** Store configuration in Settings DocType, make it user-editable.
 
-- ✅ Use parameterized SQL queries
-- ✅ Check permissions in all whitelisted methods
-- ✅ Validate on server-side, not client-side
-- ✅ Convert types from client input
-- ✅ Use descriptive variable/function names
-- ✅ Follow 3+ uses rule for helpers
-- ✅ Filter data in database, not Python
-- ✅ Use background jobs for long operations
-- ✅ Batch process large datasets
-- ✅ Handle errors explicitly
-- ✅ Never log sensitive data
-- ✅ Never hardcode credentials
-- ✅ Never modify core files
-- ❌ Avoid god objects
-- ❌ Avoid tight coupling
+---
+
+### 19. Not Using Property Setters
+
+#### ❌ WRONG
+```javascript
+// Hiding field via Client Script
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm) {
+        frm.set_df_property('discount', 'hidden', 1);  // Every form load!
+    }
+});
+```
+
+#### ✅ RIGHT
+```
+Use Customize Form → Property Setter:
+DocType: Sales Order
+Field: discount
+Property: hidden
+Value: 1
+```
+
+**Why Wrong:** Client Script runs every form load (unnecessary processing).
+**Risk:** LOW - Minor performance impact.
+**Fix:** Use Property Setters for static field properties.
+
+---
+
+### 20. Not Registering Overrides in hooks.py
+
+#### ❌ WRONG
+```python
+# Custom app overrides standard method but NOT registered
+# apps/custom_app/overrides/sales_order.py
+def custom_validate(self):
+    # Custom validation
+    pass
+
+# Frappe doesn't know about this!
+```
+
+#### ✅ RIGHT
+```python
+# In hooks.py
+override_doctype_class = {
+    "Sales Order": "custom_app.overrides.sales_order.CustomSalesOrder"
+}
+```
+
+```python
+# In custom_app/overrides/sales_order.py
+from erpnext.selling.doctype.sales_order.sales_order import SalesOrder
+
+class CustomSalesOrder(SalesOrder):
+    def validate(self):
+        super().validate()  # Call parent
+        self.custom_validate()  # Then custom
+
+    def custom_validate(self):
+        # Custom validation
+        pass
+```
+
+**Why Wrong:** Override not registered = not executed.
+**Risk:** HIGH - Custom logic silently ignored.
+**Fix:** Register all overrides in `hooks.py`.
+
+---
+
+## Diagnostic Anti-Patterns
+
+### 21. Not Checking Logs After Errors
+
+#### ❌ WRONG
+```
+User: "It's not working"
+Developer: "Let me guess what's wrong..."
+```
+
+#### ✅ RIGHT
+```bash
+# ALWAYS check logs first!
+tail -50 sites/[site]/logs/error.log
+```
+
+**Why Wrong:** Guessing wastes time, logs have the answer.
+**Risk:** LOW - Wasted debugging time.
+**Fix:** Check error.log, web.log, scheduler.log FIRST.
+
+---
+
+### 22. Not Using EXPLAIN for Slow Queries
+
+#### ❌ WRONG
+```
+Query is slow...
+Developer: "Maybe I need to add an index? Which one?"
+```
+
+#### ✅ RIGHT
+```bash
+bench --site [site] mariadb
+> EXPLAIN SELECT * FROM `tabItem` WHERE custom_field = 'value';
+
+# Check "type" column:
+# ALL = table scan (BAD!)
+# index = using index (GOOD!)
+```
+
+**Why Wrong:** Guessing which index to add.
+**Risk:** LOW - Wrong index doesn't help.
+**Fix:** Use EXPLAIN to see query execution plan.
+
+---
+
+## Quick Reference: Frappe Alternatives
+
+| Instead of... | Use Frappe Built-in... |
+|---------------|------------------------|
+| `from datetime import datetime` | `from frappe.utils import getdate, add_days` |
+| `round(value, 2)` | `from frappe.utils import flt` |
+| Custom HTML modal | `frappe.ui.Dialog` |
+| Custom email sending | `frappe.sendmail()` |
+| Manual permission checks | `frappe.has_permission()` |
+| String concatenation in SQL | Parameterized queries (`%s`) |
+| Client-side filtering | Server-side filters |
+| `frappe.get_doc()` for one field | `frappe.db.get_value()` |
+| Hardcoded values | Settings DocType |
+| Client Script for business logic | Controller methods (Python) |
+
+---
+
+## Anti-Pattern Detection Checklist
+
+When reviewing code, check for:
+
+**Critical (Security/Data):**
+- [ ] SQL injection (string concatenation in queries)
+- [ ] Missing @frappe.whitelist() decorators
+- [ ] Missing permission checks
+- [ ] Exposing sensitive data without checks
+
+**Important (Performance):**
+- [ ] Client-side filtering
+- [ ] N+1 query problems
+- [ ] Unnecessary data fetching
+- [ ] Missing indexes on frequently queried fields
+
+**Architecture:**
+- [ ] Business logic in Client Scripts (should be server-side)
+- [ ] Not using hooks for events
+- [ ] Hardcoded values (should be configurable)
+- [ ] Custom HTML/CSS instead of frappe.ui
+
+**Code Quality:**
+- [ ] console.log() in production
+- [ ] Not converting form values (type errors)
+- [ ] Not using frappe.utils
+- [ ] Not disabling submit buttons
+- [ ] Missing frappe.db.commit() in scheduler loops
+
+---
+
+**Use this as your anti-pattern radar. When you see these patterns, flag them immediately and suggest the Frappe-native alternative.**

@@ -1,0 +1,45 @@
+# Context: [Project] - [Phase]
+Date: [ISO timestamp] | Agent: [specialist] | Session: [N]
+
+## Summary
+[1-2 sentence recap of what was accomplished this session]
+
+## Completed
+
+| Task | Description | Files | Status |
+|------|-------------|-------|--------|
+| [id] | [what] | [main file changed] | ✓ |
+
+## Files Modified
+
+| File | Purpose | Lines Changed |
+|------|---------|---------------|
+| [path] | [what it does] | +[X]/-[Y] |
+
+## Current Task
+**[id]:** [description]
+
+**Progress:** [what's done, what's left]
+
+**Blockers:** [None or specific issue]
+
+## Key Decisions Made
+- [Decision 1]: [Why]
+- [Decision 2]: [Why]
+
+## Issues / Notes
+- [Issue or note with context]
+
+## Next Session Actions
+1. Resume at task: **[id]**
+2. Load: active.yaml → plan.md → TSD section [§X.X]
+3. Context to review: [specific area to focus on]
+
+## Token Stats
+- Session start: [X]k tokens
+- Session end: [Y]k tokens
+- Offload triggered at: [Z]k tokens
+
+---
+Context cleared after this dump. Use `/clear` to reset Claude Code context.
+Agent will auto-load: active.yaml + this context + plan section on restart.

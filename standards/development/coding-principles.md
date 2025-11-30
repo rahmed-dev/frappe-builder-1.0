@@ -364,6 +364,47 @@ bench --site sitename new-page page_name
 bench --site sitename new-report "Report Name"
 ```
 
+## 6.5. Clean Imports and Standard Structure
+
+**Rule:** Direct imports, no path manipulation, follow Frappe conventions.
+
+### Import Patterns
+
+```python
+✅ GOOD - Direct imports:
+import frappe
+from frappe import _
+from frappe.utils import flt, getdate, now
+from frappe.model.document import Document
+from erpnext.stock.get_item_details import get_item_details
+
+❌ BAD - Path manipulation:
+import sys
+sys.path.append("../../")
+from some_module import function
+```
+
+### Standard DocType Structure
+
+```
+custom_app/
+├── custom_app/
+│   ├── __init__.py
+│   ├── hooks.py                    # Module registration
+│   ├── patches.txt                 # Database patches
+│   └── [module_name]/
+│       └── doctype/
+│           └── [doctype_name]/
+│               ├── __init__.py
+│               ├── [doctype_name].py       # Controller
+│               ├── [doctype_name].json     # DocType definition
+│               ├── [doctype_name].js       # Client script
+│               ├── test_[doctype_name].py  # Unit tests
+│               └── [doctype_name].md       # Documentation
+```
+
+**Use bench scaffold - it creates correct structure automatically.**
+
 ## 7. Test Before Deploy
 
 **Rule:** Write and run tests for all business logic.
@@ -403,6 +444,26 @@ bench --site sitename run-tests --doctype "Sales Order"
 ## 8. Handle Errors Gracefully
 
 **Rule:** Validate input, handle errors, provide clear messages.
+
+### Translatable User Messages
+
+**Rule:** All user-facing strings must use `_()` for translation.
+
+```python
+from frappe import _
+
+✅ GOOD - Translatable:
+frappe.msgprint(_("Sales Order created successfully"))
+frappe.throw(_("Customer {0} does not exist").format(customer))
+
+❌ BAD - Hardcoded English:
+frappe.msgprint("Sales Order created successfully")
+frappe.throw(f"Customer {customer} does not exist")
+```
+
+**Why:** Multi-language support, internationalization.
+
+### Error Handling Pattern
 
 ```python
 ❌ BAD - No validation:
@@ -482,7 +543,87 @@ class SalesOrderHandler {  // PascalCase class
 }
 ```
 
-## 10. Document for Future You
+## 10. Never Customize Core DocTypes
+
+**Rule:** Zero modifications to standard ERPNext/Frappe DocTypes.
+
+### What NOT to do:
+❌ Adding fields directly to Sales Order, Purchase Order, Item, Customer, etc.
+❌ Modifying standard DocType JSON files
+❌ Changing standard field properties
+
+### What TO do:
+✅ Use Custom Fields (Add via UI or fixtures)
+✅ Create custom app with your customizations
+✅ Use Property Setters for display changes
+
+**Why:** Core modifications break on ERPNext/Frappe upgrades.
+
+**Example:**
+```python
+# BAD - Modifying core
+# erpnext/selling/doctype/sales_order/sales_order.json
+# { "fields": [..., {"fieldname": "custom_field", ...}] }
+
+# GOOD - Custom Field fixture
+# my_app/fixtures/custom_field.json
+[{
+    "dt": "Sales Order",
+    "fieldname": "custom_priority",
+    "fieldtype": "Select",
+    "options": "High\\nMedium\\nLow"
+}]
+```
+
+## 11. Proper Registration via Fixtures & Hooks
+
+**Rule:** All customizations registered in hooks.py and exported as fixtures.
+
+### Fixtures for Version Control
+
+Custom Fields, Property Setters, Workflows, Custom Scripts belong in fixtures:
+
+```python
+# hooks.py
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [["dt", "in", ["Sales Order", "Item"]]]
+    },
+    {
+        "dt": "Property Setter",
+        "filters": [["doc_type", "in", ["Sales Order"]]]
+    },
+    {
+        "dt": "Workflow",
+        "filters": [["name", "=", "Purchase Order Approval"]]
+    }
+]
+```
+
+### Export Fixtures
+
+```bash
+# Export to JSON files
+bench --site sitename export-fixtures
+
+# Fixtures saved to: my_app/fixtures/*.json
+# Commit to version control
+git add my_app/fixtures/
+git commit -m "Export customization fixtures"
+```
+
+### On Fresh Install
+
+```bash
+# Fixtures auto-import during app install
+bench --site sitename install-app my_app
+# All Custom Fields, Workflows, etc. recreated
+```
+
+**Why:** Version control for customizations, reproducible across environments.
+
+## 12. Document for Future You
 
 **Rule:** Code should be self-documenting. Comments for WHY, not WHAT.
 
@@ -516,10 +657,15 @@ Before committing:
 - [ ] All queries parameterized (no f-strings in SQL)
 - [ ] Permission checks in all @frappe.whitelist()
 - [ ] Using frappe.ui components (no custom HTML/CSS)
+- [ ] Clean imports (no path manipulation)
+- [ ] Used bench scaffold for new DocTypes/Pages
 - [ ] Input validation + error handling
+- [ ] User messages use _() for translation
 - [ ] Tests written and passing
 - [ ] Following naming conventions
 - [ ] Comments explain WHY, not WHAT
+- [ ] Zero custom fields on core DocTypes (use Custom Field fixtures)
+- [ ] Customizations in fixtures and hooks.py
 - [ ] No hardcoded values (use config/settings)
 
 ## Related

@@ -1,0 +1,14 @@
+# Archive Metadata Template
+# Copy to archive/[project-name]/metadata.yaml when archiving
+
+project: ""                    # Project display name
+app: ""                        # Frappe app name
+archived_date: ""              # ISO timestamp
+archived_by: ""                # User name (from config.yaml)
+reason: ""                     # "Complete" or "Paused" or "Cancelled"
+final_status: ""               # "Complete", "Partial", "Blocked"
+total_tasks: 0                 # Count from plan.md
+completed_tasks: 0             # Count checked boxes
+total_phases: 0                # Count phases in plan
+final_phase: ""                # Last phase worked on
+notes: ""                      # Optional additional context
