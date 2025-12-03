@@ -1,6 +1,6 @@
 # 4-Tier Framework - Quick Reference
 
-> **Full details:** `{project-root}/.bmad/frappe-builder/knowledge/frappe-framework/4-tier-framework.md`
+> **Full details:** `{project-root}/{bmad_folder}/frappe-builder/knowledge/frappe-framework/4-tier-framework.md`
 
 ## The Decision Tree
 
@@ -19,7 +19,7 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 ## Tier 1: Standard ERPNext (Use As-Is)
 
 **Check First:** Search ERPNext docs, explore modules
-**Cost:** $0 | **Time:** Minutes | **Upgrade-Safe:** ✅ 100%
+**Upgrade-Safe:** ✅ 100%
 
 **Examples:**
 - BOM management → BOM DocType
@@ -31,7 +31,7 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 ## Tier 2: Configuration (No Code)
 
 **Tools:** Custom Fields, Workflows, Print Formats, Dashboards
-**Cost:** Minimal | **Time:** Days | **Upgrade-Safe:** ✅ Yes
+**Upgrade-Safe:** ✅ Yes
 
 **Use When:**
 - Need extra data fields
@@ -47,7 +47,7 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 ## Tier 3: Light Customization (Scripts)
 
 **Tools:** Server Scripts, Client Scripts, Script Reports
-**Cost:** Low | **Time:** Weeks | **Upgrade-Safe:** ⚠️ Moderate
+**Upgrade-Safe:** ⚠️ Moderate
 
 **Use When:**
 - Need business logic
@@ -65,7 +65,7 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 ## Tier 4: Custom App (Full Development)
 
 **What:** Custom DocTypes, modules, advanced features
-**Cost:** High | **Time:** Months | **Upgrade-Safe:** ⚠️ Requires care
+**Upgrade-Safe:** ⚠️ Requires care
 
 **Use When:**
 - Complex business processes
@@ -73,7 +73,7 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 - Integration with external systems
 - Tier 3 insufficient
 
-**Structure:** Use bench new-app, follow Frappe conventions
+**Structure:** Follow Frappe conventions
 
 ## Critical Decision Rule
 
@@ -90,5 +90,5 @@ Need custom DocTypes/modules? → YES → ✅ TIER 4: Custom App
 
 1. Search ERPNext documentation
 2. Check community forum for solutions
-3. Consult `{project-root}/.bmad/frappe-builder/knowledge/frappe-framework/4-tier-framework.md`
+3. Consult `{project-root}/{bmad_folder}/frappe-builder/knowledge/frappe-framework/4-tier-framework.md`
 4. Ask: "What's the simplest tier that solves this?"

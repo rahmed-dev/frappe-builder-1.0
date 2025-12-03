@@ -4,7 +4,7 @@ description: "Generate concise user guide (2-3 pages) using ERPNext UI terminolo
 author: "frappe-builder"
 
 # Config source pattern
-config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+config_source: "{project-root}/{bmad_folder}/frappe-builder/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
@@ -14,7 +14,7 @@ default_site: "{config_source}:default_site"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/.bmad/frappe-builder/workflows/create-guide"
+installed_path: "{project-root}/{bmad_folder}/frappe-builder/workflows/create-guide"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/template.md"
 

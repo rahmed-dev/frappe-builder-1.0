@@ -1,6 +1,6 @@
 # Create Guide Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 <critical>This is a Frappe-specific workflow - Frappe bench awareness is MANDATORY</critical>
 
@@ -72,7 +72,7 @@
 - Tips: 3-5 bullets
 - Troubleshooting: 3-5 items
 
-If guide is longer than 3 pages, cut ruthlessly. Users want quick answers, not textbooks.
+If guide is longer than 5 pages, cut ruthlessly. Users want quick answers, not textbooks.
 </action>
 
 <template-output>fluff_check</template-output>

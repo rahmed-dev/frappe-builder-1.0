@@ -31,13 +31,13 @@
 </step>
 
 <step n="3" goal="Identify ERPNext modules involved">
-<action>Map requirements to ERPNext modules (use erpnext-modules-guide quickref). Note module fit + data flows/integrations.</action>
+<action>Map requirements to ERPNext modules (use erpnext-modules-guide "{bmad_folder}/frappe-builder/agents/erpnext-ba-sidecar/knowledge/erpnext-modules-guide.md"). Note module fit + data flows/integrations.</action>
 
 <template-output>erpnext_modules</template-output>
 </step>
 
 <step n="4" goal="Gap analysis - Standard vs Custom">
-<action>Gap analysis per requirement: Standard (OOB DocTypes/workflows), Configure (custom fields/workflows/print/roles), Custom (scripts, DocTypes, integrations). Present table: Requirement | Standard | Configure | Custom. Be conservative on “standard”.</action>
+<action>Gap analysis per requirement: Standard (OOB DocTypes/workflows), Configure (custom fields/workflows/print formats/roles), Custom (scripts, DocTypes, integrations). Present table: Requirement | Standard | Configure | Custom. Be conservative on “standard”.</action>
 
 <template-output>gap_analysis</template-output>
 </step>
@@ -58,17 +58,18 @@
 <action>Now structure everything into a formal BRD using the template.
 
 Organize the collected information into:
-1. Executive Summary (2-3 paragraphs)
-2. Business Goals (bullets)
-3. ERPNext Modules Involved (with justification)
-4. Detailed Requirements (organized by module)
-5. Gap Analysis (Standard/Config/Custom breakdown)
-6. Integration Touch-Points (internal & external)
-7. Stakeholders (roles and permissions)
-8. Success Criteria (how we measure success)
+1. Make all the Sections Numbered and Sub-headings numbered as well.
+2. Executive Summary (1-2 paragraphs)
+3. Business Goals (bullets)
+4. ERPNext Modules Involved (with justification and Tabular Structure)
+5. Detailed Requirements (organized by module)
+6. Gap Analysis (Standard/Config/Custom breakdown)
+7. Integration Touch-Points (internal & external)
+8. Stakeholders (roles and permissions)
+9. Success Criteria (how we measure success)
 
 Write in {document_output_language}.
-Be clear, concise, and actionable.
+Be clear, compact, to-the-point, and actionable.
 </action>
 
 <template-output>structured_brd</template-output>
@@ -89,10 +90,10 @@ If user requests changes, update the relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
-<step n="9" goal="Update active.yaml with BRD path + Extract Summary (MAKER Integration - GAP 4 FIX)">
+<step n="9" goal="Update active.yaml with BRD path + Extract Summary">
 <action>After saving the BRD document, update the project state:
 
-**File to Update:** `.bmad/custom/modules/frappe-builder/state/active.yaml`
+**File to Update:** `.bmad/frappe-builder/state/active.yaml`
 
 **Step 1: Extract BRD Summary**
 - Read the saved BRD file
@@ -125,7 +126,6 @@ This enables:
 - All agents get quick project context via summary field
 - Nexus tracks project artifacts
 - State-based workflow coordination
-- Gap 4 FIXED: BRD summary extraction is now automated
 </action>
 
 <template-output>state_updated_with_summary</template-output>

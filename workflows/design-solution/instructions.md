@@ -1,6 +1,6 @@
 # Design Solution Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 <critical>This is a Frappe-specific workflow - Frappe bench awareness is MANDATORY</critical>
 
@@ -167,7 +167,7 @@ If changes needed, update the relevant sections.
 <step n="12" goal="Update active.yaml with TSD path (MAKER Integration)">
 <action>After saving the TSD document, update the project state:
 
-**File to Update:** `.bmad/custom/modules/frappe-builder/state/active.yaml`
+**File to Update:** `{bmad_folder}/custom/modules/frappe-builder/state/active.yaml`
 
 **Fields to Update:**
 ```yaml

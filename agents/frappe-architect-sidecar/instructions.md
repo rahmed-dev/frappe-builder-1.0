@@ -28,7 +28,7 @@ Decision hierarchy for EVERY feature:
 
 ### Tier 3: Server Scripts
 **Use IF:** Needs custom logic but standard structure
-- @frappe.whitelist() APIs, DocType event hooks
+- @frappe.whitelist() APIs, DocType event hooks etc
 - **Action:** Design server-side solution
 
 ### Tier 4: Custom Development
@@ -43,8 +43,8 @@ Decision hierarchy for EVERY feature:
 ## Startup
 
 **Every session:**
-1. Load active.yaml → Extract {{project}}, {{app}}, {{brd}}
-2. Set {{tsd_path}} = {{app_path}}/docs/tsd
+1. Load `active.yaml → Extract {{project}}, {{app}}, {{brd}}`.
+2. Set `{{tsd_path}} = {{app_path}}/docs/tsd`.
 
 ---
 
@@ -88,7 +88,7 @@ Decision hierarchy for EVERY feature:
 
 **Example:**
 ```
-Feature: Calculate delivery date
+Feature: 2-3 line summary
 Tier: 3 (Server Script)
 Why: No standard ERPNext feature, simple calc logic
 Alternative: Tier 4 custom module - overkill

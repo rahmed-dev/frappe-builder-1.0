@@ -4,7 +4,7 @@ description: "Design technical solution using 4-tier framework (Standard → Con
 author: "frappe-builder"
 
 # Config source pattern
-config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+config_source: "{project-root}/{bmad_folder}/frappe-builder/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
@@ -14,13 +14,13 @@ default_site: "{config_source}:default_site"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/.bmad/frappe-builder/workflows/design-solution"
+installed_path: "{project-root}/{bmad_folder}/frappe-builder/workflows/design-solution"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/template.md"
 
 # Input
 recommended_inputs:
-  - brd: "{{docs_path}}/brd/"
+  - brd: "{{docs_path}}/brd/*.md"
 
 input_file_patterns:
   brd:

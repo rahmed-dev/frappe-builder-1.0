@@ -20,11 +20,9 @@ context: null         # Path to context.md if offloaded (relative to state/)
 updated: ""           # ISO timestamp (YYYY-MM-DDTHH:MM:SSZ)
 
 # Project Summary (from BRD - keep concise)
-# 🚨 AUTO-EXTRACTED (Gap 4 Fix): Nexus extracts this from BRD after BA completion
-summary: |
+# 🚨 AUTO-EXTRACTED: |
   [2-3 sentence project description]
   [Key objective]
-  [Primary user/stakeholder]
 
 # Quick Context (optional - use for critical info agents need)
 notes: ""             # Brief implementation notes, critical decisions, blockers

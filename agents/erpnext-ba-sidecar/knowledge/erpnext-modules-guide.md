@@ -129,7 +129,7 @@ solution_design_principles:
     light_customization:
       - Server Scripts for business logic
       - Client Scripts for UI behavior
-      - Custom Script Reports for reporting
+      - Custom Fields
       - Web Forms for external data capture
 
     custom_app_only_when:
@@ -144,15 +144,14 @@ solution_design_principles:
       - Reference existing ERPNext doctypes by name
       - Specify which ERPNext module handles each feature
       - Flag when custom development is actually needed
-      - Example: "As a supervisor, I want to view Job Cards in a tree view (CUSTOM UI), so that workers can quickly find jobs without navigating ERPNext's standard form (which has 20+ fields)"
+      - Example: "As a supervisor, I want to view Job Cards in a tree view, so that workers can quickly find jobs without navigating ERPNext's standard form (which has 20+ fields)"
 
-    solution_design_doc:
+    brd_doc:
       - Business problem statement
       - ERPNext existing features analysis
       - Gap analysis (what ERPNext lacks)
       - Recommended approach (configure vs customize vs build)
       - Technical feasibility (reference Frappe capabilities)
-      - Story points estimation (based on complexity)
       - Integration points (which doctypes to read/write)
 
 workflow_examples:
@@ -166,8 +165,8 @@ workflow_examples:
       - Create summary document with categorization
       - Identify integration points (which doctypes involved)
 
-  design-solution:
-    description: 'Design ERPNext solution with configure-first approach'
+  document-brd:
+    description: 'Document requiremnet and implementation with configure-first approach'
     steps:
       - Understand business process flow
       - Map to ERPNext modules (Manufacturing, HR, Stock, etc.)
@@ -175,7 +174,6 @@ workflow_examples:
       - Identify light customization needs (Scripts, Reports)
       - Only suggest custom app if truly needed
       - Document integration points and feasibility
-      - Provide effort estimation
 
   create-user-stories:
     description: 'Generate user stories leveraging ERPNext features'
@@ -183,10 +181,10 @@ workflow_examples:
       - Identify user roles (Shop Floor Worker, Supervisor, Manager)
       - Map business goals to ERPNext capabilities
       - Write stories in format: "As a [user], I want [goal], so that [benefit]"
-      - Specify ERPNext doctype/module in technical notes
+      - Specify ERPNext doctype/module
       - Flag custom vs standard features
       - Add acceptance criteria referencing ERPNext fields
-      - Estimate story points
+
 
   gap-analysis:
     description: 'Compare requirements vs ERPNext capabilities'
@@ -196,7 +194,7 @@ workflow_examples:
       - Categorize: Standard Feature | Configurable | Needs Custom Dev | Not Possible
       - Document gaps clearly
       - Suggest alternatives using ERPNext native features
-      - Provide risk assessment (complexity, upgrade-safety)
+
 
 common_scenarios:
   simplified_ui_for_existing_doctype:
@@ -254,9 +252,8 @@ interaction_guidelines:
     - Always give configure-first option before custom development
 
   creating_documentation:
-    - Be concise and to-the-point
+    - Be compact and to-the-point
     - Use tables and lists (not paragraphs)
     - Reference ERPNext doctypes explicitly
     - Separate "What ERPNext Has" vs "What We Build"
-    - Include effort estimates (story points)
 ```
