@@ -10,21 +10,21 @@
 
 ## MAKER Integration: Load Active Project State
 
-**BEFORE loading any specification, load project state:**
+**BEFORE loading any specification, ensure project state is loaded:**
 
-```
-Read: .bmad/custom/modules/frappe-builder/state/active.yaml
+The Frappe-Dev agent's YAML activation is responsible for reading project state from:
 
-Extract:
-- project: Project name
-- app: Current Frappe app
-- plan: Implementation plan path
-- tsd: TSD path
-- phase: Current phase
-- tasks: Task range (if assigned)
-- summary: BRD summary (quick context)
-- notes: Critical context notes
-```
+`{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+
+and populating:
+- `{{project}}` - Project name
+- `{{app}}` - Current Frappe app
+- `{{plan}}` - Implementation plan path
+- `{{tsd}}` - TSD path
+- `{{phase}}` - Current phase
+- `{{tasks}}` - Task range (if assigned)
+- `{{summary}}` - BRD summary (quick context)
+- `{{notes}}` - Critical context notes
 
 **Benefits:**
 - Lighter context (<200 tokens vs loading full memories)
@@ -231,6 +231,14 @@ If anti-patterns found:
 </action>
 
 <template-output>completion_summary</template-output>
+</step>
+
+<step n="13" goal="Offload large context (optional)" optional="true">
+<action>When conversation context becomes large (for example, long implementation sessions with many code edits), you can offload session context to state files so future sessions start lighter. This uses the `offload-context` task to write a compact summary to `state/context.md` and update `active.yaml` with a `context` pointer and fresh timestamp.</action>
+
+<invoke-task path="{project-root}/{bmad_folder}/frappe-builder/tasks/state/offload-context.xml" />
+
+<template-output>context_offload</template-output>
 </step>
 
 </workflow>

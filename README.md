@@ -167,7 +167,10 @@ frappe-builder/
 - design-solution/generate-tests/etc. templates where provided
 
 ### State Management
-- `state/` holds multi-project context with minimal per-step state (inspired by `future-plans/maker-integration/maker-method-overview.md`). Example template: `state/test-plan.md`.
+- `state/` holds multi-project context with minimal per-step state (inspired by `future-plans/maker-integration/maker-method-overview.md`).
+- Active project pointer: `state/active-project.txt` contains the key/name of the currently active project.
+- Per-project state: each project has `state/{{project_key}}/active.yaml` following `state/templates/active.yaml.template` and storing `project`, `app`, `site`, `plan`, `tsd`, `brd`, `phase`, `specialist`, `tasks`, `context`, `notes`, and `updated`.
+- Agents (Nexus, BA, Architect, Planner, Dev, Debugger, QA, Doc-Writer) read/write the same `active.yaml` for `{{active_project}}`, updating phase/specialist/paths as they complete their part of the lifecycle.
 
 ### Installer
 - Installer template: `_module-installer/install-config.yaml` (source). Generates installed `.bmad/frappe-builder/config.yaml`. No source config.yaml by design.

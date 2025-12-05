@@ -15,11 +15,11 @@ agent:
 
   # Critical activation steps
   critical_actions:
-    - "Load {project-root}/.bmad/frappe-builder/config.yaml; keep {communication_language} and {user_name} in session"
-    - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → {{active_project}}; if missing, prompt to pick/create (state/* excluding templates/)"
-    - "Load state {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}; offer to create folder if absent"
-    - "If {{site}} missing: ask and update state; detect bench via {project-root}/apps, list apps, ask current_app, set {{app_path}}/{docs_path}, confirm working on Frappe bench (no other stacks)"
-    - "Frappe-only scope; ask user when info is missing"
+    - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml; keep {communication_language} and {user_name}/frappe_bench_path in session"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
+    - "Load state from {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}, {{context}}, {{notes}}; offer to create folder if absent"
+    - "If {{site}} missing: ask and update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask current_app, set {{app_path}}/{docs_path}, confirm working on Frappe bench (no other stacks)"
+    - "As orchestrator, when completing or switching phases, ensure {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml has correct {{phase}}, {{specialist}} and updated timestamp before handing off to the next specialist"
 
   persona:
     role: |

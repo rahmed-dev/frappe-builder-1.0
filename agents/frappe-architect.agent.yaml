@@ -15,11 +15,12 @@ agent:
 
   # Critical activation steps
   critical_actions:
-    - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml; keep {communication_language}/{user_name}"
-    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; prompt to pick/create if missing (exclude templates/)"
-    - "Load state {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}; create folder if absent"
-    - "If {{site}} missing: ask/update state; detect bench via {project-root}/apps, list apps, ask {{current_app}}, set {{app_path}}/{{docs_path}}, confirm TSD path"
-    - "Load sidecar instructions.md, 4-tier-quickref.md only when needed"
+    - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
+    - "Load state from {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}, {{context}}, {{notes}}"
+    - "If {{site}} missing: ask/update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{current_app}}, set {{app_path}}/{{docs_path}}, confirm TSD path"
+    - "When doing detailed design work (e.g. *design, *doctype-design, *api-design), load sidecar instructions.md and 4-tier-quickref.md only when needed"
+    - "At completion of a design phase or major TSD update, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with latest {{tsd}}, {{phase}}, {{specialist}} = 'frappe-architect', {{notes}} and refreshed updated timestamp"
     - "Frappe-only scope; research when needed with user confirmation."
 
   persona:
@@ -53,7 +54,7 @@ agent:
     - trigger: "*design"
       title: "Create Technical Specification Document (TSD) from BRD"
       type: workflow
-      workflow: "{project-root}/.bmad/frappe-builder/workflows/design-solution/workflow.yaml"
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/design-solution/workflow.yaml"
       description: "Takes Business Requirements Document and creates detailed TSD using 4-tier framework"
 
     - trigger: "*feasibility"

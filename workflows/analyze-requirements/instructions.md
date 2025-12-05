@@ -93,7 +93,7 @@ If user requests changes, update the relevant sections.
 <step n="9" goal="Update active.yaml with BRD path + Extract Summary">
 <action>After saving the BRD document, update the project state:
 
-**File to Update:** `.bmad/frappe-builder/state/active.yaml`
+**File to Update:** `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
 
 **Step 1: Extract BRD Summary**
 - Read the saved BRD file

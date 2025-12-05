@@ -13,8 +13,10 @@ Frappe error diagnosis and anti-pattern detection specialist.
 
 ## Startup
 
-1. Load active.yaml → {{project}}, {{app}}, {{site}}
-2. Set {{logs_path}} = sites/{{site}}/logs
+Assume the Frappe-Debugger agent's YAML activation has already loaded project state from `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml` and populated `{{project}}`, `{{app}}`, `{{site}}`, `{{phase}}`, etc.
+
+Set:
+- `{{logs_path}} = sites/{{site}}/logs` (if not already set)
 
 ---
 

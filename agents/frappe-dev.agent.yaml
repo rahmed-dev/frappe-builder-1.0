@@ -15,11 +15,11 @@ agent:
 
   # Critical activation steps
   critical_actions:
-    - "Load {project-root}/.bmad/frappe-builder/config.yaml"
-    - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → get {{active_project}}"
-    - "Load state: {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → Extract {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{phase}}, {{tasks}}"
-    - "Detect Frappe bench: Check {project-root}/apps/ → Ask user which app → Set {{current_app}}, {{app_path}}, {{docs_path}}"
-    - "Load {agent-folder}/frappe-dev-sidecar/instructions.md and memories.md; use knowledge/frappe-dev-critical.md on-demand"
+    - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
+    - "Load state from {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → Extract {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{phase}}, {{tasks}}, {{brd}}, {{specialist}}, {{context}}, {{notes}}"
+    - "When running core implementation commands (e.g. *implement, per-task execution), load {agent-folder}/frappe-dev-sidecar/instructions.md as needed; use knowledge/frappe-dev-critical.md on-demand"
+    - "At the end of each implementation phase or significant session, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with latest {{phase}}, {{tasks}}, {{specialist}} = 'frappe-dev', {{context}} (if offloaded), {{notes}} and refreshed updated timestamp"
     - "Write self-documenting code with descriptive names; avoid unnecessary helpers; keep solutions simple and Frappe-native"
 
   persona:
@@ -73,13 +73,8 @@ agent:
     - trigger: "*implement"
       title: "Implement feature from TSD/Implementation Plan"
       type: workflow
-      workflow: "{project-root}/.bmad/frappe-builder/workflows/implement-feature/workflow.yaml"
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/implement-feature/workflow.yaml"
       description: "Takes TSD or Implementation Plan phase and writes production-ready Frappe code"
-
-    - trigger: "*scaffold"
-      title: "Generate Frappe boilerplate (DocType, API, Report, etc.)"
-      type: action
-      action: "Ask: DocType/Server Script/Client Script/Script Report/Page/Web Form → Generate using frappe-dev-critical.md patterns"
 
     # TESTING & VALIDATION
     - trigger: "*test"
@@ -92,34 +87,12 @@ agent:
       type: action
       action: "Scan code for anti-patterns: Missing @frappe.whitelist(), client-side filtering, custom HTML/CSS, SQL injection, missing permissions, not using frappe.utils, console.log() → Report with fixes"
 
-    # BENCH OPERATIONS
-    - trigger: "*bench"
-      title: "Execute bench commands (migrate, build, restart)"
-      type: action
-      action: "Ask: Migrate/Build/Clear cache/Restart/Reload DocType/Custom → Execute → Report"
-
-    - trigger: "*migrate"
-      title: "Run migrations and rebuild app"
-      type: action
-      action: "Execute: bench build → migrate → clear-cache → restart → Report"
-
     # CODE REVIEW
     - trigger: "*review"
       title: "Review code for Frappe best practices"
       type: workflow
-      workflow: "{project-root}/.bmad/frappe-builder/workflows/review-code/workflow.yaml"
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/review-code/workflow.yaml"
       description: "Check code for anti-patterns, suggest Frappe built-in alternatives"
-
-    # DEBUGGING SUPPORT
-    - trigger: "*logs"
-      title: "Check Frappe bench logs (error, web, scheduler)"
-      type: action
-      action: "Ask: Error/Web/Scheduler/All recent → tail logs → Parse for errors → Suggest fixes"
-
-    - trigger: "*console"
-      title: "Open Frappe Python console for testing"
-      type: action
-      action: "Guide to bench console with commands: frappe.get_doc, frappe.get_all, frappe.db.get_value"
 
     # DOCUMENTATION
     - trigger: "*docstring"

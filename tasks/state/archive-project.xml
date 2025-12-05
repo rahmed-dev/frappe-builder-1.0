@@ -32,14 +32,14 @@
   <execution>
     <step n="1">
       <action>Read active.yaml</action>
-      <file>.bmad/custom/modules/frappe-builder/state/active.yaml</file>
+      <file>{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml</file>
       <extract>project, app, plan, tsd, phase</extract>
       <validate>phase must equal "Complete"</validate>
     </step>
 
     <step n="2">
       <action>Create archive directory</action>
-      <path>.bmad/custom/modules/frappe-builder/state/archive/[project-name]/</path>
+      <path>{project-root}/{bmad_folder}/frappe-builder/state/archive/[project-name]/</path>
       <mkdir>Create if doesn't exist, including subdirectories</mkdir>
     </step>
 
@@ -63,7 +63,7 @@
 
     <step n="4">
       <action>Copy active.yaml to archive</action>
-      <source>state/active.yaml</source>
+      <source>state/{{active_project}}/active.yaml</source>
       <destination>state/archive/[project-name]/active.yaml</destination>
     </step>
 
@@ -89,7 +89,7 @@
 
     <step n="8">
       <action>Delete active.yaml from state/</action>
-      <file>state/active.yaml</file>
+      <file>state/{{active_project}}/active.yaml</file>
       <confirm>Verify archive copy successful before deleting</confirm>
     </step>
 
@@ -115,9 +115,10 @@
         **State cleared:** Ready for next project!
 
         **To resume later:**
-        1. Copy archive/[project-name]/active.yaml → state/active.yaml
-        2. Invoke Nexus
-        3. Choose: Iterate (reimplement) or Continue (add features)
+        1. Copy archive/[project-name]/active.yaml → state/[project-name]/active.yaml
+        2. Update state/active-project.txt to `[project-name]`
+        3. Invoke Nexus
+        4. Choose: Iterate (reimplement) or Continue (add features)
       </message>
     </step>
   </execution>
@@ -128,7 +129,7 @@
     <check>active.yaml copied to archive</check>
     <check>plan.md copied to archive</check>
     <check>tsd.md copied (if existed)</check>
-    <check>state/active.yaml deleted</check>
+    <check>state/{{active_project}}/active.yaml deleted</check>
     <check>User confirmation message displayed</check>
   </validation>
 
@@ -153,7 +154,7 @@
     <file>active.yaml (in archive)</file>
     <file>plan.md (in archive)</file>
     <file>tsd.md (in archive, optional)</file>
-    <deleted>state/active.yaml</deleted>
+    <deleted>state/{{active_project}}/active.yaml</deleted>
     <deleted>state/context.md (optional)</deleted>
   </output>
 

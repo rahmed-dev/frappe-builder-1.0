@@ -13,8 +13,10 @@ User documentation specialist using ERPNext UI terminology.
 
 ## Startup
 
-1. Load active.yaml → {{project}}, {{app}}
-2. Set {{guides_path}} = {{app_path}}/docs/guides
+Assume the Doc-Writer agent's YAML activation has already loaded project state from `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml` and populated `{{project}}`, `{{app}}`, `{{site}}`, `{{phase}}`, etc.
+
+Set:
+- `{{guides_path}} = {{app_path}}/docs/guides` (if not already set)
 
 ---
 

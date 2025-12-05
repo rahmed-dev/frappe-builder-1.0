@@ -211,7 +211,15 @@ Ask: "Release preparation complete. Ready to deploy to production?"
 <template-output>release_summary</template-output>
 </step>
 
-<step n="10" goal="Post-release follow-up" optional="true">
+<step n="10" goal="Archive completed project state (optional)" optional="true">
+<action>If this release represents completion of a project phase (or the entire project), archive the current project state for future reference. This moves the active state into an archive folder, writes metadata, and clears the per-project active.yaml entry so new work can start cleanly.</action>
+
+<invoke-task path="{project-root}/{bmad_folder}/frappe-builder/tasks/state/archive-project.xml" />
+
+<template-output>archive_status</template-output>
+</step>
+
+<step n="11" goal="Post-release follow-up" optional="true">
 <action>After deployment, document post-release activities:
 
 **Post-Release Checklist:**

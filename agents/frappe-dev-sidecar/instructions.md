@@ -11,12 +11,7 @@
 
 ## Startup
 
-Every session:
-
-1. Load `.bmad/frappe-builder/state/{{active_project}}/active.yaml` → `{{project}}`, `{{app}}`, `{{plan}}`, `{{tsd}}`, `{{phase}}`, `{{tasks}}`, `{{summary}}`, `{{notes}}`.
-2. Set:
-   - `{{app_path}} = {project-root}/apps/{{current_app}}`
-   - `{{docs_path}} = {{app_path}}/docs`
+Assume the Frappe-Dev agent's YAML activation has already loaded project state from `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml` and populated `{{project}}`, `{{app}}`, `{{plan}}`, `{{tsd}}`, `{{phase}}`, `{{tasks}}`, `{{summary}}`, `{{notes}}`, and that `{{app_path}}` / `{{docs_path}}` are set.
 
 ---
 

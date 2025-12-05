@@ -39,7 +39,7 @@
 
     <step n="2">
       <action>Read active.yaml</action>
-      <file>.bmad/custom/modules/frappe-builder/state/active.yaml</file>
+      <file>{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml</file>
       <extract>project, app, phase, specialist, plan</extract>
     </step>
 
@@ -74,7 +74,7 @@
         - Files modified list: From step 4
         - Current task: From step 5
       </fill>
-      <output_path>.bmad/custom/modules/frappe-builder/state/context.md</output_path>
+      <output_path>{project-root}/{bmad_folder}/frappe-builder/state/context.md</output_path>
     </step>
 
     <step n="7">
@@ -83,7 +83,7 @@
       <value>"context.md"</value>
       <field>updated</field>
       <value>[Current ISO timestamp]</value>
-      <output_path>.bmad/custom/modules/frappe-builder/state/active.yaml</output_path>
+      <output_path>{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml</output_path>
     </step>
 
     <step n="8">
@@ -124,8 +124,8 @@
   </error_handling>
 
   <output>
-    <file>.bmad/custom/modules/frappe-builder/state/context.md</file>
-    <file>.bmad/custom/modules/frappe-builder/state/active.yaml (updated)</file>
+    <file>{project-root}/{bmad_folder}/frappe-builder/state/context.md</file>
+    <file>{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml (updated)</file>
     <notification>User instruction to restart session</notification>
   </output>
 

@@ -1,6 +1,6 @@
 # Frappe Anti-Patterns - Quick Reference
 
-> **Full details:** `{project-root}/.bmad/frappe-builder/knowledge/debugging/anti-patterns.md`
+> **Full details:** `{project-root}/{bmad_folder}/frappe-builder/knowledge/debugging/anti-patterns.md`
 
 ## Top 10 Anti-Patterns to Detect
 
@@ -86,4 +86,4 @@ When debugging an error:
 ## For Full Details
 
 Consult the comprehensive anti-patterns guide:
-`{project-root}/.bmad/frappe-builder/knowledge/debugging/anti-patterns.md`
+`{project-root}/{bmad_folder}/frappe-builder/knowledge/debugging/anti-patterns.md`

@@ -11,7 +11,7 @@
 
 Every session:
 
-1. Load `.bmad/frappe-builder/state/{{active_project}}/active.yaml` → `{{project}}`, `{{app}}`, `{{plan}}`, `{{tsd}}`, `{{phase}}`.
+1. Load `{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml` → `{{project}}`, `{{app}}`, `{{plan}}`, `{{tsd}}`, `{{phase}}`.
 2. Set:
    - `{{app_path}} = {project-root}/apps/{{current_app}}`
    - `{{docs_path}} = {{app_path}}/docs`

@@ -13,8 +13,10 @@ Test scenario generation and quality assurance specialist.
 
 ## Startup
 
-1. Load active.yaml → {{project}}, {{app}}
-2. Set {{test_path}} = {{app_path}}/{{module}}/tests
+Assume the QA-Specialist agent's YAML activation has already loaded project state from `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml` and populated `{{project}}`, `{{app}}`, `{{site}}`, `{{phase}}`, etc.
+
+Set:
+- `{{test_path}} = {{app_path}}/{{module}}/tests` (if not already set)
 
 ---
 

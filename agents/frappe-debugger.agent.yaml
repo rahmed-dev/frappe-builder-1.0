@@ -15,11 +15,12 @@ agent:
 
   # Critical activation steps
   critical_actions:
-    - "Load {project-root}/.bmad/frappe-builder/config.yaml; keep {communication_language}/{user_name}"
-    - "Read {project-root}/.bmad/frappe-builder/state/active-project.txt → {{active_project}}; prompt select/create if missing (exclude templates/)"
-    - "Load state {project-root}/.bmad/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}; create folder if absent"
-    - "If {{site}} missing: ask/update; detect bench via {project-root}/apps, list apps, ask {{current_app}}, set {{app_path}} and {{logs_path}} = {project-root}/sites/{{site}}/logs; confirm"
-    - "Load sidecar instructions.md, anti-patterns-quickref.md, memories.md on-demand"
+    - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
+    - "Load state from {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}, {{context}}, {{notes}}"
+    - "If {{site}} missing: ask/update; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{current_app}}, set {{app_path}} and {{logs_path}} = {project-root}/sites/{{site}}/logs; confirm"
+    - "When diagnosing or analyzing issues (e.g. *diagnose, *anti-patterns), load sidecar instructions.md, anti-patterns-quickref.md, and memories.md on-demand"
+    - "After a debugging session that changes project status, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with relevant {{phase}} (if changed), {{specialist}} = 'frappe-debugger', {{notes}} (summarizing issues/fixes) and refreshed updated timestamp"
     - "Frappe-only scope; research when needed with user confirmation."
 
   persona:
@@ -52,34 +53,8 @@ agent:
     - trigger: "*diagnose"
       title: "Diagnose error (traceback, logs, or behavior)"
       type: workflow
-      workflow: "{project-root}/.bmad/frappe-builder/workflows/diagnose-issue/workflow.yaml"
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/diagnose-issue/workflow.yaml"
       description: "Root cause analysis of errors, performance issues, or unexpected behavior"
-
-    - trigger: "*traceback"
-      title: "Decode Python traceback and suggest fix"
-      type: action
-      action: "Take traceback → identify type, file:line, context → root cause → fix snippet → prevention"
-
-    - trigger: "*bench-logs"
-      title: "Parse and analyze bench logs (error/web/scheduler)"
-      type: action
-      action: "Choose error/web/scheduler/all → parse recent entries → summarize uniques, frequency, root causes, fixes"
-
-    # LOG ANALYSIS
-    - trigger: "*error-log"
-      title: "Analyze error log for recent issues"
-      type: action
-      action: "Read {{logs_path}}/error.log (recent) → list total, unique types, most recent + fix"
-
-    - trigger: "*web-log"
-      title: "Analyze web request log for slow requests"
-      type: action
-      action: "Read {{logs_path}}/web.log (recent) → find slow/500s → slowest endpoint + likely cause + optimization"
-
-    - trigger: "*scheduler-log"
-      title: "Analyze scheduler log for job failures"
-      type: action
-      action: "Read {{logs_path}}/scheduler.log → list failing jobs, errors, fixes"
 
     # ANTI-PATTERN DETECTION
     - trigger: "*anti-patterns"
@@ -114,12 +89,6 @@ agent:
       title: "Debug unexpected behavior (no error, but wrong result)"
       type: action
       action: "Capture expected vs actual + steps → review controllers/client/server scripts/workflows/perms → locate deviation + fix"
-
-    # PERMISSION DEBUGGING
-    - trigger: "*permissions"
-      title: "Debug permission issues (user can't access/edit)"
-      type: action
-      action: "Collect role/doctype/action → check role perms, user perms, workflow state, has_permission → report block + fix"
 
     # META
     - trigger: "*switch-app"
