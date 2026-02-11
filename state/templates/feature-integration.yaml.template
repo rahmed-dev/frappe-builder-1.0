@@ -1,0 +1,50 @@
+# Feature: {feature-name}
+# Type: Integration
+
+type: "integration"
+integration_name: ""  # Integration name
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to TSD
+
+# Integration configuration
+config:
+  external_system: "" # Name of external system
+  protocol: ""        # "REST API" | "SOAP" | "Database" | etc.
+  module: ""
+
+# Components
+components:
+  api_endpoints: []
+    # - endpoint: ""
+    #   method: "GET" | "POST" | "PUT" | "DELETE"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  data_mappings: []
+    # - source: ""
+    #   target: ""
+    #   transformation: ""
+    #   status: "planned" | "completed"
+
+  webhooks: []
+    # - event: ""
+    #   url: ""
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  scheduled_tasks: []
+    # - task: ""
+    #   schedule: ""
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

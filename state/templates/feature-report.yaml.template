@@ -1,0 +1,40 @@
+# Feature: {feature-name}
+# Type: Report
+
+type: "report"
+report_name: ""       # Report name
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to TSD
+
+# Report configuration
+config:
+  report_type: ""     # "Script Report" | "Query Report" | "Report Builder"
+  module: ""
+  is_standard: true
+
+# Components
+components:
+  query_file: ""      # For Query Reports
+  script_file: ""     # For Script Reports
+  columns: []
+    # - fieldname: ""
+    #   label: ""
+    #   fieldtype: ""
+    #   status: "planned" | "completed"
+
+  filters: []
+    # - fieldname: ""
+    #   label: ""
+    #   fieldtype: ""
+    #   status: "planned" | "completed"
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

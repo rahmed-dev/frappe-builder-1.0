@@ -171,4 +171,43 @@ Explain how to interpret test results:
 <template-output>execution_instructions</template-output>
 </step>
 
+<step n="6" goal="Update project state with test information">
+<action>After test generation completion, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature exists)
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Tests generated and ready for execution"
+workflow: "generate-tests"
+workflow_step: 6
+last_action: "Generated {{test_count}} test scenarios ({{happy_count}} happy, {{sad_count}} sad, {{edge_count}} edge, {{evil_count}} evil)"
+next_action: "Run tests using bench commands or continue implementation"
+specialist: "qa-specialist"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+status: "in-progress"
+updated: "{{timestamp}}"
+customizations:
+  tests_generated: true
+  test_count: {{test_count}}
+  test_file: "{{test_file_path}}"
+notes: "Tests generated: {{test_count}} scenarios created"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. If {{current_feature}} is set, also update the detailed feature file with test information
+4. Write back to both files
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

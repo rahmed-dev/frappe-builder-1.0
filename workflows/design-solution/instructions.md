@@ -164,28 +164,42 @@ If changes needed, update the relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
-<step n="12" goal="Update active.yaml with TSD path">
+<step n="12" goal="Update state with TSD and feature information">
 <action>After saving the TSD document, update the project state:
 
-**File to Update:** `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature exists)
 
-**Fields to Update:**
+**active.yaml - Fields to Update:**
 ```yaml
-tsd: "{{docs_path}}/tsd/tsd-{{date}}.md"  # Path to the created TSD
-updated: "{{timestamp}}"                   # Current timestamp
+current_task: "Design solution completed, ready for planning"
+workflow: "design-solution"
+workflow_step: 12
+last_action: "Created TSD: {{tsd_path}}"
+next_action: "Create implementation roadmap"
+specialist: "frappe-architect"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+tsd: "{{docs_path}}/tsd/tsd-{{date}}.md"
+status: "in-progress"
+updated: "{{timestamp}}"
 ```
 
 **How to update:**
 1. Read existing active.yaml for `{{active_project}}`.
-2. Update the `tsd` field with the TSD path.
-3. Update the `updated` field with current timestamp.
-4. Write back to active.yaml.
+2. Update the fields above.
+3. If {{current_feature}} is set, also update the detailed feature file.
+4. Write back to both files.
 
 This enables:
-- Planner to find the TSD automatically.
-- Dev to reference the TSD without searching.
-- Nexus to track project artifacts.
-- State-based workflow coordination.
+- Feature-level TSD tracking
+- Workflow resumption at exact step
+- Clear action trail (last/next)
+- Specialist handoff coordination
 </action>
 
 <template-output>state_updated</template-output>

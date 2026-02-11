@@ -102,4 +102,42 @@ Keep it concise - resist urge to add more content.
 </action>
 </step>
 
+<step n="11" goal="Update project state with documentation info">
+<action>After guide creation, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature exists)
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "User guide created"
+workflow: "create-guide"
+workflow_step: 11
+last_action: "Created user guide: {{guide_path}}"
+next_action: "Review guide with stakeholders or continue implementation"
+specialist: "doc-writer"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+status: "in-progress"
+updated: "{{timestamp}}"
+documentation:
+  guide_created: true
+  guide_path: "{{guide_path}}"
+notes: "User guide completed: {{guide_title}}"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. If {{current_feature}} is set, update detailed feature file with documentation info
+4. Write back to both files
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

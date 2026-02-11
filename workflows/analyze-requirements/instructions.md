@@ -90,36 +90,42 @@ If user requests changes, update the relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
-<step n="9" goal="Update active.yaml with BRD path + Extract Summary">
+<step n="9" goal="Update state with BRD and requirements information">
 <action>After saving the BRD document, update the project state:
 
-**File to Update:** `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature exists)
 
-**Step 1: Extract BRD Summary**
-- Read the saved BRD file
-- Locate the "Executive Summary" section
-- Extract first 3 sentences (or up to 150 words)
-- This summary provides quick context for all agents
-
-**Step 2: Update active.yaml**
+**active.yaml - Fields to Update:**
 ```yaml
-brd: "{{docs_path}}/brd/brd-{{date}}.md"   # Path to created BRD
-summary: "[Extracted 3 sentences from Executive Summary]"  # Quick project context
-updated: "{{timestamp}}"                    # Current timestamp
+current_task: "Requirements analyzed, ready for technical design"
+workflow: "analyze-requirements"
+workflow_step: 9
+last_action: "Created BRD: {{brd_path}}"
+next_action: "Design technical solution"
+specialist: "erpnext-ba"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+status: "in-progress"
+updated: "{{timestamp}}"
+notes: "BRD completed, requirements documented"
 ```
 
 **How to update:**
 1. Read existing active.yaml
-2. Update the `brd` field with the BRD path
-3. Update the `summary` field with extracted Executive Summary text
-4. Update the `updated` field with current timestamp
-5. Write back to active.yaml
+2. Update the fields above
+3. If {{current_feature}} is set, also update the detailed feature file
+4. Write back to both files
 
-**Benefits of Summary Extraction:**
-- Agents get instant project context (<50 tokens vs 1000+ for full BRD)
-- Consistent summary across all agents
-- No manual copy-paste needed
-- Auto-updated when BRD changes
+**Benefits:**
+- Clear workflow state tracking
+- Smooth handoff to architect
+- Feature-level progress tracking
+- Action trail maintained
 
 This enables:
 - Architect can find BRD automatically

@@ -1,0 +1,58 @@
+# Feature: {feature-name}
+# Type: Bug Fix
+
+type: "bugfix"
+bug_title: ""         # Brief title of the bug
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to bug analysis/fix spec
+
+# Bug details
+bug_info:
+  doctype: ""         # Affected DocType (if applicable)
+  module: ""          # Affected module
+  severity: ""        # "critical" | "high" | "medium" | "low"
+  reported_by: ""
+  reported_date: ""
+
+# Root cause
+root_cause:
+  description: ""
+  affected_files: []
+    # - file: "path/to/file"
+    #   line_numbers: "10-25"
+
+# Fix components
+fix_components:
+  code_changes: []
+    # - file: "path/to/file"
+    #   change_type: "modify" | "add" | "delete"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  database_changes: []
+    # - change: "Migration description"
+    #   status: "planned" | "completed"
+
+  config_changes: []
+    # - setting: ""
+    #   old_value: ""
+    #   new_value: ""
+    #   status: "planned" | "completed"
+
+# Testing
+testing:
+  test_scenario: ""
+  expected_result: ""
+  actual_result: ""
+  verified: false
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

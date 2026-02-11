@@ -152,4 +152,48 @@ If no:
 </action>
 </step>
 
+<step n="10" goal="Update project state with diagnosis results">
+<action>After diagnosis completion, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature is a bugfix)
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Issue diagnosed, {{fix_status}}"
+workflow: "diagnose-issue"
+workflow_step: 10
+last_action: "Diagnosed {{error_type}}: {{root_cause_summary}}"
+next_action: "{{fix_status == 'fixed' ? 'Test the fix' : 'Implement the fix'}}"
+specialist: "frappe-debugger"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists and type is "bugfix"):
+```yaml
+status: "{{fix_status == 'fixed' ? 'completed' : 'in-progress'}}"
+bug_info:
+  root_cause: "{{root_cause}}"
+  severity: "{{severity}}"
+fix_components:
+  code_changes:
+    - file: "{{fixed_file}}"
+      status: "completed"
+testing:
+  verified: {{fix_applied}}
+updated: "{{timestamp}}"
+notes: "Diagnosis completed: {{root_cause_summary}}"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. If {{current_feature}} is a bugfix feature, update detailed feature file with diagnosis results
+4. Write back to both files
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

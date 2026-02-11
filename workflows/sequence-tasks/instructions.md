@@ -82,4 +82,32 @@ Optionally save to file if user requests.
 <template-output>final_presentation</template-output>
 </step>
 
+<step n="5" goal="Update project state with task sequencing">
+<action>After task sequencing completion, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Tasks sequenced and prioritized, ready for implementation"
+workflow: "sequence-tasks"
+workflow_step: 5
+last_action: "Sequenced {{task_count}} tasks into {{phase_count}} phases based on dependencies"
+next_action: "Begin implementation with Phase 1 tasks"
+specialist: "frappe-planner"
+updated: "{{timestamp}}"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. Write back to file
+
+This marks planning completion and enables smooth transition to implementation.
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

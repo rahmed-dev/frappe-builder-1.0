@@ -1,0 +1,9 @@
+agent,role,trigger
+frappe-nexus,Orchestrator,nexus
+erpnext-ba,Business Analyst,ba
+frappe-architect,Architect,architect
+frappe-planner,Planner,planner
+frappe-dev,Developer,dev
+frappe-debugger,Debugger,debug
+qa-specialist,QA Specialist,qa
+doc-writer,Documentation Writer,docs

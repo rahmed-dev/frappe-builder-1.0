@@ -1,0 +1,4 @@
+agent,role,trigger
+frappe-architect,Architect,architect
+frappe-planner,Planner,planner
+erpnext-ba,Business Analyst,ba

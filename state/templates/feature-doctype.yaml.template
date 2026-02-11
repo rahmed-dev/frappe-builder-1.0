@@ -1,0 +1,65 @@
+# Feature: {feature-name}
+# Type: DocType Customization
+
+type: "doctype_customization"
+doctype: ""           # DocType name
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to TSD
+
+# Detailed customizations by component type
+customizations:
+
+  # Server Scripts (Python)
+  server_scripts: []
+    # - id: "unique-script-id"
+    #   event: "on_submit" | "before_save" | "validate" | etc.
+    #   purpose: "Brief description"
+    #   status: "planned" | "in-progress" | "completed"
+    #   file: "path/to/script.py"
+    #   notes: ""
+
+  # Client Scripts (JavaScript)
+  client_scripts: []
+    # - id: "unique-script-id"
+    #   trigger: "refresh" | "{fieldname}.onchange" | etc.
+    #   purpose: "Brief description"
+    #   status: "planned" | "completed"
+    #   file: "path/to/script.js"
+
+  # Custom Fields
+  custom_fields: []
+    # - field: "custom_field_name"
+    #   label: "Field Label"
+    #   type: "Data" | "Select" | etc.
+    #   status: "planned" | "completed"
+
+  # Custom Buttons/Actions
+  custom_buttons: []
+    # - label: "Button Label"
+    #   action: "function_name"
+    #   purpose: "What this does"
+    #   status: "planned" | "completed"
+
+  # Workflows
+  workflows: []
+    # - name: "Workflow Name"
+    #   states: ["Draft", "Approved"]
+    #   purpose: "Brief description"
+    #   status: "planned" | "completed"
+
+  # Print Formats
+  print_formats: []
+
+  # Permissions/Roles
+  permissions: []
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

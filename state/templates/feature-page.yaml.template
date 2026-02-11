@@ -1,0 +1,47 @@
+# Feature: {feature-name}
+# Type: Page/Portal
+
+type: "page"
+page_name: ""         # Page name
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to TSD
+
+# Page configuration
+config:
+  route: ""           # URL route
+  is_public: false
+  module: ""
+
+# Components
+components:
+  html_templates: []
+    # - file: "path/to/template.html"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  javascript: []
+    # - file: "path/to/script.js"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  styles: []
+    # - file: "path/to/style.css"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+  api_endpoints: []
+    # - endpoint: "/api/method/..."
+    #   method: "GET" | "POST"
+    #   purpose: ""
+    #   status: "planned" | "completed"
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

@@ -152,4 +152,32 @@ If changes needed, update relevant sections.
 <action if="changes requested">Update the affected template sections</action>
 </step>
 
+<step n="10" goal="Update project state with roadmap information">
+<action>After roadmap creation, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Roadmap created, ready for task sequencing"
+workflow: "create-roadmap"
+workflow_step: 10
+last_action: "Created implementation roadmap with {{phase_count}} phases"
+next_action: "Sequence tasks within each phase"
+specialist: "frappe-planner"
+updated: "{{timestamp}}"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. Write back to file
+
+This enables smooth handoff to sequence-tasks workflow.
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

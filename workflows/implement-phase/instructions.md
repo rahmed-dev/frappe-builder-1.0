@@ -19,12 +19,15 @@ The Frappe-Dev agent's YAML activation is responsible for reading project state 
 and populating:
 - `{{project}}` - Project name
 - `{{app}}` - Current Frappe app
-- `{{plan}}` - Implementation plan path
-- `{{tsd}}` - TSD path
-- `{{phase}}` - Current phase
-- `{{tasks}}` - Task range (if assigned)
-- `{{summary}}` - BRD summary (quick context)
-- `{{notes}}` - Critical context notes
+- `{{bench_path}}` - Path to Frappe bench
+- `{{current_feature}}` - Current feature ID
+- `{{current_component}}` - Current component being worked on
+- `{{current_task}}` - Current task description
+- `{{workflow}}` - Active workflow name
+- `{{workflow_step}}` - Current step number
+- `{{features}}` - Feature inventory (compact)
+- `{{last_action}}` - Last action taken
+- `{{next_action}}` - Next action to take
 
 **Benefits:**
 - Lighter context (<200 tokens vs loading full memories)

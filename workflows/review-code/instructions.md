@@ -225,4 +225,39 @@ Optionally save report to file if user requests.
 <template-output>fixes_applied</template-output>
 </step>
 
+<step n="7" goal="Update project state">
+<action>After code review completion, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if feature exists)
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Code review completed"
+workflow: "review-code"
+workflow_step: 7
+last_action: "Reviewed code, identified {{issue_count}} issues, applied {{fix_count}} fixes"
+next_action: "Continue implementation or test changes"
+specialist: "frappe-dev"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+status: "in-progress"
+updated: "{{timestamp}}"
+notes: "Code review completed: {{issue_count}} issues found, {{fix_count}} fixed"
+```
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. If {{current_feature}} is set, also update the detailed feature file
+4. Write back to both files
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>

@@ -1,0 +1,44 @@
+# Feature: {feature-name}
+# Type: New DocType
+
+type: "new_doctype"
+doctype: ""           # New DocType name
+status: "planned"     # planned | in-progress | completed | on-hold | blocked
+started: ""           # YYYY-MM-DD
+completed: ""         # YYYY-MM-DD
+tsd: ""              # Path to TSD
+
+# DocType configuration
+config:
+  module: ""          # Frappe module
+  is_child: false
+  is_submittable: false
+  is_single: false
+  is_tree: false
+  track_changes: true
+  track_views: false
+
+# Fields definition
+fields: []
+  # - fieldname: ""
+  #   label: ""
+  #   fieldtype: "Data" | "Select" | etc.
+  #   mandatory: false
+  #   status: "planned" | "completed"
+
+# Associated components
+components:
+  server_scripts: []
+  client_scripts: []
+  workflows: []
+  print_formats: []
+  permissions: []
+
+# Progress tracking
+progress:
+  completed: 0
+  in_progress: 0
+  planned: 0
+  total: 0
+
+notes: ""

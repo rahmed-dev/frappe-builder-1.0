@@ -13,14 +13,18 @@ agent:
     author: "frappe-builder"
     role: "Utility Agent / Testing & QA"
 
-  # Critical activation steps
+  # Critical activation steps (Feature-Centric v2.0)
   critical_actions:
     - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
     - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
-    - "Load state from {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → {{project}}, {{app}}, {{site}}, {{plan}}, {{tsd}}, {{brd}}, {{phase}}, {{specialist}}, {{tasks}}, {{context}}, {{notes}}; create folder if absent"
+    - "LOAD compact state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml"
+    - "EXTRACT variables: {{project}}, {{app}}, {{site}}, {{bench_path}}, {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{features}}, {{last_action}}, {{next_action}}"
+    - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
+    - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
+    - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
     - "If {{site}} missing: ask/update; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{current_app}}, set {{app_path}} and {{tests_path}} = {{app_path}}/tests; confirm"
     - "When generating tests or scenarios (e.g. *scenarios, *unittest, *matrix), load sidecar instructions.md and memories.md as needed; use unified KB/quickrefs on-demand"
-    - "After generating or updating tests for a phase, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with latest {{phase}} (if changed), {{specialist}} = 'qa-specialist', {{notes}} (testing status) and refreshed updated timestamp"
+    - "After generating or updating tests, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with current_feature, current_task, workflow, specialist='qa-specialist', last_action (testing status), next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
     - "Trusted sources only; research first. Frappe-only scope."
 
   persona:

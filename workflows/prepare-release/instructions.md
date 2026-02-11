@@ -235,4 +235,45 @@ Ask: "Release preparation complete. Ready to deploy to production?"
 <template-output>post_release_activities</template-output>
 </step>
 
+<step n="12" goal="Update project state with release completion">
+<action>After release preparation, update the project state:
+
+**Files to Update:**
+1. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
+2. `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml` (if specific feature release)
+
+**active.yaml - Fields to Update:**
+```yaml
+current_task: "Release {{release_version}} prepared and deployed"
+workflow: "prepare-release"
+workflow_step: 12
+last_action: "Prepared release {{release_version}} with {{change_count}} changes"
+next_action: "{{project_complete ? 'Archive project or start new work' : 'Continue with next feature'}}"
+specialist: "doc-writer"
+updated: "{{timestamp}}"
+```
+
+**feature file - Fields to Update** (if {{current_feature}} exists):
+```yaml
+status: "completed"
+completed: "{{timestamp}}"
+updated: "{{timestamp}}"
+notes: "Released in version {{release_version}}"
+```
+
+**If project complete:**
+- Mark all features as completed
+- Optionally trigger archive-project task (step 10)
+
+**How to update:**
+1. Read existing active.yaml
+2. Update the fields above
+3. If specific feature release, mark feature as completed
+4. If project complete, update all features to completed status
+5. Write back to files
+</action>
+
+<template-output>state_updated</template-output>
+</step>
+
 </workflow>
