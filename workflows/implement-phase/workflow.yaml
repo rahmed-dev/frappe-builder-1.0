@@ -1,7 +1,8 @@
-# Implement Feature Workflow
-name: implement-feature
-description: "Implement feature from Technical Specification with production-ready Frappe code"
+# Implement Phase Workflow
+name: implement-phase
+description: "Formal, phased development from Technical Specification Documents (TSD). For big, structured projects with proper planning and documentation."
 author: "frappe-builder"
+version: "2.0"  # Refactored to BMAD v6 step-based architecture
 
 # Config source pattern
 config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
@@ -14,21 +15,44 @@ default_site: "{config_source}:default_site"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/.bmad/frappe-builder/workflows/implement-feature"
-instructions: "{installed_path}/instructions.md"
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/implement-phase"
+instructions: "{installed_path}/workflow.md"  # BMAD v6: orchestrator pattern
 template: false  # Action workflow - generates code, not documents
 
-# Input
+# Architecture
+architecture: "single-modal"  # TSD-based only
+step_count: 8
+step_files: "{installed_path}/steps/"
+data_files: "{installed_path}/data/"
+
+# Steps
+steps:
+  - step-01-load-tsd.md
+  - step-02-identify.md
+  - step-03-scaffold.md
+  - step-04-implement-server.md
+  - step-05-implement-client.md
+  - step-06-deploy.md
+  - step-07-validate.md
+  - step-08-complete.md
+
+# Data files (loaded JIT by steps)
+data:
+  - scaffolding-patterns.md
+  - server-patterns.md
+  - client-patterns.md
+  - anti-patterns-checklist.md
+
+# Input requirements
+required_inputs:
+  - tsd: "Technical Specification Document path (required)"
+
 recommended_inputs:
   - tsd: "{{docs_path}}/tsd/"
-  - implementation_plan: "{{docs_path}}/implementation-plans/"
 
 input_file_patterns:
   tsd:
     whole: "{{docs_path}}/tsd/*.md"
     sharded: "{{docs_path}}/tsd/*/index.md"
-  implementation_plan:
-    whole: "{{docs_path}}/implementation-plans/*.md"
-    sharded: "{{docs_path}}/implementation-plans/*/index.md"
 
 standalone: true
