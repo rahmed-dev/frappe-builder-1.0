@@ -11,6 +11,7 @@
 <critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 <critical>This is a Frappe-specific workflow - Frappe bench awareness is MANDATORY</critical>
+<critical>You may use Claude Code skills if you find an appropriate one in the skill list for the current task.</critical>
 
 ---
 

@@ -46,9 +46,9 @@
 
 ## Pending
 
-### D — Claude Code skill discovery in workflows
-- Add instruction in `implement-feature/workflow.md` and `implement-phase/workflow.md` to check for relevant installed frappe skills (e.g. `/bmad-frappe-builder-*`) and invoke them alongside the workflow where applicable.
-- **Blocked:** Need Riz to confirm skill names/triggers installed in Claude Code.
+### D — Claude Code skill discovery in workflows ✅
+- Added general `<critical>` line to both `implement-feature/workflow.md` and `implement-phase/workflow.md`:
+  _"You may use Claude Code skills if you find an appropriate one in the skill list for the current task."_
 
 ### F — Remove redundant state loading from workflow.md files (SKIPPED)
 - Both `implement-feature/workflow.md` and `implement-phase/workflow.md` contain a "Load Active Project State" section that duplicates what agent `critical_actions` already does.
