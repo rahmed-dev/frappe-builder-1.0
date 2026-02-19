@@ -92,6 +92,12 @@ agent:
       action: "Capture expected vs actual + steps → review controllers/client/server scripts/workflows/perms → locate deviation + fix"
 
     # META
+    - trigger: "*kb"
+      title: "Add or update knowledge base"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/update-kb/workflow.yaml"
+      description: "Capture new or corrected Frappe/ERPNext knowledge into the KB and update the index"
+
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app"
       type: action

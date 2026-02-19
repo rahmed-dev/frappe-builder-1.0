@@ -1,0 +1,15 @@
+# Update Knowledge Base Workflow
+name: update-kb
+description: "Add or update knowledge base content and keep INDEX.md current"
+author: "frappe-builder"
+
+config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+kb_location: "{config_source}:kb_location"
+
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/update-kb"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+standalone: true

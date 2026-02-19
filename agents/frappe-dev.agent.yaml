@@ -108,6 +108,12 @@ agent:
       action: "Review code → Add PEP 257 docstrings: purpose, args, returns, raises, examples"
 
     # META
+    - trigger: "*kb"
+      title: "Add or update knowledge base"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/update-kb/workflow.yaml"
+      description: "Capture new or corrected Frappe/ERPNext knowledge into the KB and update the index"
+
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app"
       type: action

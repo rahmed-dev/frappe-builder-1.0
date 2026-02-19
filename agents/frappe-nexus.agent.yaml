@@ -118,6 +118,12 @@ agent:
       action: "Debugger diagnoses → route to Dev for fixes or Architect if design issue → iterate"
 
     # META
+    - trigger: "*kb"
+      title: "Add or update knowledge base"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/update-kb/workflow.yaml"
+      description: "Capture new or corrected Frappe/ERPNext knowledge into the KB and update the index"
+
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app in the bench"
       type: action
