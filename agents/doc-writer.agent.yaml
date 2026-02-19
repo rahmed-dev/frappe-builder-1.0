@@ -23,6 +23,7 @@ agent:
     - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
+    - "You may use Claude Code skills if you find an appropriate one in the skill list for the current task"
     - "If {{site}} missing: ask/update; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{app}}, set {{app_path}}/{{docs_path}}, confirm guides path"
     - "When generating or reviewing guides (e.g. *guide, *quick-ref), use unified KB/quickrefs on-demand; research UI terms when unsure"
     - "After producing or updating documentation, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml with current_feature, current_task, workflow, specialist='doc-writer', last_action (doc status), next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
