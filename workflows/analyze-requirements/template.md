@@ -1,6 +1,6 @@
 # Business Requirements Document
 
-**Project:** {{current_app}}
+**Project:** {{app}}
 
 **Date:** {{date}}
 

@@ -1,6 +1,6 @@
 # Diagnostic Report
 **Issue ID:** {{issue_id}}
-**App:** {{current_app}}
+**App:** {{app}}
 **Date:** {{date}}
 **Diagnosed By:** {{user_name}}
 
@@ -44,7 +44,7 @@ ErrorType: Error message here
 ## Technical Analysis
 
 ### File Location
-**File:** `apps/{{current_app}}/{{current_app}}/{{module}}/{{file}}.py`
+**File:** `apps/{{app}}/{{app}}/{{module}}/{{file}}.py`
 **Line:** {{line_number}}
 **Method:** `{{method_name}}`
 
@@ -62,7 +62,7 @@ def method_name(self):
 ## Fix
 
 ### Code Changes
-**File:** `apps/{{current_app}}/{{current_app}}/{{module}}/{{file}}.py`
+**File:** `apps/{{app}}/{{app}}/{{module}}/{{file}}.py`
 
 ```python
 # BEFORE
@@ -143,7 +143,7 @@ bench restart
 ### Long-Term Fix (Development)
 ```bash
 # Commit to version control
-git add apps/{{current_app}}/...
+git add apps/{{app}}/...
 git commit -m "fix: Handle None value in method_name"
 git push
 ```

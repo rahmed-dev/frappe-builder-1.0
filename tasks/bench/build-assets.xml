@@ -2,7 +2,7 @@
   <name>build-assets</name>
   <description>Build JavaScript/CSS assets for Frappe app</description>
   <steps>
-    <step>Build app: bench build --app {{current_app}}</step>
+    <step>Build app: bench build --app {{app}}</step>
     <step>Verify build: Check for build errors in output</step>
   </steps>
   <expected_output>

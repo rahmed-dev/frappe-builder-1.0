@@ -29,11 +29,13 @@ variables:
 ## Session Variables (Available)
 
 From active.yaml:
-- `{{tsd_path}}` - Path to Technical Specification Document
 - `{{project}}` - Project name
 - `{{app}}` - Current Frappe app
 - `{{bench_path}}` - Path to Frappe bench
 - `{{app_path}}` - Full path to app
+
+From session.yaml:
+- `{{tsd_path}}` - Path to Technical Specification Document
 
 ---
 
@@ -122,7 +124,7 @@ Store this summary for reference in subsequent steps.
 
 ## Update State
 
-Update `active.yaml`:
+Update `session.yaml`:
 ```yaml
 workflow: "implement-phase"
 workflow_step: 1

@@ -23,7 +23,7 @@ Frappe-Builder is a **sub-agent compatible module** specifically designed for he
 - **Multi-Project State Management**: Work on multiple Frappe projects without losing context
 - **Token-Efficient Knowledge Base**: 88% token reduction through hybrid unified KB + quickref architecture
 - **Comprehensive Standards**: 11 coding principles, security guidelines, performance rules, and anti-patterns
-- **12 Workflow Automations**: Analyze requirements, design solutions, generate tests, review code, and more
+- **11 Workflow Automations**: Analyze requirements, design solutions, generate tests, review code, and more
 - **4-Tier Framework Integration**: Automatic solution design using Standard → Configure → Scripts → Custom approach
 
 ## Installation
@@ -152,25 +152,27 @@ frappe-builder/
 - qa-specialist.agent.yaml — tests/scenarios
 - doc-writer.agent.yaml — user docs
 
-### Workflows (12)
+### Workflows (11)
 - analyze-requirements — convert notes to BRD
 - design-solution — produce TSD (4-tier)
 - sequence-tasks — order tasks by dependencies
 - create-roadmap — phased plan
-- implement-feature — execute build
+- implement-phase — formal TSD-based phased development (7 steps)
+- implement-feature — iterative ad-hoc feature development, new or resume from inventory (bi-modal)
 - diagnose-issue — debug flow
 - generate-tests — manual + unittest scenarios
 - review-code — anti-pattern/code review
 - create-guide — user docs
 - prepare-release — release checklist
-- create-guide templates — doc templates
-- design-solution/generate-tests/etc. templates where provided
 
 ### State Management
-- `state/` holds multi-project context with minimal per-step state (inspired by `future-plans/maker-integration/maker-method-overview.md`).
+- `state/` holds multi-project context using a **3-file split** per project.
 - Active project pointer: `state/active-project.txt` contains the key/name of the currently active project.
-- Per-project state: each project has `state/{{project_key}}/active.yaml` following `state/templates/active.yaml.template` and storing `project`, `app`, `site`, `plan`, `tsd`, `brd`, `phase`, `specialist`, `tasks`, `context`, `notes`, and `updated`.
-- Agents (Nexus, BA, Architect, Planner, Dev, Debugger, QA, Doc-Writer) read/write the same `active.yaml` for `{{active_project}}`, updating phase/specialist/paths as they complete their part of the lifecycle.
+- Per-project state uses three files (see `state/templates/` for each template):
+  - `active.yaml` — project config only: `project`, `app`, `site`, `bench_path` (rarely changes)
+  - `session.yaml` — current step state: `workflow`, `workflow_step`, `current_feature`, `last_action`, `next_action`, `specialist`, `updated` (written at every step boundary)
+  - `inventory.yaml` — feature list with status and progress (loaded on demand in resume mode only)
+- Each project also has `features/{{feature_id}}.yaml` files for detailed per-feature context, loaded JIT.
 
 ### Installer
 - Installer template: `_module-installer/install-config.yaml` (source). Generates installed `.bmad/frappe-builder/config.yaml`. No source config.yaml by design.

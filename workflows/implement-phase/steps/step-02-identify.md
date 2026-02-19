@@ -239,12 +239,12 @@ IMPLEMENTATION CHECKLIST
 
 ## Update State
 
-Update `active.yaml`:
+Update `session.yaml`:
 ```yaml
 workflow_step: 2
 current_task: "Identified components to build"
 last_action: "Created implementation checklist with [X] components"
-next_action: "Scaffold boilerplate for all components"
+next_action: "Implement server-side business logic"
 updated: "[current timestamp]"
 ```
 
@@ -252,6 +252,4 @@ updated: "[current timestamp]"
 
 ## Next Step
 
-**→ Load and execute:** `steps/step-03-scaffold.md`
-
-Continue to scaffolding.
+**→ Load and execute:** `steps/step-03-implement-server.md`

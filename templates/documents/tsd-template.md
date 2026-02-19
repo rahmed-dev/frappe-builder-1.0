@@ -1,5 +1,5 @@
 # Technical Specification Document
-**Project:** {{project_name}} | **App:** {{current_app}} | **Date:** {{date}} | **BRD:** [link] | **Architect:** {{user_name}}
+**Project:** {{project_name}} | **App:** {{app}} | **Date:** {{date}} | **BRD:** [link] | **Architect:** {{user_name}}
 
 ## Overview
 - Approach (2-3 sentences)

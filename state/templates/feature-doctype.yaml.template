@@ -55,11 +55,6 @@ customizations:
   # Permissions/Roles
   permissions: []
 
-# Progress tracking
-progress:
-  completed: 0
-  in_progress: 0
-  planned: 0
-  total: 0
+progress: "0/0"       # "completed/total" e.g. "3/7"
 
-notes: ""
+notes: ""             # Free-text, updated each session

@@ -1,5 +1,5 @@
 # Business Requirements Document
-**Project:** {{project_name}} | **App:** {{current_app}} | **Date:** {{date}} | **Author:** {{user_name}}
+**Project:** {{project_name}} | **App:** {{app}} | **Date:** {{date}} | **Author:** {{user_name}}
 
 ## Context
 - Problem: [1 sentence]

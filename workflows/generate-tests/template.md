@@ -1,6 +1,6 @@
 # Test Matrix: {{feature_name}}
 
-**Project:** {{current_app}}
+**Project:** {{app}}
 
 **Date:** {{date}}
 
@@ -54,12 +54,12 @@
 
 **All tests:**
 ```bash
-bench --site {{default_site}} run-tests --app {{current_app}}
+bench --site {{default_site}} run-tests --app {{app}}
 ```
 
 **This feature only:**
 ```bash
-bench --site {{default_site}} run-tests --app {{current_app}} --module tests.test_{{feature_name}}
+bench --site {{default_site}} run-tests --app {{app}} --module tests.test_{{feature_name}}
 ```
 
 ---

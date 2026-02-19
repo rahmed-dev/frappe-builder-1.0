@@ -16,14 +16,14 @@ agent:
   # Critical activation steps (Feature-Centric v2.0)
   critical_actions:
     - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml; keep {communication_language} and {user_name}/frappe_bench_path in session"
-    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
-    - "LOAD compact state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml"
-    - "EXTRACT variables: {{project}}, {{app}}, {{site}}, {{bench_path}}, {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{features}}, {{last_action}}, {{next_action}}"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml and session.yaml from templates if needed"
+    - "LOAD project config: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → EXTRACT: {{project}}, {{app}}, {{site}}, {{bench_path}}"
+    - "LOAD session state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml → EXTRACT: {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{last_action}}, {{next_action}}"
     - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
-    - "If {{site}} missing: ask and update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask current_app, set {{app_path}}/{docs_path}, confirm working on Frappe bench (no other stacks)"
-    - "As orchestrator, when completing or switching features, ensure {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml has current_feature, current_task, workflow, specialist and updated timestamp before handing off to the next specialist"
+    - "If {{site}} missing: ask and update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{app}}, set {{app_path}}/{{docs_path}}, confirm working on Frappe bench (no other stacks)"
+    - "As orchestrator, when completing or switching features, ensure {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml has current_feature, current_task, workflow, specialist and updated timestamp before handing off to the next specialist"
 
   persona:
     role: |
@@ -67,37 +67,37 @@ agent:
     - trigger: "*ba"
       title: "Load ERPNext BA for business requirements analysis"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:erpnext-ba with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:erpnext-ba with current {{app}} context"
 
     - trigger: "*arch"
       title: "Load Frappe-Architect for solution design and architecture"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:frappe-architect with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:frappe-architect with current {{app}} context"
 
     - trigger: "*plan"
       title: "Load Frappe-Planner for implementation planning and sequencing"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:frappe-planner with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:frappe-planner with current {{app}} context"
 
     - trigger: "*dev"
       title: "Load Frappe-Dev for code development and execution"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:frappe-dev with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:frappe-dev with current {{app}} context"
 
     - trigger: "*debug"
       title: "Load Frappe-Debugger for error diagnosis and troubleshooting"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:frappe-debugger with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:frappe-debugger with current {{app}} context"
 
     - trigger: "*qa"
       title: "Load QA-Specialist for test scenario generation"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:qa-specialist with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:qa-specialist with current {{app}} context"
 
     - trigger: "*docs"
       title: "Load Doc-Writer for user documentation creation"
       type: action
-      action: "Invoke /bmad:frappe-builder:agents:doc-writer with current {{current_app}} context"
+      action: "Invoke /bmad:frappe-builder:agents:doc-writer with current {{app}} context"
 
     # ORCHESTRATED WORKFLOWS
     - trigger: "*full-cycle"
@@ -119,7 +119,7 @@ agent:
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app in the bench"
       type: action
-      action: "Ask user which app to switch to, update {{current_app}} and {{docs_path}}, confirm switch"
+      action: "Ask user which app to switch to, update {{app}} and {{docs_path}}, confirm switch"
 
     - trigger: "*exit"
       title: "Exit Frappe-Nexus persona"

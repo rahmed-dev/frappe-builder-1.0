@@ -1,0 +1,68 @@
+# Implement Feature Workflow
+name: implement-feature
+description: "Real-world iterative feature development - new ad-hoc features or resume from inventory. No formal TSD required."
+author: "frappe-builder"
+version: "2.0"  # BMAD v6 bi-modal step-based architecture
+
+# Config source pattern
+config_source: "{project-root}/.bmad/frappe-builder/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+output_folder: "{config_source}:output_folder"
+frappe_bench_path: "{config_source}:frappe_bench_path"
+default_site: "{config_source}:default_site"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/.bmad/frappe-builder/workflows/implement-feature"
+instructions: "{installed_path}/workflow.md"  # BMAD v6: orchestrator pattern
+template: false  # Action workflow - generates code, not documents
+
+# Architecture
+architecture: "bi-modal"  # New feature OR Resume from inventory
+step_count: 9
+step_files_new: "{installed_path}/steps-new/"
+step_files_resume: "{installed_path}/steps-resume/"
+data_files: "{installed_path}/data/"
+
+# Mode: New Feature (steps-new/)
+steps_new:
+  - step-01-gather-requirements.md
+  - step-02-quick-spec.md
+  - step-03-identify.md
+  - step-04-scaffold.md
+  - step-05-implement-server.md
+  - step-06-implement-client.md
+  - step-07-deploy.md
+  - step-08-validate.md
+  - step-09-complete.md
+
+# Mode: Resume from Inventory (steps-resume/)
+steps_resume:
+  - step-01-select-feature.md
+  - step-02-load-context.md
+  - step-03-identify.md
+  - step-04-scaffold.md
+  - step-05-implement-server.md
+  - step-06-implement-client.md
+  - step-07-deploy.md
+  - step-08-validate.md
+  - step-09-complete.md
+
+# Data files (loaded JIT by steps)
+data:
+  - scaffolding-patterns.md
+  - server-patterns.md
+  - client-patterns.md
+  - anti-patterns-checklist.md
+
+# Input requirements
+required_inputs:
+  - mode: "N (New Feature) or R (Resume from Inventory)"
+
+recommended_inputs:
+  - feature_description: "Brief description of the feature to build (for New mode)"
+  - feature_id: "Feature ID from inventory (for Resume mode)"
+
+standalone: true

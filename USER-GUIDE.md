@@ -2,7 +2,7 @@
 
 **Complete guide to using the Frappe-Builder module effectively**
 
-This guide covers all 8 agents, 12 workflows, multi-project management, and best practices for optimal Frappe development with BMAD.
+This guide covers all 8 agents, 11 workflows, multi-project management, and best practices for optimal Frappe development with BMAD.
 
 ---
 
@@ -12,7 +12,7 @@ This guide covers all 8 agents, 12 workflows, multi-project management, and best
 2. [When to Use Which Agent](#when-to-use-which-agent)
 3. [Multi-Project Management](#multi-project-management)
 4. [Complete Development Workflow](#complete-development-workflow)
-5. [12 Workflow Automations](#12-workflow-automations)
+5. [11 Workflow Automations](#11-workflow-automations)
 6. [Knowledge Base Architecture](#knowledge-base-architecture)
 7. [Best Practices](#best-practices)
 8. [Troubleshooting](#troubleshooting)
@@ -354,11 +354,14 @@ START
 
 ## Multi-Project Management
 
-### State Usage (fast context)
+### State Usage (3-file split, fast context)
 - Active project state lives in `.bmad/frappe-builder/state/`
 - `active-project.txt` selects the current project folder
-- `active.yaml` holds: project, app, site, plan, tsd, brd, phase, specialist, tasks, summary, notes
-- Agents read summary/context from state to avoid loading full docs; update state when BRD/TSD/plan changes
+- **3-file split per project:**
+  - `active.yaml` — project config only: `project`, `app`, `site`, `bench_path` (rarely changes)
+  - `session.yaml` — step state: `workflow`, `workflow_step`, `current_feature`, `last_action`, `next_action`, `specialist`, `updated`
+  - `inventory.yaml` — feature list with status/progress (loaded on demand in resume mode)
+- Agents write session fields to `session.yaml` at each step boundary; project config in `active.yaml` changes only when you switch sites or apps
 
 Frappe-Builder supports working on **multiple Frappe projects simultaneously** without losing context.
 
@@ -370,14 +373,17 @@ Each project has its own **state folder**:
 .bmad/frappe-builder/state/
 ├── active-project.txt          # Points to current project
 ├── nexus_erp/                  # Project 1
-│   ├── active.yaml            # Project state
-│   ├── context.md             # Project context
-│   └── archive/               # Session archives
+│   ├── active.yaml            # Project config (app, site, bench_path)
+│   ├── session.yaml           # Current step state (workflow, step, last/next action)
+│   ├── inventory.yaml         # Feature list (loaded on demand)
+│   ├── features/              # Detailed per-feature context files
+│   └── context.md             # Session offload (optional)
 ├── inventory_system/           # Project 2
 │   ├── active.yaml
-│   ├── context.md
-│   └── archive/
-└── templates/                  # State templates
+│   ├── session.yaml
+│   ├── inventory.yaml
+│   └── features/
+└── templates/                  # State templates (active, session, inventory)
 ```
 
 ### Switching Projects
@@ -393,16 +399,19 @@ To switch projects:
 
 ### Per-Project Configuration
 
-Each project state includes:
+**active.yaml** (project config — rarely changes):
 - **project**: Display name
 - **app**: Frappe app name
 - **site**: Frappe site for this project (per-project!)
-- **plan**: Path to implementation plan
-- **tsd**: Path to technical spec
-- **brd**: Path to business requirements
-- **phase**: Current development phase
+- **bench_path**: Path to Frappe bench
+
+**session.yaml** (updated at every step boundary):
+- **workflow**: Active workflow name
+- **workflow_step**: Current step number
+- **current_feature**: Feature being worked on
 - **specialist**: Last agent used
-- **tasks**: Current task range
+- **last_action** / **next_action**: Session continuity
+- **updated**: Timestamp
 
 ### Example: Working on Two Projects
 
@@ -627,9 +636,9 @@ Output: apps/my_app/docs/guides/quality-inspection-guide.md
 
 ---
 
-## 12 Workflow Automations
+## 11 Workflow Automations
 
-Frappe-Builder includes 12 pre-built workflow automations:
+Frappe-Builder includes 11 pre-built workflow automations:
 
 ### 1. Analyze Requirements
 **Command:** `/bmad:frappe-builder:workflows:analyze-requirements`
@@ -646,73 +655,67 @@ Creates TSD using 4-tier framework with DocType designs and UX.
 
 Orders implementation tasks by dependencies with User/Developer split.
 
-### 4. Implement Feature
+### 4. Implement Phase (Formal)
+**Command:** `/bmad:frappe-builder:workflows:implement-phase`
+**Skill:** `/bmad-frappe-builder-implement-phase`
+
+Formal TSD-based implementation with 7 structured steps: load TSD → identify components → server logic → client logic → deploy → validate → complete.
+
+### 5. Implement Feature (Iterative)
 **Command:** `/bmad:frappe-builder:workflows:implement-feature`
+**Skill:** `/bmad-frappe-builder-implement-feature`
 
-Generates production-ready code from TSD following all standards.
+Bi-modal iterative development: **[N] New** (gather requirements → quick spec → implement → deploy → test) or **[R] Resume** (select from feature inventory → load context → continue from where you left off).
 
-### 5. Diagnose Issue
+### 6. Diagnose Issue
 **Command:** `/bmad:frappe-builder:workflows:diagnose-issue`
 
 Root cause analysis of errors with anti-pattern detection.
 
-### 6. Generate Tests
+### 7. Generate Tests
 **Command:** `/bmad:frappe-builder:workflows:generate-tests`
 
 Creates test scenarios (Happy/Sad/Edge/Evil) and unittest code.
 
-### 7. Review Code
+### 8. Review Code
 **Command:** `/bmad:frappe-builder:workflows:review-code`
 
 Scans code for anti-patterns and suggests Frappe built-in alternatives.
 
-### 8. Create Guide
+### 9. Create Guide
 **Command:** `/bmad:frappe-builder:workflows:create-guide`
 
 Generates concise user guide (2-3 pages) with ERPNext terminology.
 
-### 9. Create Roadmap
+### 10. Create Roadmap
 **Command:** `/bmad:frappe-builder:workflows:create-roadmap`
 
 Builds phased implementation plan with dependency analysis.
 
-### 10. Prepare Release
+### 11. Prepare Release
 **Command:** `/bmad:frappe-builder:workflows:prepare-release`
 
 Final checklist: code review, tests, docs, release notes.
-
-### 11-12. Additional Workflows
-See workflow directory for complete list.
 
 ---
 
 ## Knowledge Base Architecture
 
-### Hybrid System: Unified KB + Quickrefs
+### Hybrid System: Unified KB + On-Demand Quickrefs
 
 **Unified Knowledge Base** (Comprehensive)
 - Location: `.bmad/frappe-builder/knowledge/`
-- 41 comprehensive markdown files
+- Comprehensive markdown files covering Frappe/ERPNext domains
 - Categories: frappe-framework, erpnext-modules, development, debugging, best-practices
 - **Single source of truth** for all Frappe knowledge
 
-**Agent Sidecar Quickrefs** (Fast reference)
-- Location: `.bmad/frappe-builder/agents/*-sidecar/knowledge/`
-- Distilled 50-100 line quick references
-- Loaded at agent startup for fast access
-- References unified KB for full details
+**Agent Quickrefs** (On-demand)
+- Distilled 50-100 line quick references per specialist domain
+- Loaded **on-demand** when an agent runs relevant commands (JIT, not at startup)
+- Example: `4-tier-quickref.md` loaded when frappe-architect runs `*design`
+- References unified KB for full details when needed
 
-**Token Efficiency:** 88% reduction in knowledge loading (1,518 → 173 lines)
-
-### Example: frappe-architect
-
-**Loads at startup:**
-- `4-tier-quickref.md` (85 lines) - Fast decision tree
-
-**References when needed:**
-- `.bmad/frappe-builder/knowledge/frappe-framework/4-tier-framework.md` (422 lines) - Full examples
-
-Agents stay fast and focused, but have comprehensive knowledge available on-demand!
+**Token Efficiency:** Agents stay lean — only load reference material when the task requires it.
 
 ---
 
@@ -757,12 +760,12 @@ Don't wait for errors to pile up. Use frappe-debugger to:
 
 ### 6. Maintain Project State
 
-Update `active.yaml` as you progress:
-- Current phase
-- Completed tasks
-- Blockers/notes
+Agents automatically write to `session.yaml` at each step boundary — you don't need to manage it manually. What to know:
+- `active.yaml` only needs updating if you change site, app, or bench path
+- `session.yaml` is written by every workflow step (last/next action, current feature, step number)
+- `inventory.yaml` is auto-created and updated by the implement-feature workflow on feature completion
 
-This helps agents understand context when you return.
+This ensures agents always know where you left off when you return.
 
 ### 7. One Project at a Time
 
@@ -860,7 +863,7 @@ Reference in agent critical_actions.
 
 Frappe-Builder provides:
 - ✅ **8 Specialized Agents** covering complete SDLC
-- ✅ **12 Workflow Automations** for common tasks
+- ✅ **11 Workflow Automations** for common tasks
 - ✅ **Multi-Project Support** with isolated state
 - ✅ **Token-Efficient Architecture** (88% reduction)
 - ✅ **Comprehensive Standards** (11 coding principles)

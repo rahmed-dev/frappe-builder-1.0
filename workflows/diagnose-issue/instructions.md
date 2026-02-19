@@ -7,8 +7,8 @@
 ## Frappe Bench Context
 
 **Session Variables:**
-- `{{current_app}}` - Frappe app name
-- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{current_app}}`
+- `{{app}}` - Frappe app name
+- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{app}}`
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 
 **Bench Logs Location:**

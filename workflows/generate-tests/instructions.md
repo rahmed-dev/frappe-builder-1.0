@@ -7,8 +7,8 @@
 ## Frappe Bench Context
 
 **Session Variables:**
-- `{{current_app}}` - Frappe app name
-- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{current_app}}`
+- `{{app}}` - Frappe app name
+- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{app}}`
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 
 <workflow>
@@ -143,22 +143,22 @@ Confirm file saved successfully.
 **Run all tests:**
 ```bash
 cd {frappe_bench_path}
-bench --site {{default_site}} run-tests --app {{current_app}}
+bench --site {{default_site}} run-tests --app {{app}}
 ```
 
 **Run specific test module:**
 ```bash
-bench --site {{default_site}} run-tests --app {{current_app}} --module tests.test_{{feature_name}}
+bench --site {{default_site}} run-tests --app {{app}} --module tests.test_{{feature_name}}
 ```
 
 **Run specific test case:**
 ```bash
-bench --site {{default_site}} run-tests --app {{current_app}} --module tests.test_{{feature_name}} --test Test{{FeatureName}}.test_happy_path
+bench --site {{default_site}} run-tests --app {{app}} --module tests.test_{{feature_name}} --test Test{{FeatureName}}.test_happy_path
 ```
 
 **View test coverage:**
 ```bash
-bench --site {{default_site}} run-tests --app {{current_app}} --coverage
+bench --site {{default_site}} run-tests --app {{app}} --coverage
 ```
 
 Explain how to interpret test results:

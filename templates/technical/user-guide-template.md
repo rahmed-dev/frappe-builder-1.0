@@ -1,5 +1,5 @@
 # {{feature_name}} - User Guide
-**App:** {{current_app}}
+**App:** {{app}}
 **Version:** {{version}}
 **Date:** {{date}}
 

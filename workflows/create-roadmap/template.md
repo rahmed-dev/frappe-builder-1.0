@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Project:** {{current_app}}
+**Project:** {{app}}
 
 **Date:** {{date}}
 

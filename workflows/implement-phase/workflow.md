@@ -20,7 +20,7 @@ This workflow follows BMAD v6 best practices:
 
 - **Just-In-Time Loading**: Load step files only when needed, not upfront
 - **Step Independence**: Each step is self-contained with its own instructions
-- **State Management**: Track progress via active.yaml updates
+- **State Management**: Track progress via session.yaml updates (project config stays in active.yaml)
 - **Menu-Driven**: User controls flow (Auto/Pause/Cancel at key decision points)
 - **Data Separation**: Reference materials in data/ folder, loaded JIT by steps
 
@@ -30,28 +30,30 @@ This workflow follows BMAD v6 best practices:
 
 **BEFORE proceeding, ensure project state is loaded:**
 
+**Load project config:**
 Read from: `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml`
-
-**Populate session variables:**
 - `{{project}}` - Project name
 - `{{app}}` - Current Frappe app
+- `{{site}}` - Active site
 - `{{bench_path}}` - Path to Frappe bench
+
+**Load session state:**
+Read from: `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml`
 - `{{current_feature}}` - Current feature ID
 - `{{current_component}}` - Current component being worked on
 - `{{current_task}}` - Current task description
-- `{{workflow}}` - Active workflow name (set to "implement-phase")
+- `{{workflow}}` - Active workflow name
 - `{{workflow_step}}` - Current step number
-- `{{features}}` - Feature inventory (compact)
 - `{{last_action}}` - Last action taken
 - `{{next_action}}` - Next action to take
 
 **Derived session variables:**
-- `{{current_app}}` - Frappe app name (from active.yaml)
-- `{{app_path}}` - Full path: `{{bench_path}}/apps/{{current_app}}`
+- `{{app}}` - Frappe app name (from active.yaml)
+- `{{app_path}}` - Full path: `{{bench_path}}/apps/{{app}}`
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 
 **Code Output Path:**
-- All code: `{{app_path}}/{{current_app}}/`
+- All code: `{{app_path}}/{{app}}/`
 
 **Benefits:**
 - Lighter context (<200 tokens vs loading full memories)
@@ -77,7 +79,7 @@ Ask user: "Please provide the TSD path (e.g., `tsd/feature-name.md`):"
 **If TSD provided:**
 - Validate file exists
 - Store path in `{{tsd_path}}`
-- Update active.yaml: `tsd: {{tsd_path}}`
+- Update session.yaml: `tsd: {{tsd_path}}`
 - Proceed to Step 1
 
 ---
@@ -86,7 +88,7 @@ Ask user: "Please provide the TSD path (e.g., `tsd/feature-name.md`):"
 
 ### Initialize Workflow State
 
-Update `active.yaml`:
+Update `session.yaml`:
 ```yaml
 workflow: "implement-phase"
 workflow_step: 1
@@ -106,16 +108,15 @@ Load and execute: `steps/step-01-load-tsd.md`
 
 ## Workflow Steps Overview
 
-This workflow consists of 8 focused steps:
+This workflow consists of 7 focused steps:
 
 1. **Load TSD** - Load and understand Technical Specification Document
 2. **Identify Components** - Identify DocTypes, scripts, reports, APIs to build
-3. **Scaffold** - Generate boilerplate code for all components
-4. **Implement Server** - Implement server-side business logic
-5. **Implement Client** - Implement client-side UI behavior (minimal)
-6. **Deploy** - Write files + bench build + migrate + clear cache
-7. **Validate** - Run tests + scan for anti-patterns
-8. **Complete** - Summary + state update + context offload
+3. **Implement Server** - Implement server-side business logic
+4. **Implement Client** - Implement client-side UI behavior (minimal)
+5. **Deploy** - Write files + bench build + migrate + clear cache
+6. **Validate** - Run tests + scan for anti-patterns
+7. **Complete** - State update + completion report
 
 ---
 
@@ -156,7 +157,7 @@ Located in `data/` folder, loaded JIT by steps:
 All bash commands assume:
 - Frappe bench is at `{{bench_path}}`
 - Active site is configured
-- Current app is `{{current_app}}`
+- Current app is `{{app}}`
 
 Commands will be executed from bench directory.
 

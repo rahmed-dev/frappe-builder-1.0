@@ -7,7 +7,7 @@
 ## Frappe Bench Context
 
 **Session Variables:**
-- `{{current_app}}` - Frappe app name
+- `{{app}}` - Frappe app name
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 
 <workflow>

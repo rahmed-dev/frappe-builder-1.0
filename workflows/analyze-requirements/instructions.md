@@ -9,8 +9,8 @@
 **CRITICAL**: This workflow operates in Frappe bench environment.
 
 **Session Variables** (set by agent or workflow):
-- `{{current_app}}` - Frappe app name (e.g., "custom_app")
-- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{current_app}}`
+- `{{app}}` - Frappe app name (e.g., "custom_app")
+- `{{app_path}}` - Full path: `{frappe_bench_path}/apps/{{app}}`
 - `{{docs_path}}` - Documents directory: `{{app_path}}/docs`
 
 **Document Output Path:**

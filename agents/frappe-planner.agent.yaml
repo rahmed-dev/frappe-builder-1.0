@@ -16,15 +16,15 @@ agent:
   # Critical activation steps (Feature-Centric v2.0)
   critical_actions:
     - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
-    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
-    - "LOAD compact state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml"
-    - "EXTRACT variables: {{project}}, {{app}}, {{site}}, {{bench_path}}, {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{features}}, {{last_action}}, {{next_action}}"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml and session.yaml from templates if needed"
+    - "LOAD project config: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → EXTRACT: {{project}}, {{app}}, {{site}}, {{bench_path}}"
+    - "LOAD session state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml → EXTRACT: {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{last_action}}, {{next_action}}"
     - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
-    - "Detect Frappe bench: Check {{frappe_bench_path}}/apps/ → Ask user which app → Set {{current_app}}, {{app_path}}, {{docs_path}}"
-    - "When performing planning work (e.g. *plan, *sequence-tasks), load {agent-folder}/frappe-planner-sidecar/instructions.md and memories.md as needed; use unified KB/quickrefs on-demand"
-    - "At the end of each planning session, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with current_feature, current_task, workflow, specialist='frappe-planner', last_action, next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
+    - "Detect Frappe bench: Check {{frappe_bench_path}}/apps/ → Ask user which app → Set {{app}}, {{app_path}}, {{docs_path}}"
+    - "When performing planning work (e.g. *plan, *sequence-tasks), use memories.md and unified KB/quickrefs on-demand"
+    - "At the end of each planning session, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml with current_feature, current_task, workflow, specialist='frappe-planner', last_action, next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
     - "WebSearch/WebFetch available - Trusted sources: frappeframework.com, docs.erpnext.com, github.com/frappe/*"
 
   persona:
@@ -71,38 +71,12 @@ agent:
       type: action
       action: "display_menu"
 
-    # CORE PLANNING COMMANDS
+    # WORKFLOWS
     - trigger: "*plan"
       title: "Generate phased implementation plan from TSD"
       type: workflow
       workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/create-roadmap/workflow.yaml"
       description: "Takes Technical Specification Document and creates dependency-based phased implementation plan"
-
-    - trigger: "*dependencies"
-      title: "Analyze feature dependencies (what depends on what)"
-      type: action
-      action: "Analyze TSD/features → Identify DocType links, data flow, workflow deps → Categorize blocking vs non-blocking → Present dependency graph"
-
-    - trigger: "*critical-path"
-      title: "Identify critical path (must-build-first features)"
-      type: action
-      action: "Analyze TSD → Foundation features → Features others depend on → Blocking deps → Present critical path with sequence justification"
-
-    - trigger: "*user-tasks"
-      title: "Divide User (configuration) vs Developer (code) tasks"
-      type: action
-      action: "Review TSD → USER: DocTypes, Custom Fields, Workflows, Roles | DEVELOPER: Server Scripts, Client Scripts, Reports, APIs, Jobs → Present division with sequence"
-
-    - trigger: "*parallelize"
-      title: "Identify features that can be built simultaneously"
-      type: action
-      action: "Analyze deps → Features with no deps + different modules + no shared data → Present parallel tracks with benefits"
-
-    # PHASE ANALYSIS
-    - trigger: "*phase-breakdown"
-      title: "Break features into logical phases"
-      type: action
-      action: "Review features → Phase 1: MVP core workflow | Phase 2: Extended functionality | Phase 3: Enhancements → Present with rationale"
 
     - trigger: "*sequence-tasks"
       title: "Order task list by dependencies"
@@ -110,7 +84,7 @@ agent:
       workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/sequence-tasks/workflow.yaml"
       description: "Takes unordered feature list and creates dependency-ordered sequence"
 
-    # RISK & CONTINGENCY
+    # PLANNING ACTIONS
     - trigger: "*risks"
       title: "Identify implementation risks and alternatives"
       type: action
@@ -121,22 +95,11 @@ agent:
       type: action
       action: "Ask what's blocked → Analyze: Mock dep? Parallel features? Simplify? Fastest unblock? → Present recommendations"
 
-    # OPTIMIZATION
-    - trigger: "*optimize-sequence"
-      title: "Optimize feature sequence for faster delivery"
-      type: action
-      action: "Review sequence → Optimize: Parallel work, early value, reduced blocking, critical path → Present optimized sequence"
-
-    - trigger: "*estimate-phases"
-      title: "Provide phase complexity assessment"
-      type: action
-      action: "Per phase: Feature count, complexity level, deps, parallel potential, config vs code ratio → Present complexity overview"
-
     # META
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app"
       type: action
-      action: "Ask which app to switch to, update {{current_app}} and {{docs_path}}, confirm switch"
+      action: "Ask which app to switch to, update {{app}} and {{docs_path}}, confirm switch"
 
     - trigger: "*exit"
       title: "Exit Frappe-Planner persona"

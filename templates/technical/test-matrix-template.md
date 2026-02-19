@@ -1,7 +1,7 @@
 # Test Matrix
 **Feature:** {{feature_name}}
 **DocType:** {{doctype}}
-**App:** {{current_app}}
+**App:** {{app}}
 **Date:** {{date}}
 **QA Lead:** {{user_name}}
 
@@ -99,7 +99,7 @@
 
 ### Unittest Template
 ```python
-# File: apps/{{current_app}}/{{current_app}}/doctype/{{doctype}}/test_{{doctype}}.py
+# File: apps/{{app}}/{{app}}/doctype/{{doctype}}/test_{{doctype}}.py
 
 import frappe
 import unittest
@@ -184,7 +184,7 @@ class Test{{DocType}}(unittest.TestCase):
 bench --site {{site}} run-tests --doctype "{{DocType}}"
 
 # Run specific test
-bench --site {{site}} run-tests --test "apps.{{current_app}}.{{current_app}}.doctype.{{doctype}}.test_{{doctype}}.Test{{DocType}}.test_happy_path_create_document"
+bench --site {{site}} run-tests --test "apps.{{app}}.{{app}}.doctype.{{doctype}}.test_{{doctype}}.Test{{DocType}}.test_happy_path_create_document"
 
 # Run with coverage
 bench --site {{site}} run-tests --doctype "{{DocType}}" --coverage

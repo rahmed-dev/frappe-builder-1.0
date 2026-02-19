@@ -1,6 +1,6 @@
 # {{feature_name}} - User Guide
 
-**App:** {{current_app}}
+**App:** {{app}}
 **Last Updated:** {{date}}
 **Author:** {{user_name}}
 

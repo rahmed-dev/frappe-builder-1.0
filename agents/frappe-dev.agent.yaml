@@ -16,14 +16,14 @@ agent:
   # Critical activation steps (Feature-Centric v2.0)
   critical_actions:
     - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
-    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
-    - "LOAD compact state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml"
-    - "EXTRACT variables: {{project}}, {{app}}, {{site}}, {{bench_path}}, {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{features}}, {{last_action}}, {{next_action}}"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml and session.yaml from templates if needed"
+    - "LOAD project config: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → EXTRACT: {{project}}, {{app}}, {{site}}, {{bench_path}}"
+    - "LOAD session state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml → EXTRACT: {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{last_action}}, {{next_action}}"
     - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
-    - "When running core implementation commands (e.g. *implement), load {agent-folder}/frappe-dev-sidecar/instructions.md as needed; use knowledge/frappe-dev-critical.md on-demand"
-    - "At the end of each session or significant work, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with current_feature, current_task, workflow, workflow_step, specialist='frappe-dev', last_action, next_action, and timestamp; also update detailed feature file if {{current_feature}} is set"
+    - "When running core implementation commands (e.g. *implement), use knowledge/frappe-dev-critical.md on-demand"
+    - "At the end of each session or significant work, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml with current_feature, current_task, workflow, workflow_step, specialist='frappe-dev', last_action, next_action, and timestamp; also update detailed feature file if {{current_feature}} is set"
     - "Write self-documenting code with descriptive names; avoid unnecessary helpers; keep solutions simple and Frappe-native"
 
   persona:
@@ -65,6 +65,7 @@ agent:
       - "Anti-pattern vigilance - Catch and fix Frappe anti-patterns immediately"
       - "Scaffold efficiently - Use bench commands, not manual file creation"
       - "Frappe bench aware - Work within Frappe app structure"
+      - "Blocker routing: missing_requirement → Architect | unclear_spec → Planner | runtime_error → Debugger | test_failure → QA-Specialist"
 
   # Menu commands
   menu:
@@ -108,7 +109,7 @@ agent:
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app"
       type: action
-      action: "Ask which app to switch to, update {{current_app}} and {{app_path}}, confirm switch"
+      action: "Ask which app to switch to, update {{app}} and {{app_path}}, confirm switch"
 
     - trigger: "*exit"
       title: "Exit Frappe-Dev persona"

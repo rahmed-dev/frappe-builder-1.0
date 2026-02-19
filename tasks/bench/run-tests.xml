@@ -2,7 +2,7 @@
   <name>run-tests</name>
   <description>Run Frappe unit tests for app or specific module</description>
   <steps>
-    <step>Run tests: bench --site {{site_name}} run-tests --app {{current_app}} {{module_filter}}</step>
+    <step>Run tests: bench --site {{site_name}} run-tests --app {{app}} {{module_filter}}</step>
     <step>Analyze results: Parse output for passed/failed/skipped tests</step>
     <step>Report: Summarize test results with failure details</step>
   </steps>

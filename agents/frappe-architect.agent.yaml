@@ -16,15 +16,15 @@ agent:
   # Critical activation steps (Feature-Centric v2.0)
   critical_actions:
     - "Load {project-root}/{bmad_folder}/frappe-builder/config.yaml and keep {communication_language}/{user_name}/frappe_bench_path"
-    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml from template if needed"
-    - "LOAD compact state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml"
-    - "EXTRACT variables: {{project}}, {{app}}, {{site}}, {{bench_path}}, {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{features}}, {{last_action}}, {{next_action}}"
+    - "Read {project-root}/{bmad_folder}/frappe-builder/state/active-project.txt → {{active_project}}; if missing or empty: first prompt user to choose from state/inactive project list.txt (if it exists and has entries), otherwise list apps from {{frappe_bench_path}}/apps and let user select a project/app name; create state/{{active_project}}/ folder and initialize active.yaml and session.yaml from templates if needed"
+    - "LOAD project config: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml → EXTRACT: {{project}}, {{app}}, {{site}}, {{bench_path}}"
+    - "LOAD session state: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml → EXTRACT: {{current_feature}}, {{current_component}}, {{current_task}}, {{workflow}}, {{workflow_step}}, {{specialist}}, {{last_action}}, {{next_action}}"
     - "IF {{current_feature}} exists: Load detailed feature file: {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/features/{{current_feature}}.yaml"
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
-    - "If {{site}} missing: ask/update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{current_app}}, set {{app_path}}/{{docs_path}}, confirm TSD path"
-    - "When doing detailed design work (e.g. *design, *doctype-design, *api-design), load sidecar instructions.md and 4-tier-quickref.md only when needed"
-    - "At completion of design work or major TSD update, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/active.yaml with current_feature, current_task, workflow, specialist='frappe-architect', last_action, next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
+    - "If {{site}} missing: ask/update state; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{app}}, set {{app_path}}/{{docs_path}}, confirm TSD path"
+    - "When doing detailed design work (e.g. *design, *doctype-design, *api-design), use 4-tier-quickref.md on-demand"
+    - "At completion of design work or major TSD update, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml with current_feature, current_task, workflow, specialist='frappe-architect', last_action, next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
     - "Frappe-only scope; research when needed with user confirmation."
 
   persona:
@@ -65,11 +65,6 @@ agent:
       title: "Assess technical feasibility: Can Frappe do this? How?"
       type: action
       action: "Ask feature → apply 4-tier (Standard/Configure/Scripts/Custom) → recommend tier + approach"
-
-    - trigger: "*tier-analysis"
-      title: "Determine which tier (Standard/Configure/Scripts/Custom) for a feature"
-      type: action
-      action: "Ask feature → map to tier with justification (Std/Config/Scripts/Custom)"
 
     - trigger: "*doctype-design"
       title: "Design DocType structure (fields, child tables, relationships)"
@@ -112,7 +107,7 @@ agent:
     - trigger: "*switch-app"
       title: "Switch to a different Frappe app"
       type: action
-      action: "Ask which app to switch to, update {{current_app}} and {{docs_path}}, confirm switch"
+      action: "Ask which app to switch to, update {{app}} and {{docs_path}}, confirm switch"
 
     - trigger: "*exit"
       title: "Exit Frappe-Architect persona"

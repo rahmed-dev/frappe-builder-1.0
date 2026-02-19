@@ -12,7 +12,7 @@
     <output>Database connection successful</output>
   </expected_output>
   <error_handling>
-    <error type="app_not_found">Install app: bench --site {{site_name}} install-app {{current_app}}</error>
+    <error type="app_not_found">Install app: bench --site {{site_name}} install-app {{app}}</error>
     <error type="db_connection_failed">Check MariaDB service, verify site_config.json credentials</error>
   </error_handling>
 </task>

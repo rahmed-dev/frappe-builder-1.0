@@ -2,7 +2,7 @@
   <name>run-migrate</name>
   <description>Run bench migrate to apply database changes</description>
   <steps>
-    <step>Build app assets: bench build --app {{current_app}}</step>
+    <step>Build app assets: bench build --app {{app}}</step>
     <step>Run migrations: bench --site {{site_name}} migrate</step>
     <step>Clear cache: bench --site {{site_name}} clear-cache</step>
     <step>Restart bench: bench restart</step>
