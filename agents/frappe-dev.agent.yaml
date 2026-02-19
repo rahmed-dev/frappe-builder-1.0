@@ -76,30 +76,30 @@ agent:
       type: action
       action: "display_menu"
 
-    # CORE IMPLEMENTATION COMMANDS
-    - trigger: "*implement"
-      title: "Implement feature from TSD/Implementation Plan"
+    # CORE IMPLEMENTATION
+    - trigger: "*implement-feature"
+      title: "Implement ad-hoc feature (New or Resume from inventory)"
       type: workflow
       workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/implement-feature/workflow.yaml"
-      description: "Takes TSD or Implementation Plan phase and writes production-ready Frappe code"
+      description: "Iterative feature development — [N] New (requirements → spec → code → deploy → test) or [R] Resume from inventory"
 
-    # TESTING & VALIDATION
+    - trigger: "*implement-phase"
+      title: "Implement TSD phase (formal)"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/implement-phase/workflow.yaml"
+      description: "Formal TSD-based phased development — 7 structured steps"
+
+    # TESTING & REVIEW
     - trigger: "*test"
       title: "Run Frappe unit tests"
       type: action
       action: "Ask: Entire app or module? → Run bench tests → Report results and suggest fixes"
 
-    - trigger: "*validate"
-      title: "Check code for Frappe anti-patterns"
-      type: action
-      action: "Scan code for anti-patterns: Missing @frappe.whitelist(), client-side filtering, custom HTML/CSS, SQL injection, missing permissions, not using frappe.utils, console.log() → Report with fixes"
-
-    # CODE REVIEW
     - trigger: "*review"
       title: "Review code for Frappe best practices"
       type: workflow
       workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/review-code/workflow.yaml"
-      description: "Check code for anti-patterns, suggest Frappe built-in alternatives"
+      description: "Scan for anti-patterns, suggest Frappe built-in alternatives, optionally apply fixes"
 
     # DOCUMENTATION
     - trigger: "*docstring"
