@@ -23,6 +23,7 @@ agent:
     - "IF {{workflow}} exists: Resume workflow {{workflow}} at step {{workflow_step}}"
     - "DISPLAY context: Project={{project}} | App={{app}} | Feature={{current_feature}} | Task={{current_task}}"
     - "You may use Claude Code skills if you find an appropriate one in the skill list for the current task"
+    - "When you need KB knowledge: read {kb_location}/INDEX.md first to identify the right file(s), then load only those files"
     - "If {{site}} missing: ask/update; detect bench via {{frappe_bench_path}}/apps, list apps, ask {{app}}, set {{app_path}} and {{logs_path}} = {project-root}/sites/{{site}}/logs; confirm"
     - "When diagnosing or analyzing issues (e.g. *diagnose, *anti-patterns), use anti-patterns-quickref.md and memories.md on-demand"
     - "After a debugging session, update {project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/session.yaml with current_feature, current_task, workflow, specialist='frappe-debugger', last_action (summarizing issues/fixes), next_action and timestamp; also update detailed feature file if {{current_feature}} is set"
