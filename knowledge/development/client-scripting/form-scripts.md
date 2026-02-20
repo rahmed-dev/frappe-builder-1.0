@@ -124,6 +124,54 @@ frappe.msgprint(__('Task updated successfully'));
 __('Processed {0} items', [count]);
 ```
 
+## Single DocType Used as a Tool Form
+
+When a Single DocType is used as a UI tool (not for storing data), standard
+form patterns behave unexpectedly. Confirmed through real usage (2026-02-20).
+
+### Hiding the Save button
+
+```javascript
+refresh(frm) {
+    frm.disable_save(); // removes Save button AND disables Ctrl+S
+}
+```
+
+### Clearing fields after an action
+
+❌ `frm.set_value(field, null)` — marks the form dirty, leaves unsaved
+state indicator even after the action completes.
+
+❌ `frm.reload_doc()` — reloads from DB. Since Single DocTypes persist
+field values, this brings back previously saved values, not a clean form.
+
+✅ **Correct approach:** set directly on `frm.doc`, refresh the UI,
+then save back to DB to persist the empty state.
+
+```javascript
+function clear_tool_form(frm) {
+    const fields_to_clear = ["field_a", "field_b", "field_c"];
+
+    // Direct assignment — no events fired, no dirty marking
+    fields_to_clear.forEach((fieldname) => {
+        frm.doc[fieldname] = null;
+    });
+
+    // Restore Check fields to their defaults
+    frm.doc.maintain_stock = 1;
+
+    // Refresh UI then persist cleared state back to DB
+    frm.refresh_fields();
+    frm.save();
+}
+```
+
+**Why this works:** `frm.doc[field] = null` bypasses Frappe's event/dirty
+system. `frm.save()` persists the empty state so the form is in a clean
+saved state ready for the next entry.
+
+---
+
 ## Minimalist Code
 
 ❌ **Avoid:**
