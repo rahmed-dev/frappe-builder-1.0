@@ -28,6 +28,19 @@
 <action>For each requirement, choose lowest viable tier (Standard → Configure → Scripts → Custom). Note DocTypes/workflows/config needs, script needs, or custom DocType need. Document tier + rationale per requirement.</action>
 
 <template-output>tier_analysis</template-output>
+
+<decision-capture>
+After completing tier analysis, significant architectural decisions have been made (e.g., choosing Configure over Custom, selecting background queue over synchronous processing, opting for a new DocType vs extending an existing one).
+
+Prompt: **"Architectural decision detected — log this to decisions.yaml?"**
+
+If yes:
+- Append entry to `{project-root}/{bmad_folder}/frappe-builder/state/{{active_project}}/decisions.yaml` (create from template if missing)
+- Set `has_decisions: true` in session.yaml
+- Increment `decision_count` in `features/{{current_feature}}.yaml` if `{{current_feature}}` is set
+
+If no: continue without logging.
+</decision-capture>
 </step>
 
 <step n="3" goal="Design DocType structures for Tier 4 requirements">

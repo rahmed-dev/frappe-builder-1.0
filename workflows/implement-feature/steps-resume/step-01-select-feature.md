@@ -38,6 +38,20 @@ From inventory.yaml (create from template if missing):
 
 ---
 
+## State Validation (Resilient State v1.1)
+
+**Before proceeding, validate resume state:**
+
+1. **Feature file check:** If `{{current_feature}}` is set in session.yaml, confirm `state/{{active_project}}/features/{{current_feature}}.yaml` exists
+   - If missing → warn: "Feature file not found for `{{current_feature}}`. State may be stale — proceeding with inventory selection."
+2. **Step integrity:** Confirm `{{workflow_step}}` is a valid integer (not empty or NaN)
+   - If invalid → reset to step 1, continue
+3. **Timestamp check:** If `{{updated}}` is set and older than 7 days → soft warning: "Last session was over 7 days ago. Verifying state before proceeding."
+
+**Silent pass** if all checks green. **One-line warning** if any check fails. Never block — always recover and continue.
+
+---
+
 ## Step Instructions
 
 ### 1. Load Feature Inventory

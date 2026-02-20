@@ -18,6 +18,19 @@
 
 <workflow>
 
+<step n="0" goal="Validate session state before diagnosis">
+<action>Validate resume state before beginning diagnosis:
+
+1. **Feature file check:** If `{{current_feature}}` is set → confirm `state/{{active_project}}/features/{{current_feature}}.yaml` exists
+   - If missing → warn: "Feature file not found for `{{current_feature}}`. Proceeding with diagnosis without feature context."
+2. **Step integrity:** Confirm `{{workflow_step}}` is a valid integer
+   - If invalid → reset to 0, continue
+3. **Timestamp check:** If `{{updated}}` is set and older than 7 days → soft warning: "Last session was over 7 days ago — state may be stale."
+
+Silent pass if all checks green. One-line warning if any check fails. Never block.
+</action>
+</step>
+
 <step n="1" goal="Understand the problem">
 <action>Ask what the issue is (log error, traceback, unexpected behavior, performance). Capture brief context.</action>
 

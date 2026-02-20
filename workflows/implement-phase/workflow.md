@@ -22,6 +22,7 @@ This workflow follows BMAD v6 best practices:
 - **Just-In-Time Loading**: Load step files only when needed, not upfront
 - **Step Independence**: Each step is self-contained with its own instructions
 - **State Management**: Track progress via session.yaml updates (project config stays in active.yaml)
+- **Quality Gate**: At the end of every step, verify session.yaml `updated` timestamp changed since the step began — if not, write it now and log `last_action: "State integrity restored (step boundary write recovered)"`. Silent if no recovery needed.
 - **Menu-Driven**: User controls flow (Auto/Pause/Cancel at key decision points)
 - **Data Separation**: Reference materials in data/ folder, loaded JIT by steps
 

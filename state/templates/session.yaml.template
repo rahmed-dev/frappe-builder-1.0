@@ -15,3 +15,9 @@ next_action: ""           # Imperative: what to do next
 
 specialist: ""            # Agent currently handling the work
 updated: ""               # ISO 8601 timestamp
+
+has_decisions: false      # Gates JIT load of decisions.yaml — set true when first decision is logged
+recent_actions:           # Rolling last 3 actions (FIFO) — breadcrumb trail for agent activation
+  - action: ""
+    specialist: ""
+    timestamp: ""

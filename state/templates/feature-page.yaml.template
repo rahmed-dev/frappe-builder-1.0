@@ -37,6 +37,7 @@ components:
     #   purpose: ""
     #   status: "planned" | "completed"
 
+decision_count: 0     # Incremented when decisions.yaml entries reference this feature
 progress: "0/0"       # "completed/total" e.g. "3/7"
 
 notes: ""             # Free-text, updated each session

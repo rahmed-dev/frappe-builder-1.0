@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(_bmad/frappe-builder/state/**)",
+      "Edit(_bmad/frappe-builder/state/**)",
+      "Write(_bmad/frappe-builder/state/**)"
+    ]
+  }
+}
