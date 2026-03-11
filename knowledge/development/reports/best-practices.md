@@ -62,6 +62,99 @@ data = frappe.db.sql("""
 """, {"status": status}, as_dict=True)
 ```
 
+## User Permissions in Reports (CRITICAL)
+
+Frappe's User Permission system only applies automatically when you use `frappe.get_list()`.
+Query Builder (`frappe.qb`) executes directly and **bypasses permissions entirely**.
+
+### Method Comparison
+
+| Method | User Permissions Applied? | Use Case |
+|--------|--------------------------|----------|
+| `frappe.get_list()` | ✅ Yes (via DatabaseQuery) | Standard data fetching — default choice |
+| `frappe.get_all()` | ⚠️ Only if `ignore_permissions=False` | Admin-only queries |
+| `frappe.db.sql()` + `build_match_conditions()` | ✅ Manual, if applied correctly | Complex joins, aggregations |
+| `frappe.qb` (Query Builder) | ❌ No — avoid in reports | — |
+| `frappe.db.sql()` alone | ❌ No | Internal/admin tasks only |
+
+### ✅ Pattern 1: frappe.get_list() — Use by Default
+
+```python
+def get_invoices(filters):
+    """Fetch Sales Invoices respecting User Permissions automatically."""
+    query_filters = {"docstatus": 1}
+
+    if filters.get("company"):
+        query_filters["company"] = filters.company
+
+    if filters.get("from_date") and filters.get("to_date"):
+        query_filters["posting_date"] = ["between", [filters.from_date, filters.to_date]]
+
+    return frappe.get_list(
+        "Sales Invoice",
+        filters=query_filters,
+        fields=["name", "customer", "employee", "posting_date", "grand_total"],
+        order_by="posting_date desc, name desc"
+    )
+    # User Permissions enforced automatically — same as List View ✅
+```
+
+### ⚠️ Pattern 2: Custom SQL — Apply match_conditions Manually
+
+When complex joins or aggregations require raw SQL:
+
+```python
+from frappe.desk.reportview import build_match_conditions
+
+def get_invoice_summary(filters):
+    """Custom SQL with manual User Permission enforcement."""
+    query = """
+        SELECT si.name, si.customer, emp.employee_name, si.grand_total
+        FROM `tabSales Invoice` si
+        LEFT JOIN `tabEmployee` emp ON si.employee = emp.name
+        WHERE si.docstatus = 1
+          AND si.company = %(company)s
+    """
+
+    match_conditions = build_match_conditions("Sales Invoice")
+    if match_conditions:
+        query += f" AND ({match_conditions})"
+
+    query += " ORDER BY si.posting_date DESC"
+    return frappe.db.sql(query, {"company": filters.company}, as_dict=True)
+```
+
+### ❌ Anti-Pattern: Query Builder Bypasses Permissions
+
+```python
+# BAD — bypasses User Permissions, users see data they shouldn't
+si = frappe.qb.DocType("Sales Invoice")
+query = frappe.qb.from_(si).select(si.star).where(si.docstatus == 1)
+return query.run(as_dict=True)
+```
+
+**Why `frappe.qb` fails:** It executes directly against the database without going through `DatabaseQuery`, which is the class that reads and applies User Permissions.
+
+### Testing
+
+Always test with a restricted user, not Administrator:
+
+```python
+# Debug: check what permissions a user has
+user_perms = frappe.permissions.get_user_permissions("test.user@example.com")
+
+# Debug: check what SQL conditions are generated
+from frappe.desk.reportview import build_match_conditions
+print(build_match_conditions("Sales Invoice"))
+```
+
+**Test checklist:**
+1. Test as restricted user → verify data isolation
+2. Test as Administrator → verify all data visible
+3. Test edge cases: NULL field values, multiple permissions
+
+---
+
 ## Column Definitions
 
 ```python

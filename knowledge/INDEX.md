@@ -49,7 +49,7 @@ Use this index to find the right file before loading KB content.
 ### reports/
 | File | Covers |
 |------|--------|
-| `development/reports/best-practices.md` | Report design best practices: performance, filters, formatting |
+| `development/reports/best-practices.md` | Report design best practices: performance, filters, formatting, User Permissions enforcement (frappe.get_list vs frappe.qb) |
 | `development/reports/pf-for-reports-via-ui.md` | How to create Print Formats for Script Reports using the Frappe UI (no code) |
 | `development/reports/script-reports.md` | Script Report implementation: Python + JS, columns, filters, data return |
 
