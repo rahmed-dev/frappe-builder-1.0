@@ -5,6 +5,7 @@
 
 code: frappe-builder
 name: "Frappe-Builder"
+version: "1.0.0"
 default_selected: false
 
 # Welcome message shown during installation
@@ -31,16 +32,16 @@ frappe_bench_path:
 
 # Module Infrastructure Paths (STATIC)
 kb_location:
-  result: "{project-root}/.bmad/frappe-builder/knowledge-base"
+  result: "{project-root}/_bmad/frappe-builder/knowledge-base"
 
 module_data_path:
-  result: "{project-root}/.bmad/frappe-builder/data"
+  result: "{project-root}/_bmad/frappe-builder/data"
 
 standards_path:
-  result: "{project-root}/.bmad/frappe-builder/standards"
+  result: "{project-root}/_bmad/frappe-builder/standards"
 
 templates_path:
-  result: "{project-root}/.bmad/frappe-builder/templates"
+  result: "{project-root}/_bmad/frappe-builder/templates"
 
 # Agent Bench Awareness (used by all agents at startup)
 apps_directory:

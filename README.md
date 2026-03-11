@@ -121,6 +121,23 @@ Frappe-Nexus will:
 2. Route you to the appropriate specialist agent
 3. Guide you through the Frappe development workflow
 
+## Updating / Reinstalling
+
+When you make changes to the frappe-builder source and want to push updates to an already-installed bench, always provide `--custom-content` pointing to the module source. This bypasses the installer's cache lookup and re-caches fresh from your source.
+
+```bash
+# From your BMAD-METHOD directory
+node tools/cli/bmad-cli.js install --custom-content <path-to-frappe-builder-source>
+```
+
+**Example:**
+```bash
+node tools/cli/bmad-cli.js install --custom-content /path/to/frappe-builder
+```
+
+> **Why `--custom-content` is required for updates:**
+> Without it, the BMAD installer attempts to re-cache the module from a stored internal cache path. If that cache directory is missing or stale, the installation will fail. Providing `--custom-content` with the source path always works reliably.
+
 ## What's Next?
 
 See **USER-GUIDE.md** for:
