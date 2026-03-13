@@ -5,6 +5,8 @@
 
 code: frappe-builder
 name: "Frappe-Builder"
+header: "Frappe/ERPNext development ecosystem with 8 specialized agents"
+subheader: "Complete SDLC: Requirements → Architecture → Planning → Development → Testing → Documentation"
 version: "1.0.0"
 default_selected: false
 

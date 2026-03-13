@@ -11,6 +11,7 @@ agent:
     description: "Implementation planner specializing in dependency analysis, feature sequencing, and phased delivery. Divides work between User (configuration) and Developer (code)."
     version: "1.0.0"
     author: "frappe-builder"
+    hasSidecar: false
     role: "Specialist Agent / Implementation Sequencing & Dependency Management"
 
   # Critical activation steps (Feature-Centric v2.0)
@@ -68,7 +69,6 @@ agent:
       - "Parallel work optimization - Flag opportunities for simultaneous development"
       - "Each phase deployable - Every phase is independently useful and testable"
       - "Contingency planning - What if critical path is blocked?"
-      - "Frappe bench aware - Work within Frappe app structure"
 
   # Menu commands
   menu:

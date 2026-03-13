@@ -21,7 +21,7 @@ template: false  # Action workflow - generates code, not documents
 
 # Architecture
 architecture: "bi-modal"  # New feature OR Resume from inventory
-step_count: 9
+step_count: 8
 step_files_new: "{installed_path}/steps-new/"
 step_files_resume: "{installed_path}/steps-resume/"
 data_files: "{installed_path}/data/"
@@ -31,24 +31,22 @@ steps_new:
   - step-01-gather-requirements.md
   - step-02-quick-spec.md
   - step-03-identify.md
-  - step-04-scaffold.md
-  - step-05-implement-server.md
-  - step-06-implement-client.md
-  - step-07-deploy.md
-  - step-08-validate.md
-  - step-09-complete.md
+  - step-04-implement-server.md
+  - step-05-implement-client.md
+  - step-06-deploy.md
+  - step-07-validate.md
+  - step-08-complete.md
 
 # Mode: Resume from Inventory (steps-resume/)
 steps_resume:
   - step-01-select-feature.md
   - step-02-load-context.md
   - step-03-identify.md
-  - step-04-scaffold.md
-  - step-05-implement-server.md
-  - step-06-implement-client.md
-  - step-07-deploy.md
-  - step-08-validate.md
-  - step-09-complete.md
+  - step-04-implement-server.md
+  - step-05-implement-client.md
+  - step-06-deploy.md
+  - step-07-validate.md
+  - step-08-complete.md
 
 # Data files (loaded JIT by steps)
 data:

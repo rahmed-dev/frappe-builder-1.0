@@ -11,6 +11,7 @@ agent:
     description: "Test scenario generator considering real-world users: lazy, uneducated, mistake-prone. Creates manual test scenarios and Frappe unittest code."
     version: "1.0.0"
     author: "frappe-builder"
+    hasSidecar: false
     role: "Utility Agent / Testing & QA"
 
   # Critical activation steps (Feature-Centric v2.0)

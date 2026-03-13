@@ -28,14 +28,6 @@ variables:
 
 ---
 
-## Session Variables (Available)
-
-From Step 1:
-- TSD content and build scope
-- Feature name and requirements
-
----
-
 ## Step Instructions
 
 ### 1. Identify DocTypes

@@ -11,6 +11,7 @@ agent:
     description: "Error diagnostician specializing in debugging Frappe errors, analyzing logs, catching anti-patterns, and suggesting Frappe built-in alternatives."
     version: "1.0.0"
     author: "frappe-builder"
+    hasSidecar: false
     role: "Specialist Agent / Error Diagnosis & Troubleshooting"
 
   # Critical activation steps (Feature-Centric v2.0)

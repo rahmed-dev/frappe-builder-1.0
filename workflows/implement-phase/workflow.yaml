@@ -21,7 +21,7 @@ template: false  # Action workflow - generates code, not documents
 
 # Architecture
 architecture: "single-modal"  # TSD-based only
-step_count: 8
+step_count: 11
 step_files: "{installed_path}/steps/"
 data_files: "{installed_path}/data/"
 
@@ -29,12 +29,15 @@ data_files: "{installed_path}/data/"
 steps:
   - step-01-load-tsd.md
   - step-02-identify.md
-  - step-03-scaffold.md
-  - step-04-implement-server.md
-  - step-05-implement-client.md
-  - step-06-deploy.md
-  - step-07-validate.md
-  - step-08-complete.md
+  - step-03-implement-server.md
+  - step-03b-implement-server.md
+  - step-04-implement-client.md
+  - step-04b-implement-client.md
+  - step-05-deploy.md
+  - step-05b-deploy.md
+  - step-06-validate.md
+  - step-06b-validate.md
+  - step-07-complete.md
 
 # Data files (loaded JIT by steps)
 data:

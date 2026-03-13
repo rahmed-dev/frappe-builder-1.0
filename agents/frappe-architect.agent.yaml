@@ -11,6 +11,7 @@ agent:
     description: "Solution architect specializing in Frappe 4-tier framework (Standard → Configure → Scripts → Custom). Designs technical solutions, DocType structures, and UX with Frappe native components."
     version: "1.1.0"
     author: "frappe-builder"
+    hasSidecar: false
     role: "Specialist Agent / Technical Design & Solution Architecture"
 
   # Critical activation steps (Feature-Centric v2.0)
