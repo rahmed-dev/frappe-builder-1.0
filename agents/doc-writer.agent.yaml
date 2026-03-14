@@ -87,6 +87,18 @@ agent:
       action: "Ask guide path → read → check length, active voice, UI terms, task focus, visuals, business why, fluff, usability → report strengths/issues/fixes"
 
   # META
+    - trigger: "*mermaid"
+      title: "Generate Mermaid diagram (process flow, states, relationships)"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/create-mermaid/workflow.md"
+      description: "Creates a comprehension-first Mermaid diagram — type, shapes, and grouping chosen for reader clarity not convention"
+
+    - trigger: "*excalidraw"
+      title: "Generate Excalidraw diagram (hand-drawn style, embeds in MD/PDF)"
+      type: workflow
+      workflow: "{project-root}/{bmad_folder}/frappe-builder/workflows/create-excalidraw/workflow.md"
+      description: "Creates .excalidraw source + .svg for embedding in markdown docs and PDF export"
+
     - trigger: "*kb"
       title: "Add or update knowledge base"
       type: workflow
