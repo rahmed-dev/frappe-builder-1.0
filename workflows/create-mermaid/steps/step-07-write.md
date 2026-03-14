@@ -97,3 +97,20 @@ Display: "**Select:** [C] Continue to wrap up"
 - Proceeding without writing the file
 
 **Master Rule:** Populate completely. Write once. Confirm the path.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not proceed to step-08 until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "create-mermaid"
+workflow_step: 7
+workflow_status: "in-progress"
+last_action: "Written Mermaid diagram file: {{diagram_name}}-diagram.md"
+next_action: "Deliver completion summary to user"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

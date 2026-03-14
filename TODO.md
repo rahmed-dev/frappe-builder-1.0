@@ -12,3 +12,4 @@
 
 - [x] Validate module with agent sub-process deep validation (8 built agents)
 - [x] Validate implement-feature and implement-phase workflows with workflow sub-process deep validation
+- [x] Implement state cascade enforcement via blocking gates across all workflows (replaced MCP server approach — gates embedded directly in step files; deploy gate uses [C]/[M] prompt to capture completion state when step-08 is skipped)

@@ -100,3 +100,20 @@ Display: "**Select:** [C] Continue to wrap up"
 - Unresolved placeholders in companion `.md`
 
 **Master Rule:** All three files. Complete. Confirmed.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not proceed to step-08 until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "create-excalidraw"
+workflow_step: 7
+workflow_status: "in-progress"
+last_action: "Written all three diagram files: {{diagram_name}} (.excalidraw + .svg + -diagram.md)"
+next_action: "Deliver completion summary to user"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

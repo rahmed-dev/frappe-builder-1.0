@@ -169,3 +169,20 @@ Based on user's confirmed resume point:
 - Resume from Complete → `steps-resume/step-09-complete.md`
 
 Default (if unsure): `steps-resume/step-03-identify.md`
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 2
+workflow_status: "in-progress"
+last_action: "Loaded context for {{selected_feature_id}}, resume point confirmed at step {{resume_step}}"
+next_action: "Resume implementation from step {{resume_step}}"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

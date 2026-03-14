@@ -75,3 +75,8 @@ notes: "Excalidraw diagram created: {{diagram_name}}"
 - Not explaining what the user can do with each file
 
 **Master Rule:** Update state. Name every file. Tell the user what comes next.
+
+---
+## Note on state gate
+
+The session.yaml state gate already fired at step-07-write. The session.yaml update in this step is now redundant but is kept for completeness. If the step-07 gate was confirmed, this step does not need to re-write session.yaml — it may update it with `workflow_step: 8` and `workflow_status: "completed"` if desired, but failure to do so is not a blocking condition.

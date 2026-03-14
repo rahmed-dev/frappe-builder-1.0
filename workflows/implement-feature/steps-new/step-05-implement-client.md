@@ -145,3 +145,28 @@ STOP here. User can review client scripts and resume later.
 
 **If [C]ancel:**
 EXIT workflow. Update state and preserve progress.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until all writes below are confirmed.**
+
+**1. Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 5
+workflow_status: "in-progress"
+last_action: "Implemented client-side UI behavior — [X] scripts with [Y] behaviors"
+next_action: "Deploy code to Frappe bench"
+updated: "{{ISO timestamp}}"
+```
+
+**2. Update `state/{{active_project}}/features/{{feature_id}}.yaml`:**
+```yaml
+# Mark client components as in-progress:
+{{client_component_id}}:
+  status: "in-progress"
+notes: "Client-side implementation in progress."
+```
+
+**If any write fails → HALT. Report the failure. Do not proceed.**

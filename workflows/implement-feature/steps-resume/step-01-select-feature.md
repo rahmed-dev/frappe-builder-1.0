@@ -150,3 +150,20 @@ updated: "[current timestamp]"
 **→ Load and execute:** `steps-resume/step-02-load-context.md`
 
 Continue to load feature context.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 1
+workflow_status: "in-progress"
+last_action: "Selected feature to resume: {{selected_feature_id}}"
+next_action: "Load feature context and understand where work left off"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

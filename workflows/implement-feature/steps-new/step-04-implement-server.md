@@ -172,3 +172,28 @@ STOP here. User can review server logic and resume later.
 
 **If [C]ancel:**
 EXIT workflow. Update state and preserve progress.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until all writes below are confirmed.**
+
+**1. Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 4
+workflow_status: "in-progress"
+last_action: "Implemented server-side logic — [X] controllers, [Y] APIs, [Z] scheduled jobs"
+next_action: "Implement client-side UI behavior"
+updated: "{{ISO timestamp}}"
+```
+
+**2. Update `state/{{active_project}}/features/{{feature_id}}.yaml`:**
+```yaml
+# Mark server components as in-progress:
+{{server_component_id}}:
+  status: "in-progress"
+notes: "Server-side implementation in progress."
+```
+
+**If any write fails → HALT. Report the failure. Do not proceed.**

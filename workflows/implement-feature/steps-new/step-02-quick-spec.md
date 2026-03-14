@@ -142,3 +142,20 @@ spec: "docs/features/{{feature_id}}-spec.md"
 **→ Load and execute:** `steps-new/step-03-identify.md`
 
 Continue to component identification.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 2
+workflow_status: "in-progress"
+last_action: "Created and saved quick spec for {{feature_name}}"
+next_action: "Identify all components to implement"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

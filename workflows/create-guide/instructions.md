@@ -138,6 +138,10 @@ notes: "User guide completed: {{guide_title}}"
 </action>
 
 <template-output>state_updated</template-output>
+<gate>
+HALT: Do not respond with the next step until session.yaml is confirmed written.
+If the write fails or is skipped, report the failure and stop.
+</gate>
 </step>
 
 </workflow>

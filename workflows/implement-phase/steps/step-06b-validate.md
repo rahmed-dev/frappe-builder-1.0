@@ -141,3 +141,26 @@ Record known issues, then proceed to Step 7.
 
 **If [C]ancel:**
 EXIT workflow. Update state and preserve progress.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until all writes below are confirmed.**
+
+**1. Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-phase"
+workflow_step: 6
+workflow_status: "in-progress"
+last_action: "Validated code quality — tests: [X passed / Y failed], anti-patterns: [X found]"
+next_action: "Generate completion summary"
+updated: "{{ISO timestamp}}"
+```
+
+**2. Update `state/{{active_project}}/features/{{feature_id}}.yaml`:**
+```yaml
+# Notes only — status and progress do not change here:
+notes: "Validated. Tests: [X/Y passed]. Anti-patterns: [X critical, Y high]. {{any known issues}}"
+```
+
+**If any write fails → HALT. Report the failure. Do not proceed.**

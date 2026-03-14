@@ -70,6 +70,10 @@ updated: "{{timestamp}}"
 ```
 </action>
 <template-output>update_complete</template-output>
+<gate>
+HALT: Do not respond with the next step until session.yaml is confirmed written.
+If the write fails or is skipped, report the failure and stop.
+</gate>
 </step>
 
 </workflow>

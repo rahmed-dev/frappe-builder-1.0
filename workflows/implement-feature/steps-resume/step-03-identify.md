@@ -153,3 +153,40 @@ updated: "[current timestamp]"
 ## Next Step
 
 **→ Load and execute:** `steps-resume/step-04-implement-server.md`
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until all writes below are confirmed.**
+
+**1. Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 3
+workflow_status: "in-progress"
+last_action: "Identified all components to build — checklist of [X] components created"
+next_action: "Implement server-side business logic"
+updated: "{{ISO timestamp}}"
+```
+
+**2. Update `state/{{active_project}}/features/{{feature_id}}.yaml`:**
+```yaml
+# Register all components as planned, set feature in-progress:
+status: "in-progress"
+progress: "0/N"   # N = total components identified
+notes: "Components identified. Implementation starting."
+# Each component entry:
+{{component_id}}:
+  status: "planned"
+```
+
+**3. Mirror to `state/{{active_project}}/inventory.yaml` — status and progress just changed:**
+```yaml
+features:
+  {{feature_id}}:
+    status: "in-progress"
+    progress: "0/N"
+    notes: "Components identified. Implementation starting."
+```
+
+**If any write fails → HALT. Report the failure. Do not proceed.**

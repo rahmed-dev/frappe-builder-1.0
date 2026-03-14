@@ -157,3 +157,20 @@ notes: "Requirements gathered in session"
 **→ Load and execute:** `steps-new/step-02-quick-spec.md`
 
 Continue to quick spec creation.
+
+---
+## ⛔ STATE GATE — Required before proceeding
+
+**Do not load the next step file until the write below is confirmed.**
+
+**Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-feature"
+workflow_step: 1
+workflow_status: "in-progress"
+last_action: "Gathered and confirmed requirements for {{feature_name}}"
+next_action: "Create quick spec from gathered requirements"
+updated: "{{ISO timestamp}}"
+```
+
+**If the write fails → HALT. Report the failure. Do not proceed.**

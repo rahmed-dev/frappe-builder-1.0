@@ -70,3 +70,37 @@ Next:
 ## Workflow Complete
 
 Return control to user or invoking agent.
+
+---
+## ⛔ STATE GATE — Required before completing (aspirational — step-05b deploy gate handles the common case)
+
+**Do not confirm workflow complete until all writes below are confirmed.**
+
+**1. Write `state/{{active_project}}/session.yaml`:**
+```yaml
+workflow: "implement-phase"
+workflow_step: 7
+workflow_status: "completed"
+last_action: "Completed {{feature_name}} — [X] components deployed and tested"
+next_action: "Test manually in UI, generate tests, create user documentation"
+updated: "{{ISO timestamp}}"
+```
+
+**2. Update `state/{{active_project}}/features/{{feature_id}}.yaml`:**
+```yaml
+status: "completed"
+progress: "N/N"
+completed: "{{today's date}}"
+notes: "Implementation complete. Tests: [X/Y passed]. Quality: [status]."
+```
+
+**3. Mirror to `state/{{active_project}}/inventory.yaml` — status changed to completed:**
+```yaml
+features:
+  {{feature_id}}:
+    status: "completed"
+    progress: "N/N"
+    notes: "Implementation complete. Tests: [X/Y passed]."
+```
+
+**If any write fails → HALT. Report the failure. Do not proceed.**
