@@ -488,6 +488,67 @@ def get_context(context):
     return context
 ```
 
+## Page File Naming Convention (CRITICAL)
+
+Frappe resolves page files differently for HTML vs Python — **they must use different naming styles**.
+
+| File type | Naming | Example | Why |
+|---|---|---|---|
+| HTML template | **hyphens** (matches URL literally) | `stripe-checkout.html` | Frappe looks up HTML by URL path verbatim |
+| Python controller | **underscores** | `stripe_checkout.py` | Frappe calls `set_pymodule()` which converts hyphens→underscores before import |
+
+**Rule:** For a page at URL `/stripe-checkout`:
+- ✅ `stripe-checkout.html` — HTML must match URL literally
+- ✅ `stripe_checkout.py` — Python module must use underscores
+- ❌ `stripe-checkout.py` — Frappe will silently skip loading `get_context`; all template variables will be undefined
+
+> **Hard-learned:** If your Python controller is never called, the Jinja template will throw `UndefinedError` for every context variable. The symptom looks like a template bug but the cause is a filename mismatch. Always name `.py` with underscores, `.html` with hyphens.
+
+### Guest API Context: frappe.db.commit() required
+
+When a whitelisted API uses `@frappe.whitelist(allow_guest=True)` and switches user with `frappe.set_user()`, Frappe's auto-commit does **not** fire. Any `insert()` or `save()` calls must be followed by an explicit `frappe.db.commit()`.
+
+```python
+@frappe.whitelist(allow_guest=True)
+def finalize_checkout(invoice_name, payment_intent_id, token, expires):
+    frappe.set_user("Administrator")
+    # ... create Payment Entry ...
+    frappe.db.commit()  # REQUIRED — auto-commit does not fire in guest API context
+```
+
+### no_cache for dynamic pages
+
+Always set `no_cache = 1` at module level (not inside `get_context`) for payment and auth pages:
+
+```python
+# stripe_checkout.py
+no_cache = 1
+
+def get_context(context):
+    ...
+```
+
+### Safe defaults before any logic
+
+Set all template variables to safe defaults at the top of `get_context` before any code that could raise, then wrap the real logic in try/except:
+
+```python
+def get_context(context):
+    context.invalid = False
+    context.already_paid = False
+    context.amount = 0
+    context.currency = "CAD"
+    # ... other defaults ...
+    try:
+        _load_checkout_context(context)
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Page Error")
+        context.invalid = True
+        context.error = _("An unexpected error occurred.")
+```
+
+---
+
 ## Key Rules
 
 - ✅ Use web pages for static content
