@@ -1,4 +1,4 @@
-# !!!!! No Longer Maintained but Still Useable for beginners
+# !!!!! No Longer Maintained but Still Useable for beginners thus not archived
 
 # Frappe-Builder Module
 
