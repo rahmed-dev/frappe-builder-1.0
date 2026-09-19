@@ -1,3 +1,5 @@
+# No Longer Maintained but Still Useable for beginners
+
 # Frappe-Builder Module
 
 **A BMAD-compatible sub-agent module for comprehensive Frappe Framework development**
